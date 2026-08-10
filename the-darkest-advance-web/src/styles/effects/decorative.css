@@ -1,0 +1,46 @@
+@layer utilities {
+  .red-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 26, 26, 0.5),
+      transparent
+    );
+  }
+
+  .tda-red-radial {
+    background: radial-gradient(
+      circle at 70% 45%,
+      rgba(176, 0, 0, 0.32),
+      transparent 30rem
+    );
+  }
+
+  .tda-hero-gradient {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 1),
+      rgba(0, 0, 0, 0.82),
+      rgba(0, 0, 0, 0.42)
+    );
+  }
+
+  .tda-noise {
+    position: relative;
+  }
+
+  .tda-noise::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+}

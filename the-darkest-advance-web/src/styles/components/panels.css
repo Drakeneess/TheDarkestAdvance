@@ -1,0 +1,23 @@
+@layer components {
+  .dark-panel {
+    background: var(--panel-black);
+    border: 1px solid var(--red-border-soft);
+    box-shadow: 0 0 48px var(--red-glow-soft);
+    backdrop-filter: blur(10px);
+  }
+
+  .dark-panel-strong {
+    background: var(--panel-black-strong);
+    border: 1px solid var(--red-border-mid);
+    box-shadow:
+      0 0 56px rgba(176, 0, 0, 0.16),
+      inset 0 0 24px rgba(176, 0, 0, 0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  .red-glow {
+    box-shadow:
+      0 0 24px var(--red-glow-mid),
+      inset 0 0 20px rgba(176, 0, 0, 0.08);
+  }
+}

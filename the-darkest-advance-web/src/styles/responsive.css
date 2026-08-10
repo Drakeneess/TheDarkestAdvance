@@ -1,0 +1,20 @@
+@media (max-width: 768px) {
+  :root {
+    --parallax-soft-x: 0px;
+    --parallax-soft-y: 0px;
+
+    --parallax-mid-x: 0px;
+    --parallax-mid-y: 0px;
+
+    --parallax-strong-x: 0px;
+    --parallax-strong-y: 0px;
+  }
+
+  .section-spacing {
+    padding-block: 5rem;
+  }
+
+  .section-spacing-sm {
+    padding-block: 3.5rem;
+  }
+}

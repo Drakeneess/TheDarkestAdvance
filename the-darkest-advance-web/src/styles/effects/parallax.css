@@ -1,0 +1,28 @@
+@layer utilities {
+  .parallax-soft {
+    transform: translate3d(
+      var(--parallax-soft-x),
+      var(--parallax-soft-y),
+      0
+    );
+    will-change: transform;
+  }
+
+  .parallax-mid {
+    transform: translate3d(
+      var(--parallax-mid-x),
+      var(--parallax-mid-y),
+      0
+    );
+    will-change: transform;
+  }
+
+  .parallax-strong {
+    transform: translate3d(
+      var(--parallax-strong-x),
+      var(--parallax-strong-y),
+      0
+    );
+    will-change: transform;
+  }
+}

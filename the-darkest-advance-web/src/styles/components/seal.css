@@ -1,0 +1,89 @@
+@layer components {
+  .tda-seal {
+    --seal-blood-dark: #3a0007;
+    --seal-blood-frame: #65000d;
+    --seal-blood-frame-hover: #8a0012;
+    --seal-blood-rune: #ff2a1f;
+    --seal-blood-rune-hover: #ff4a36;
+    --seal-cut: rgba(35, 0, 0, 0.85);
+
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--seal-blood-rune);
+    filter:
+      drop-shadow(0 0 6px rgba(255, 30, 20, 0.45))
+      drop-shadow(0 0 16px rgba(176, 0, 0, 0.32));
+    transition:
+      transform 180ms ease,
+      filter 180ms ease,
+      color 180ms ease;
+  }
+
+  .tda-seal .seal-glow {
+    color: var(--seal-blood-frame);
+    opacity: 0.14;
+    transform-origin: center;
+    transition:
+      opacity 180ms ease,
+      transform 220ms ease;
+  }
+
+  .tda-seal .seal-frame {
+    color: var(--seal-blood-frame);
+    opacity: 0.95;
+    transform-origin: center;
+    transition:
+      opacity 180ms ease,
+      transform 220ms ease,
+      color 180ms ease;
+  }
+
+  .tda-seal .seal-rune {
+    color: var(--seal-blood-rune);
+    transform-origin: center;
+    transition:
+      transform 220ms ease,
+      filter 180ms ease,
+      color 180ms ease;
+  }
+
+  .tda-seal .seal-cuts {
+    color: var(--seal-cut);
+    opacity: 0.75;
+    transition:
+      opacity 180ms ease,
+      color 180ms ease;
+  }
+
+  .tda-seal:hover {
+    color: var(--seal-blood-rune-hover);
+    transform: scale(1.05);
+    filter:
+      drop-shadow(0 0 10px rgba(255, 30, 20, 0.62))
+      drop-shadow(0 0 24px rgba(176, 0, 0, 0.42));
+  }
+
+  .tda-seal:hover .seal-glow {
+    opacity: 0.28;
+    transform: scale(1.04);
+  }
+
+  .tda-seal:hover .seal-frame {
+    color: var(--seal-blood-frame-hover);
+    opacity: 1;
+    transform: rotate(2deg);
+  }
+
+  .tda-seal:hover .seal-rune {
+    color: var(--seal-blood-rune-hover);
+    filter: drop-shadow(0 0 8px rgba(255, 60, 40, 0.35));
+  }
+
+  .tda-seal:hover .seal-cuts {
+    opacity: 0.95;
+  }
+
+  .tda-seal:active {
+    transform: scale(0.96);
+  }
+}

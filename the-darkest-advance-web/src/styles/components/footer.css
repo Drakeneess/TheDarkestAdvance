@@ -1,0 +1,200 @@
+@layer components {
+  .tda-footer {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(120, 0, 15, 0.5);
+    background:
+      linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.94),
+        rgba(24, 3, 5, 0.82),
+        rgba(0, 0, 0, 0.94)
+      );
+    padding: 2.25rem 1.5rem;
+  }
+
+  .tda-footer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 30, 20, 0.08),
+        transparent
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0,
+        transparent 38px,
+        rgba(120, 0, 15, 0.12) 39px,
+        transparent 40px
+      );
+    opacity: 0.5;
+  }
+
+  .tda-footer::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 42, 31, 0.7),
+      transparent
+    );
+    opacity: 0.8;
+  }
+
+  .tda-footer > .site-container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .tda-footer-grid {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .tda-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .tda-footer-seal {
+    width: 2.35rem;
+    height: 2.35rem;
+    color: #9a0014;
+    filter:
+      drop-shadow(0 0 5px rgba(154, 0, 20, 0.42))
+      drop-shadow(0 0 14px rgba(80, 0, 8, 0.34));
+  }
+
+  .tda-footer-title {
+    font-family: var(--font-cinzel);
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgb(231, 221, 205);
+  }
+
+  .tda-footer-subtitle {
+    margin-top: 0.35rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(168, 155, 138, 0.72);
+  }
+
+  .tda-footer-status {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.55rem;
+    border: 1px solid rgba(120, 0, 15, 0.55);
+    background: rgba(0, 0, 0, 0.48);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 80, 62, 0.88);
+    backdrop-filter: blur(14px);
+  }
+
+  .tda-footer-status-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: #ff2a1f;
+    box-shadow:
+      0 0 8px rgba(255, 42, 31, 0.75),
+      0 0 18px rgba(154, 0, 20, 0.45);
+  }
+
+  .tda-footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  .tda-footer-nav a {
+    border: 1px solid rgba(120, 0, 15, 0.42);
+    background: rgba(0, 0, 0, 0.34);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(196, 181, 163, 0.72);
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .tda-footer-nav a:hover {
+    border-color: rgba(255, 42, 31, 0.58);
+    background: rgba(120, 0, 15, 0.18);
+    color: #ff4a36;
+    transform: translateY(-1px);
+  }
+
+  .tda-footer-line {
+    margin: 1.75rem 0 1rem;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(120, 0, 15, 0.75),
+      rgba(255, 42, 31, 0.18),
+      transparent
+    );
+  }
+
+  .tda-footer-meta {
+    display: grid;
+    gap: 0.65rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(168, 155, 138, 0.62);
+  }
+
+  .tda-footer-meta p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tda-footer-meta span {
+    color: rgba(120, 0, 15, 0.9);
+  }
+
+  .tda-footer-meta strong {
+    font-weight: 800;
+    color: rgba(231, 221, 205, 0.78);
+  }
+
+  @media (min-width: 768px) {
+    .tda-footer-grid {
+      grid-template-columns: 1.2fr auto auto;
+    }
+
+    .tda-footer-nav {
+      justify-content: flex-end;
+    }
+
+    .tda-footer-meta {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+}

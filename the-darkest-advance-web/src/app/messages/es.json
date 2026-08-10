@@ -1,0 +1,51 @@
+{
+  "home": {
+    "hero": {
+      "style": "Dark Tactical Elegance",
+      "title": "The Darkest Advance",
+      "tagline": "Mundos forjados en instinto, ruina y precisión.",
+      "primaryCta": "Entrar al Codex",
+      "secondaryCta": "Ver proyectos",
+      "signal": {
+        "label": "Señal del estudio",
+        "description": "Instinto convertido en estructura. Oscuridad moldeada en sistemas."
+      }
+    }
+  },
+  "navbar": {
+    "items": {
+      "projects": "Proyectos",
+      "codex": "Codex",
+      "about": "Acerca de"
+    }
+  },
+  "footer": {
+    "subtitle": "Juegos. Historias. Mundos. Sistemas.",
+    "status": "Señal activa",
+    "navigationLabel": "Navegación del pie de página",
+    "meta": {
+      "studio": {
+        "label": "Estudio"
+      },
+      "protocol": {
+        "label": "Protocolo",
+        "value": "Elegancia táctica oscura"
+      },
+      "archive": {
+        "label": "Archivo"
+      },
+      "year": {
+        "label": "Año"
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "ERROR 404 // CODEX INDEX FAILURE",
+    "title": "Entrada no archivada.",
+    "description": "La ruta que intentas abrir no existe en este plano. Puede haber sido borrada, sellada o nunca escrita.",
+    "signal": "SEÑAL PERDIDA",
+    "log": "El archivo solicitado no responde. Persistir en esta ruta no producirá avance.",
+    "home": "Volver al inicio",
+    "codex": "Entrar al Codex"
+  }
+}

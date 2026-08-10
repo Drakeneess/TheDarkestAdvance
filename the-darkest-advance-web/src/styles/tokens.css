@@ -1,0 +1,39 @@
+:root {
+  /* Core palette */
+  --void-black: #030202;
+  --black-red: #110303;
+  --deep-crimson: #570000;
+  --blood-red: #b00000;
+  --ember-red: #ff1a1a;
+  --bone-white: #e8ddc8;
+  --ash-gray: #8a8178;
+  --charcoal: #151111;
+
+  /* Transparent colors */
+  --panel-black: rgba(5, 2, 2, 0.72);
+  --panel-black-strong: rgba(0, 0, 0, 0.78);
+
+  --red-border-soft: rgba(255, 26, 26, 0.18);
+  --red-border-mid: rgba(255, 26, 26, 0.34);
+
+  --red-glow-soft: rgba(176, 0, 0, 0.12);
+  --red-glow-mid: rgba(255, 26, 26, 0.18);
+
+  /* Interaction values updated by InteractionLayer */
+  --input-x: 0;
+  --input-y: 0;
+  --scroll-progress: 0;
+
+  --parallax-soft-x: 0px;
+  --parallax-soft-y: 0px;
+
+  --parallax-mid-x: 0px;
+  --parallax-mid-y: 0px;
+
+  --parallax-strong-x: 0px;
+  --parallax-strong-y: 0px;
+
+  /* Layout */
+  --site-max-width: 80rem;
+  --navbar-height: 4.5rem;
+}

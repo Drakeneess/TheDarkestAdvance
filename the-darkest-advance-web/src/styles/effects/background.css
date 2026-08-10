@@ -1,0 +1,196 @@
+@layer utilities {
+  .tda-ambient-base {
+    background:
+      radial-gradient(
+        circle at 68% 42%,
+        rgba(155, 0, 12, 0.34),
+        transparent 24rem
+      ),
+      radial-gradient(
+        circle at 22% 24%,
+        rgba(95, 8, 12, 0.32),
+        transparent 22rem
+      ),
+      radial-gradient(
+        circle at 50% 78%,
+        rgba(120, 0, 0, 0.26),
+        transparent 28rem
+      ),
+      linear-gradient(
+        135deg,
+        #010101 0%,
+        #080202 34%,
+        #140404 58%,
+        #080101 78%,
+        #000000 100%
+      );
+  }
+
+  .tda-ash-gradient {
+    opacity: 1;
+    background:
+      radial-gradient(
+        ellipse at 54% 48%,
+        rgba(150, 125, 110, 0.16),
+        transparent 30rem
+      ),
+      radial-gradient(
+        ellipse at 80% 16%,
+        rgba(190, 80, 70, 0.1),
+        transparent 20rem
+      ),
+      radial-gradient(
+        ellipse at 20% 82%,
+        rgba(100, 0, 0, 0.22),
+        transparent 26rem
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 70, 50, 0.05),
+        transparent 32%,
+        rgba(0, 0, 0, 0.58) 74%,
+        rgba(0, 0, 0, 0.9) 100%
+      );
+  }
+
+  .tda-ash-noise {
+    opacity: 0.34;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.84' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.48'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+  }
+
+  .tda-ash-dust {
+    opacity: 0.46;
+    mix-blend-mode: screen;
+    background-image:
+      radial-gradient(circle, rgba(235, 215, 190, 0.5) 0 1px, transparent 1.5px),
+      radial-gradient(circle, rgba(170, 120, 105, 0.32) 0 1px, transparent 1.7px),
+      radial-gradient(circle, rgba(255, 255, 255, 0.18) 0 0.8px, transparent 1.3px);
+    background-size:
+      150px 150px,
+      260px 260px,
+      410px 410px;
+    background-position:
+      20px 40px,
+      130px 90px,
+      260px 180px;
+    animation: ash-drift 26s linear infinite;
+  }
+
+  .tda-ember-dust {
+    opacity: 0.42;
+    mix-blend-mode: screen;
+    background-image:
+      radial-gradient(circle, rgba(255, 55, 35, 0.75) 0 1.1px, transparent 2px),
+      radial-gradient(circle, rgba(190, 0, 18, 0.52) 0 1px, transparent 2.2px),
+      radial-gradient(circle, rgba(255, 95, 50, 0.34) 0 1.4px, transparent 2.8px);
+    background-size:
+      280px 280px,
+      430px 430px,
+      620px 620px;
+    background-position:
+      80px 140px,
+      300px 40px,
+      180px 260px;
+    animation: ember-drift 32s linear infinite;
+  }
+
+  .tda-vignette {
+    background:
+      radial-gradient(
+        circle at center,
+        transparent 0%,
+        rgba(0, 0, 0, 0.22) 32%,
+        rgba(0, 0, 0, 0.72) 72%,
+        rgba(0, 0, 0, 0.96) 100%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.88),
+        transparent 34%,
+        rgba(0, 0, 0, 0.82)
+      ),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.12),
+        transparent 45%,
+        rgba(0, 0, 0, 0.78)
+      );
+  }
+}
+
+@keyframes ash-drift {
+  from {
+    background-position:
+      20px 40px,
+      130px 90px,
+      260px 180px;
+  }
+
+  to {
+    background-position:
+      90px -210px,
+      210px -270px,
+      340px -380px;
+  }
+}
+
+@keyframes ember-drift {
+  from {
+    background-position:
+      80px 140px,
+      300px 40px,
+      180px 260px;
+  }
+
+  to {
+    background-position:
+      130px -280px,
+      380px -340px,
+      230px -420px;
+  }
+}
+
+.tda-static-sigil {
+  opacity: 0.38;
+  background:
+    radial-gradient(circle at 62% 44%, rgba(180, 15, 10, 0.24), transparent 24%),
+    radial-gradient(circle at 62% 44%, rgba(255, 80, 60, 0.08), transparent 38%);
+}
+
+.tda-static-sigil::before {
+  content: "";
+  position: absolute;
+  width: min(42rem, 82vw);
+  aspect-ratio: 1;
+  left: 52%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  border: 1px solid rgba(255, 62, 49, 0.18);
+  clip-path: polygon(
+    50% 0%,
+    88% 18%,
+    100% 50%,
+    82% 88%,
+    50% 100%,
+    12% 82%,
+    0% 50%,
+    18% 12%
+  );
+  box-shadow:
+    0 0 80px rgba(140, 0, 0, 0.18),
+    inset 0 0 70px rgba(120, 0, 0, 0.1);
+}
+
+.tda-static-sigil::after {
+  content: "";
+  position: absolute;
+  width: min(18rem, 44vw);
+  aspect-ratio: 1;
+  left: 52%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-top: 2px solid rgba(244, 234, 220, 0.12);
+  border-left: 2px solid rgba(255, 62, 49, 0.16);
+}

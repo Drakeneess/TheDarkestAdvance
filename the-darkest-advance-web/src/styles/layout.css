@@ -1,0 +1,20 @@
+@layer utilities {
+  .site-container {
+    width: min(100% - 3rem, var(--site-max-width));
+    margin-inline: auto;
+  }
+
+  .content-layer {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+  }
+
+  .section-spacing {
+    padding-block: 7rem;
+  }
+
+  .section-spacing-sm {
+    padding-block: 4.5rem;
+  }
+}
