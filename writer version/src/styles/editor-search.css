@@ -1,0 +1,223 @@
+﻿/* ==================================================
+   EDITOR SEARCH / REPLACE
+   ================================================== */
+
+.editor-toolbar-actions {
+  display: flex;
+
+  justify-self: end;
+
+  align-items: center;
+
+  gap: 5px;
+}
+
+.editor-find-button {
+  border:
+    1px solid
+    var(--border-subtle);
+
+  border-radius: 6px;
+
+  padding:
+    6px
+    10px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    transparent;
+
+  font-size: 8px;
+}
+
+.editor-find-button:hover {
+  border-color:
+    var(--border-medium);
+
+  color:
+    var(--text-primary);
+
+  background:
+    var(--bg-hover);
+}
+
+.editor-search-panel {
+  position: relative;
+
+  z-index: 15;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  padding:
+    7px
+    10px;
+
+  border-bottom:
+    1px solid
+    var(--border-subtle);
+
+  background:
+    #0d0e11;
+
+  box-shadow:
+    0 8px 20px
+    rgba(
+      0,
+      0,
+      0,
+      0.16
+    );
+}
+
+.editor-search-row {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+}
+
+.editor-search-row input {
+  width: min(
+    380px,
+    45vw
+  );
+
+  height: 29px;
+
+  border:
+    1px solid
+    var(--border-medium);
+
+  border-radius: 6px;
+
+  padding:
+    0
+    9px;
+
+  color:
+    var(--text-primary);
+
+  background:
+    #141519;
+
+  outline: none;
+
+  font-size: 10px;
+}
+
+.editor-search-row input:focus {
+  border-color:
+    var(--accent-border);
+
+  box-shadow:
+    0 0 0 2px
+    var(--accent-soft);
+}
+
+.editor-search-row button {
+  display: inline-flex;
+
+  min-width: 29px;
+  height: 29px;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius: 5px;
+
+  padding:
+    0
+    7px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    transparent;
+
+  font-size: 9px;
+}
+
+.editor-search-row button:hover:not(:disabled) {
+  border-color:
+    var(--border-medium);
+
+  color:
+    var(--text-primary);
+
+  background:
+    var(--bg-hover);
+}
+
+.editor-search-row button.active {
+  border-color:
+    var(--accent-border);
+
+  color:
+    #d497a0;
+
+  background:
+    var(--accent-soft);
+}
+
+.editor-search-row button:disabled {
+  cursor:
+    not-allowed;
+
+  opacity: 0.3;
+}
+
+.editor-search-text-button {
+  padding:
+    0
+    10px !important;
+
+  white-space:
+    nowrap;
+}
+
+.editor-search-counter {
+  min-width: 44px;
+
+  color:
+    var(--text-faint);
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 8px;
+
+  text-align: center;
+}
+
+.editor-replace-row {
+  padding-left: 0;
+}
+
+.editor-search-readonly {
+  color:
+    var(--text-faint);
+
+  font-size: 8px;
+}
+
+.editor-search-controls,
+.editor-replace-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+}

@@ -1,0 +1,1499 @@
+﻿:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: #f5f2ea;
+  background: #090909;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button,
+input,
+textarea {
+  color: inherit;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 4px;
+  font-size: 28px;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 20px;
+}
+
+.eyebrow {
+  margin-bottom: 6px;
+
+  color: #777;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+}
+
+.muted {
+  margin-bottom: 0;
+
+  color: #707070;
+
+  font-size: 13px;
+}
+
+/* -------------------------------------------------- */
+/* Layout                                             */
+/* -------------------------------------------------- */
+
+.writer-shell {
+  display: grid;
+
+  grid-template-columns:
+    300px
+    minmax(0, 1fr)
+    280px;
+
+  min-height: 100vh;
+
+  background: #090909;
+}
+
+.library-panel,
+.versions-panel {
+  min-width: 0;
+
+  background: #0e0e0e;
+}
+
+.library-panel {
+  display: flex;
+  flex-direction: column;
+
+  padding: 22px 16px;
+
+  border-right: 1px solid #252525;
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+  min-height: 100vh;
+
+  background: #151515;
+}
+
+.versions-panel {
+  border-left: 1px solid #252525;
+}
+
+/* -------------------------------------------------- */
+/* Library                                            */
+/* -------------------------------------------------- */
+
+.brand {
+  padding: 2px 4px 24px;
+}
+
+.library-section {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  padding: 18px 0;
+
+  border-top: 1px solid #242424;
+}
+
+.chapters-section {
+  flex: 1;
+}
+
+.section-title-row {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 4px;
+
+  color: #a0a0a0;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.counter {
+  display: inline-flex;
+
+  min-width: 24px;
+  height: 22px;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #303030;
+  border-radius: 999px;
+
+  padding: 0 7px;
+
+  color: #777;
+  background: #171717;
+
+  font-size: 11px;
+}
+
+/* -------------------------------------------------- */
+/* Inputs                                             */
+/* -------------------------------------------------- */
+
+.create-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    38px;
+
+  gap: 7px;
+}
+
+.create-row input,
+.snapshot-box input {
+  width: 100%;
+
+  border: 1px solid #2c2c2c;
+  border-radius: 8px;
+
+  padding: 9px 11px;
+
+  color: #eee;
+  background: #171717;
+
+  outline: none;
+}
+
+.create-row input:focus,
+.snapshot-box input:focus {
+  border-color: #5d5d5d;
+}
+
+.create-row button {
+  border: 1px solid #343434;
+  border-radius: 8px;
+
+  color: #eee;
+  background: #222;
+}
+
+.create-row button:hover {
+  background: #2d2d2d;
+}
+
+/* -------------------------------------------------- */
+/* Stories + chapters                                 */
+/* -------------------------------------------------- */
+
+.story-list,
+.chapter-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.story,
+.chapter {
+  display: flex;
+
+  width: 100%;
+
+  border: 0;
+  border-radius: 7px;
+
+  padding: 9px 10px;
+
+  color: #aaa;
+  background: transparent;
+
+  text-align: left;
+}
+
+.story {
+  justify-content: space-between;
+}
+
+.chapter {
+  gap: 11px;
+}
+
+.chapter small {
+  min-width: 26px;
+
+  color: #5f5f5f;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+}
+
+.story:hover,
+.chapter:hover {
+  background: #181818;
+}
+
+.story.active,
+.chapter.active {
+  color: #fff;
+  background: #222;
+}
+
+/* -------------------------------------------------- */
+/* Editor                                             */
+/* -------------------------------------------------- */
+
+.editor-header {
+  display: flex;
+
+  min-height: 94px;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 20px 28px;
+
+  border-bottom: 1px solid #292929;
+}
+
+.version-preview-label {
+  margin: 5px 0 0;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+.editor-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.primary,
+.secondary {
+  min-height: 38px;
+
+  border-radius: 8px;
+
+  padding: 0 14px;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.primary {
+  border: 1px solid #444;
+
+  color: #fafafa;
+  background: #2a2a2a;
+}
+
+.primary:hover {
+  background: #353535;
+}
+
+.secondary {
+  border: 1px solid #303030;
+
+  color: #a8a8a8;
+  background: transparent;
+}
+
+.secondary:hover {
+  color: #eee;
+  background: #202020;
+}
+
+.editor {
+  flex: 1;
+
+  width: 100%;
+  min-height: 0;
+
+  resize: none;
+
+  border: 0;
+
+  padding:
+    38px
+    max(
+      36px,
+      calc((100% - 850px) / 2)
+    );
+
+  color: #eae6dc;
+  background: #151515;
+
+  outline: none;
+
+  font-family:
+    "IBM Plex Mono",
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.editor.readonly {
+  color: #bbb;
+  background: #121212;
+}
+
+.statusbar {
+  display: flex;
+
+  min-height: 38px;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 20px;
+
+  padding: 8px 18px;
+
+  border-top: 1px solid #292929;
+
+  color: #696969;
+
+  font-size: 11px;
+}
+
+.save-status {
+  min-width: 88px;
+
+  text-align: right;
+}
+
+.save-status.pending {
+  color: #aaa;
+}
+
+/* -------------------------------------------------- */
+/* Versions                                           */
+/* -------------------------------------------------- */
+
+.versions-header {
+  display: flex;
+
+  min-height: 94px;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 18px;
+
+  border-bottom: 1px solid #252525;
+}
+
+.snapshot-box {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  padding: 16px;
+
+  border-bottom: 1px solid #252525;
+}
+
+.snapshot-box .primary {
+  width: 100%;
+}
+
+.version-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  padding: 10px;
+}
+
+.version-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  width: 100%;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  padding: 11px;
+
+  color: #999;
+  background: transparent;
+
+  text-align: left;
+}
+
+.version-card:hover {
+  background: #181818;
+}
+
+.version-card.selected {
+  border-color: #454545;
+
+  color: #ddd;
+  background: #202020;
+}
+
+.version-card.current {
+  background: #171717;
+}
+
+.version-card.current.selected {
+  background: #222;
+}
+
+.version-card-top {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.version-card strong {
+  overflow: hidden;
+
+  color: #ddd;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current-badge {
+  border: 1px solid #424242;
+  border-radius: 999px;
+
+  padding: 2px 6px;
+
+  color: #aaa;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+}
+
+.version-date,
+.version-meta {
+  color: #626262;
+
+  font-size: 10px;
+}
+
+.version-index {
+  position: absolute;
+
+  right: 10px;
+  bottom: 9px;
+
+  color: #444;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 10px;
+}
+
+.versions-empty {
+  padding: 22px 16px;
+
+  color: #606060;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* -------------------------------------------------- */
+/* Empty / boot                                       */
+/* -------------------------------------------------- */
+
+.empty-state {
+  margin: auto;
+
+  max-width: 420px;
+
+  padding: 36px;
+
+  color: #777;
+}
+
+.empty-state h2 {
+  margin-bottom: 12px;
+
+  color: #ddd;
+}
+
+.empty-state p:last-child {
+  line-height: 1.6;
+}
+
+.boot-state {
+  display: grid;
+
+  min-height: 100vh;
+
+  place-items: center;
+
+  padding: 24px;
+
+  color: #aaa;
+  background: #0d0d0d;
+}
+
+.boot-state.error {
+  color: #e0a0a0;
+}
+
+/* -------------------------------------------------- */
+/* Tablet                                             */
+/* -------------------------------------------------- */
+
+@media (max-width: 1050px) {
+  .writer-shell {
+    grid-template-columns:
+      240px
+      minmax(0, 1fr)
+      240px;
+  }
+}
+
+/* -------------------------------------------------- */
+/* Mobile                                             */
+/* -------------------------------------------------- */
+
+
+/* -------------------------------------------------- */
+/* Version comparison                                 */
+/* -------------------------------------------------- */
+
+.compare-box {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  padding: 16px;
+
+  border-bottom:
+    1px solid #252525;
+}
+
+.compare-title {
+  color: #888;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.compare-box label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  color: #666;
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+}
+
+.compare-box select {
+  width: 100%;
+
+  border:
+    1px solid #303030;
+
+  border-radius: 7px;
+
+  padding: 8px 9px;
+
+  color: #ddd;
+  background: #171717;
+
+  outline: none;
+
+  font-size: 12px;
+}
+
+.compare-box select:focus {
+  border-color: #555;
+}
+
+.compare-box button {
+  width: 100%;
+}
+
+.compare-box button:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.35;
+}
+
+/* -------------------------------------------------- */
+/* Diff                                               */
+/* -------------------------------------------------- */
+
+.diff-view {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: #111;
+}
+
+.diff-summary {
+  display: flex;
+
+  min-height: 38px;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 0 16px;
+
+  border-bottom:
+    1px solid #282828;
+
+  color: #777;
+
+  font-size: 11px;
+}
+
+.diff-table {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  overflow: auto;
+}
+
+.diff-column-header {
+  position: sticky;
+  top: 0;
+
+  z-index: 2;
+
+  padding: 10px 14px;
+
+  border-bottom:
+    1px solid #303030;
+
+  color: #aaa;
+  background: #171717;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.diff-column-header:first-child {
+  border-right:
+    1px solid #303030;
+}
+
+.diff-row {
+  display: contents;
+}
+
+.diff-cell {
+  display: grid;
+
+  grid-template-columns:
+    46px
+    minmax(0, 1fr);
+
+  min-height: 26px;
+
+  border-bottom:
+    1px solid #1d1d1d;
+
+  background: #121212;
+}
+
+.diff-cell:nth-child(odd) {
+  border-right:
+    1px solid #303030;
+}
+
+.diff-cell.removed {
+  background:
+    rgba(
+      130,
+      40,
+      40,
+      0.22
+    );
+}
+
+.diff-cell.added {
+  background:
+    rgba(
+      40,
+      110,
+      65,
+      0.22
+    );
+}
+
+.diff-cell.empty {
+  background: #0d0d0d;
+}
+
+.diff-line-number {
+  display: flex;
+
+  justify-content: flex-end;
+
+  padding:
+    5px
+    9px
+    5px
+    4px;
+
+  border-right:
+    1px solid #242424;
+
+  color: #555;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 10px;
+
+  user-select: none;
+}
+
+.diff-line-content {
+  margin: 0;
+
+  padding: 4px 10px;
+
+  overflow-wrap: anywhere;
+
+  color: #bbb;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  white-space: pre-wrap;
+}
+
+.diff-cell.removed
+.diff-line-content {
+  color: #daa7a7;
+}
+
+.diff-cell.added
+.diff-line-content {
+  color: #a8d3b3;
+}
+
+@media (
+  max-width: 760px
+) {
+  .diff-table {
+    min-width: 850px;
+  }
+
+  .diff-view {
+    overflow-x: auto;
+  }
+}
+
+/* -------------------------------------------------- */
+/* Inline token diff                                  */
+/* -------------------------------------------------- */
+
+.diff-token {
+  border-radius: 3px;
+}
+
+.diff-token-removed {
+  color: #ffd0d0;
+
+  background:
+    rgba(
+      190,
+      55,
+      55,
+      0.48
+    );
+
+  text-decoration:
+    line-through;
+
+  text-decoration-color:
+    rgba(
+      255,
+      190,
+      190,
+      0.45
+    );
+}
+
+.diff-token-added {
+  color: #d1f5d9;
+
+  background:
+    rgba(
+      55,
+      150,
+      85,
+      0.48
+    );
+}
+
+/* -------------------------------------------------- */
+/* Version management                                 */
+/* -------------------------------------------------- */
+
+.version-card {
+  padding: 0;
+
+  overflow: hidden;
+}
+
+.version-card-select {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  width: 100%;
+
+  border: 0;
+
+  padding: 11px;
+
+  color: inherit;
+  background: transparent;
+
+  text-align: left;
+}
+
+.version-card-select:hover {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.025
+    );
+}
+
+.version-meta-row {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.version-index {
+  position: static;
+
+  margin-left: auto;
+}
+
+.version-card-actions {
+  display: flex;
+
+  gap: 4px;
+
+  padding:
+    6px
+    8px
+    8px;
+
+  border-top:
+    1px solid #242424;
+}
+
+.version-card-actions button {
+  flex: 1;
+
+  border: 0;
+  border-radius: 5px;
+
+  padding:
+    5px
+    6px;
+
+  color: #777;
+  background: transparent;
+
+  font-size: 9px;
+}
+
+.version-card-actions button:hover {
+  color: #ddd;
+  background: #252525;
+}
+
+.version-card-actions
+button.danger:hover {
+  color: #e3a7a7;
+
+  background:
+    rgba(
+      130,
+      45,
+      45,
+      0.18
+    );
+}
+
+/* -------------------------------------------------- */
+/* Rename                                             */
+/* -------------------------------------------------- */
+
+.version-rename-form {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    auto;
+
+  gap: 5px;
+
+  padding:
+    7px
+    8px
+    8px;
+
+  border-top:
+    1px solid #292929;
+}
+
+.version-rename-form input {
+  min-width: 0;
+
+  border:
+    1px solid #383838;
+
+  border-radius: 5px;
+
+  padding:
+    6px
+    7px;
+
+  color: #ddd;
+  background: #111;
+
+  outline: none;
+
+  font-size: 11px;
+}
+
+.version-rename-form input:focus {
+  border-color: #606060;
+}
+
+.version-rename-form button {
+  border:
+    1px solid #303030;
+
+  border-radius: 5px;
+
+  padding:
+    5px
+    7px;
+
+  color: #999;
+  background: #1d1d1d;
+
+  font-size: 9px;
+}
+
+.version-rename-form button:hover {
+  color: #eee;
+  background: #292929;
+}
+
+/* -------------------------------------------------- */
+/* Chapter management                                 */
+/* -------------------------------------------------- */
+
+.chapter-list {
+  gap: 6px;
+}
+
+.chapter-item {
+  overflow: hidden;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+}
+
+.chapter-item:hover {
+  background: #181818;
+}
+
+.chapter-item.active {
+  border-color: #303030;
+
+  background: #202020;
+}
+
+.chapter-item-select {
+  display: flex;
+
+  width: 100%;
+
+  gap: 11px;
+
+  border: 0;
+
+  padding: 9px 10px;
+
+  color: #aaa;
+  background: transparent;
+
+  text-align: left;
+}
+
+.chapter-item.active
+.chapter-item-select {
+  color: #fff;
+}
+
+.chapter-item-select small {
+  min-width: 26px;
+
+  color: #5f5f5f;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+}
+
+.chapter-item-select span {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chapter-item-actions {
+  display: flex;
+
+  gap: 3px;
+
+  padding:
+    5px
+    6px
+    7px;
+
+  border-top:
+    1px solid #262626;
+}
+
+.chapter-item-actions button {
+  min-width: 25px;
+
+  border: 0;
+  border-radius: 5px;
+
+  padding: 5px;
+
+  color: #6f6f6f;
+  background: transparent;
+
+  font-size: 9px;
+}
+
+.chapter-item-actions button:hover:not(:disabled) {
+  color: #ddd;
+  background: #292929;
+}
+
+.chapter-item-actions button:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.25;
+}
+
+.chapter-item-actions
+button.danger:hover {
+  color: #e0a0a0;
+
+  background:
+    rgba(
+      130,
+      45,
+      45,
+      0.18
+    );
+}
+
+/* -------------------------------------------------- */
+/* Chapter rename                                     */
+/* -------------------------------------------------- */
+
+.chapter-rename-form {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    auto;
+
+  gap: 4px;
+
+  padding:
+    6px
+    7px
+    7px;
+
+  border-top:
+    1px solid #292929;
+}
+
+.chapter-rename-form input {
+  min-width: 0;
+
+  border:
+    1px solid #383838;
+
+  border-radius: 5px;
+
+  padding:
+    6px
+    7px;
+
+  color: #ddd;
+  background: #111;
+
+  outline: none;
+
+  font-size: 11px;
+}
+
+.chapter-rename-form input:focus {
+  border-color: #606060;
+}
+
+.chapter-rename-form button {
+  border:
+    1px solid #303030;
+
+  border-radius: 5px;
+
+  padding:
+    5px
+    7px;
+
+  color: #999;
+  background: #1d1d1d;
+
+  font-size: 9px;
+}
+
+.chapter-rename-form button:hover {
+  color: #eee;
+  background: #292929;
+}
+
+/* -------------------------------------------------- */
+/* Story management                                   */
+/* -------------------------------------------------- */
+
+.story-list {
+  gap: 6px;
+}
+
+.story-item {
+  overflow: hidden;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+}
+
+.story-item:hover {
+  background: #181818;
+}
+
+.story-item.active {
+  border-color: #303030;
+
+  background: #202020;
+}
+
+.story-item-select {
+  display: flex;
+
+  width: 100%;
+
+  border: 0;
+
+  padding: 9px 10px;
+
+  color: #aaa;
+  background: transparent;
+
+  text-align: left;
+}
+
+.story-item.active
+.story-item-select {
+  color: #fff;
+}
+
+.story-item-select span {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-item-actions {
+  display: flex;
+
+  gap: 4px;
+
+  padding:
+    5px
+    6px
+    7px;
+
+  border-top:
+    1px solid #262626;
+}
+
+.story-item-actions button {
+  flex: 1;
+
+  border: 0;
+  border-radius: 5px;
+
+  padding: 5px;
+
+  color: #6f6f6f;
+  background: transparent;
+
+  font-size: 9px;
+}
+
+.story-item-actions button:hover {
+  color: #ddd;
+
+  background: #292929;
+}
+
+.story-item-actions
+button.danger:hover {
+  color: #e0a0a0;
+
+  background:
+    rgba(
+      130,
+      45,
+      45,
+      0.18
+    );
+}
+
+/* -------------------------------------------------- */
+/* Story rename                                       */
+/* -------------------------------------------------- */
+
+.story-rename-form {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    auto;
+
+  gap: 4px;
+
+  padding:
+    6px
+    7px
+    7px;
+
+  border-top:
+    1px solid #292929;
+}
+
+.story-rename-form input {
+  min-width: 0;
+
+  border:
+    1px solid #383838;
+
+  border-radius: 5px;
+
+  padding:
+    6px
+    7px;
+
+  color: #ddd;
+  background: #111;
+
+  outline: none;
+
+  font-size: 11px;
+}
+
+.story-rename-form input:focus {
+  border-color: #606060;
+}
+
+.story-rename-form button {
+  border:
+    1px solid #303030;
+
+  border-radius: 5px;
+
+  padding:
+    5px
+    7px;
+
+  color: #999;
+  background: #1d1d1d;
+
+  font-size: 9px;
+}
+
+.story-rename-form button:hover {
+  color: #eee;
+
+  background: #292929;
+}
+
+.story-import-input {
+  display: none;
+}
+
+.story-import-button {
+  width: 100%;
+
+  border:
+    1px dashed #353535;
+
+  border-radius: 7px;
+
+  padding:
+    7px 10px;
+
+  color: #777;
+  background: transparent;
+
+  font-size: 10px;
+}
+
+.story-import-button:hover:not(:disabled) {
+  color: #bbb;
+
+  border-color: #555;
+
+  background: #171717;
+}
+
+.story-import-button:disabled {
+  cursor: wait;
+
+  opacity: 0.5;
+}
+

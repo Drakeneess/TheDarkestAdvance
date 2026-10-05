@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Writer</string>
+    <string name="title_activity_main">Writer</string>
+    <string name="package_name">com.thedarkestadvance.writer</string>
+    <string name="custom_url_scheme">com.thedarkestadvance.writer</string>
+</resources>

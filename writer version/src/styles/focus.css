@@ -1,0 +1,222 @@
+﻿/* ==================================================
+   FOCUS MODE
+   ================================================== */
+
+.writer-shell.focus-mode {
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  background:
+    var(--bg-editor);
+}
+
+.writer-shell.focus-mode
+.editor-panel {
+  grid-column: 1;
+
+  width: 100%;
+  height: 100vh;
+}
+
+.focus-mode-bar {
+  display: flex;
+
+  min-height: 52px;
+
+  align-items: center;
+  justify-content:
+    space-between;
+
+  gap: 16px;
+
+  padding:
+    8px
+    20px;
+
+  border-bottom:
+    1px solid
+    var(--border-subtle);
+
+  background:
+    rgba(
+      13,
+      14,
+      17,
+      0.82
+    );
+
+  backdrop-filter:
+    blur(12px);
+}
+
+.focus-mode-chapter {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 2px;
+}
+
+.focus-mode-chapter span {
+  overflow: hidden;
+
+  color:
+    var(--text-faint);
+
+  font-size: 8px;
+
+  letter-spacing:
+    0.08em;
+
+  text-overflow:
+    ellipsis;
+
+  text-transform:
+    uppercase;
+
+  white-space:
+    nowrap;
+}
+
+.focus-mode-chapter strong {
+  overflow: hidden;
+
+  color:
+    var(--text-secondary);
+
+  font-size: 11px;
+  font-weight: 500;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+}
+
+.focus-mode-meta {
+  display: flex;
+
+  flex: 0 0 auto;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.focus-mode-meta span {
+  color:
+    var(--text-faint);
+
+  font-size: 8px;
+}
+
+.focus-mode-meta button,
+.focus-toggle {
+  border:
+    1px solid
+    var(--border-subtle);
+
+  border-radius: 6px;
+
+  padding:
+    6px
+    10px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    transparent;
+
+  font-size: 8px;
+}
+
+.focus-mode-meta button:hover,
+.focus-toggle:hover {
+  border-color:
+    var(--accent-border);
+
+  color:
+    var(--text-primary);
+
+  background:
+    var(--accent-soft);
+}
+
+
+/* --------------------------------------------------
+   Focus editor
+   -------------------------------------------------- */
+
+.writer-shell.focus-mode
+.editor-workspace {
+  background:
+    var(--bg-editor);
+}
+
+.writer-shell.focus-mode
+.editor-workspace
+.editor {
+  padding-top: 54px;
+
+  padding-right:
+    max(
+      48px,
+      calc(
+        (100% - 780px) /
+        2
+      )
+    );
+
+  padding-bottom: 100px;
+
+  padding-left:
+    max(
+      48px,
+      calc(
+        (100% - 780px) /
+        2
+      )
+    );
+
+  font-size: 18px;
+
+  line-height: 1.9;
+}
+
+
+/* --------------------------------------------------
+   Focus search
+   -------------------------------------------------- */
+
+.writer-shell.focus-mode
+.editor-search-panel {
+  width:
+    min(
+      720px,
+      calc(
+        100% - 40px
+      )
+    );
+
+  margin:
+    12px
+    auto
+    0;
+
+  border:
+    1px solid
+    var(--border-medium);
+
+  border-radius:
+    var(--radius-md);
+}
+
+
+/* --------------------------------------------------
+   Mobile
+   -------------------------------------------------- */
+
+

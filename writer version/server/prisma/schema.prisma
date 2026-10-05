@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SyncEntity {
+  workspaceId   String
+  entityType    String
+  entityId      String
+
+  serverVersion BigInt
+
+  payload       Json
+  deletedAt     DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@id([workspaceId, entityType, entityId])
+  @@index([workspaceId, serverVersion])
+
+  @@map("sync_entities")
+}
+
+model SyncChange {
+  cursor           BigInt @id @default(autoincrement())
+
+  workspaceId      String
+  entityType       String
+  entityId         String
+
+  serverVersion    BigInt
+  payload          Json
+
+  sourceDeviceId   String
+  sourceMutationId String?
+
+  createdAt        DateTime @default(now())
+
+  @@index([workspaceId, cursor])
+  @@index([workspaceId, entityType, entityId])
+
+  @@map("sync_changes")
+}
+
+model SyncMutation {
+  mutationId      String @id
+
+  workspaceId     String
+  deviceId        String
+
+  entityType      String
+  entityId        String
+
+  clientRevision  Int
+  status          String
+
+  serverVersion   BigInt?
+  cursor          BigInt?
+
+  result          Json?
+
+  createdAt       DateTime @default(now())
+
+  @@index([workspaceId, deviceId])
+
+  @@map("sync_mutations")
+}

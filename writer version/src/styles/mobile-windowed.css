@@ -1,0 +1,1721 @@
+﻿/* ==================================================
+   MOBILE V4 — WINDOWED UI
+   ================================================== */
+.mobile-topbar, .mobile-backdrop, .mobile-action-menu, .mobile-library-header, .mobile-library-close {
+  display: none;
+}
+
+.mobile-editor-navigation {
+  display: none;
+}
+
+.mobile-version-banner {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  body {
+    min-height: 0;
+    overscroll-behavior: none;
+  }
+
+  /* Main shell */
+  .writer-shell {
+    display: flex !important;
+    position: relative;
+    width: 100%;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    flex-direction: column;
+    overflow: hidden;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Mobile top bar */
+  .mobile-topbar {
+    display: grid;
+    position: relative;
+    z-index: 100;
+    flex: 0 0 56px;
+    width: 100%;
+    min-height: 56px;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(13, 14, 17, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-icon-button {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .mobile-icon-button:active {
+    border-color: var(--border-medium);
+    background: var(--bg-hover);
+  }
+
+  .mobile-topbar-context {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .mobile-topbar-context span, .mobile-topbar-context strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-topbar-context span {
+    margin-bottom: 2px;
+    color: var(--text-muted);
+    font-size: 10px;
+  }
+
+  .mobile-topbar-context strong {
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Common backdrop */
+  .mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.58);
+  }
+
+  /* Main editor */
+  .editor-panel {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    flex-direction: column;
+    overflow: hidden !important;
+  }
+
+  .editor-header {
+    flex: 0 0 auto;
+    min-height: 0 !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 9px 12px !important;
+  }
+
+  .editor-header h2 {
+    font-size: 15px;
+  }
+
+  /* Desktop toolbar still works, but as a temporary mobile strip. V4.0.3C will replace it. */
+  .editor-toolbar {
+    display: flex;
+    flex: 0 0 auto;
+    min-height: 44px;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 5px 8px;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .format-toolbar {
+    position: static;
+    flex: 0 0 auto;
+    min-height: 44px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 5px 8px;
+    scrollbar-width: none;
+  }
+
+  .format-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Actual writing space */
+  .editor-workspace {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: hidden;
+  }
+
+  .editor-workspace .editor {
+    width: 100%;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 24px 18px calc(36px + env(safe-area-inset-bottom, 0px));
+    font-size: 17px;
+    line-height: 1.72;
+  }
+
+  .editor-workspace.mode-preview {
+    overflow-y: auto;
+  }
+
+  .mdx-preview {
+    min-height: 100%;
+    padding: 24px 18px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Split sigue disponible, pero en móvil se apila. */
+  .editor-workspace.mode-split {
+    display: block;
+    overflow-y: auto;
+  }
+
+  .editor-workspace.mode-split .editor {
+    height: 50dvh !important;
+    min-height: 50dvh !important;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .editor-workspace.mode-split .mdx-preview {
+    min-height: 50dvh;
+  }
+
+  /* Status bar */
+  .statusbar {
+    flex: 0 0 auto;
+    min-height: 32px;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 6px 10px;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .statusbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Version history bottom sheet */
+  .mobile-versions-backdrop {
+    z-index: 1300;
+  }
+
+  .versions-panel {
+    display: block !important;
+    position: fixed !important;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1302;
+    width: 100% !important;
+    height: min(76dvh, 620px) !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px));
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    border-top: 1px solid var(--border-medium);
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0 !important;
+    border-radius: 16px 16px 0 0;
+    background: var(--bg-sidebar);
+    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.55);
+  }
+
+  .versions-header-actions {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: rgba(13, 14, 17, 0.96);
+    backdrop-filter: blur(12px);
+  }
+
+  /* Three dots menu */
+  .mobile-menu-backdrop {
+    z-index: 1400;
+    background: rgba(0, 0, 0, 0.32);
+  }
+
+  .mobile-action-menu {
+    display: grid;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 58px);
+    right: 10px;
+    z-index: 1402;
+    width: min(250px, calc(100vw - 20px));
+    padding: 6px;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-action-menu button {
+    min-height: 46px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    background: transparent;
+    text-align: left;
+  }
+
+  .mobile-action-menu button:active {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  .mobile-action-menu button:disabled {
+    opacity: 0.35;
+  }
+
+  /* Focus */
+  .writer-shell.focus-mode {
+    height: 100dvh !important;
+    min-height: 0 !important;
+  }
+
+  .writer-shell.focus-mode .editor-panel {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .mobile-library-backdrop {
+    z-index: 1200;
+  }
+
+  /* Mobile library drawer */
+  .library-panel {
+    display: flex !important;
+    position: fixed !important;
+    inset: 0 auto 0 0;
+    z-index: 1202;
+    width: min(90vw, 360px) !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    flex-direction: column;
+    overflow: hidden !important;
+    padding: 0 !important;
+    border-right: 1px solid var(--border-medium);
+    border-bottom: 0 !important;
+    background: var(--bg-sidebar);
+    box-shadow: 18px 0 50px rgba(0, 0, 0, 0.48);
+    transform: translateX(-102%);
+    transition: transform 180ms ease;
+  }
+
+  .writer-shell.mobile-library-open .library-panel {
+    transform: translateX(0);
+  }
+
+  /* Desktop branding no participa en la versión móvil. */
+  .library-panel > .brand {
+    display: none;
+  }
+
+  /* Drawer header */
+  .mobile-library-header {
+    display: flex;
+    flex: 0 0 auto;
+    min-height: calc(58px + env(safe-area-inset-top, 0px));
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-sidebar);
+  }
+
+  .mobile-library-header > div {
+    min-width: 0;
+  }
+
+  .mobile-library-header span, .mobile-library-header strong {
+    display: block;
+  }
+
+  .mobile-library-header span {
+    margin-bottom: 2px;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+  }
+
+  .mobile-library-header strong {
+    color: var(--text-primary);
+    font-size: 17px;
+    font-weight: 650;
+  }
+
+  .mobile-library-close {
+    display: grid;
+    position: static;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    place-items: center;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+    font-size: 20px;
+  }
+
+  /* Drawer scroll body */
+  .library-panel > .global-search, .library-panel > .library-section {
+    margin-right: 12px;
+    margin-left: 12px;
+  }
+
+  .library-panel > .global-search {
+    flex: 0 0 auto;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+
+  .library-section {
+    flex: 0 0 auto;
+    padding: 14px 0 !important;
+  }
+
+  .chapters-section {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .section-title-row {
+    min-height: 28px;
+    margin-bottom: 7px;
+  }
+
+  /* Creation */
+  .create-row {
+    min-height: 42px;
+    gap: 6px;
+  }
+
+  .create-row input {
+    min-width: 0;
+    min-height: 42px;
+    font-size: 14px;
+  }
+
+  .create-row button {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+  }
+
+  /* Stories / chapters */
+  .story-list, .chapter-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .story-item, .chapter-item {
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: var(--radius-md);
+  }
+
+  .story-item-select, .chapter-item-select {
+    min-height: 46px !important;
+    padding: 11px 12px !important;
+    font-size: 14px;
+  }
+
+  .story-item-select span, .chapter-item-select span {
+    font-size: 13px !important;
+  }
+
+  /* IMPORTANTE:  Las acciones desktop estaban basadas en hover/active.  No deben quedar expandidas dentro del drawer táctil. */
+  .library-panel .story-item-actions, .library-panel .chapter-item-actions {
+    display: none !important;
+  }
+
+  /* ------------------------------------------
+   Library item contextual actions
+   ------------------------------------------ */
+
+.story-item-main,
+.chapter-item-main {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    42px;
+
+  align-items: stretch;
+}
+
+.story-item-main
+  .story-item-select,
+.chapter-item-main
+  .chapter-item-select {
+  min-width: 0;
+}
+
+.mobile-item-menu-trigger {
+  display: grid;
+
+  width: 42px;
+  min-width: 42px;
+
+  place-items: center;
+
+  border: 0;
+  border-left:
+    1px solid
+    transparent;
+
+  color:
+    var(--text-muted);
+
+  background:
+    transparent;
+
+  font-size: 20px;
+  line-height: 1;
+}
+
+.mobile-item-menu-trigger:active,
+.mobile-menu-open
+  .mobile-item-menu-trigger {
+  color:
+    var(--text-primary);
+
+  border-left-color:
+    var(--border-subtle);
+
+  background:
+    var(--bg-hover);
+}
+
+/*
+ * Las actions originales continúan siendo
+ * el comportamiento desktop.
+ */
+.library-panel
+  .story-item-actions,
+.library-panel
+  .chapter-item-actions {
+  display: none !important;
+}
+
+.mobile-item-context-menu {
+  display: grid;
+
+  gap: 2px;
+
+  padding:
+    5px;
+
+  border-top:
+    1px solid
+    var(--border-subtle);
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+}
+
+.mobile-item-context-menu button {
+  min-height: 42px;
+
+  border: 0;
+  border-radius:
+    var(--radius-sm);
+
+  padding:
+    0
+    12px;
+
+  color:
+    var(--text-secondary);
+
+  background:
+    transparent;
+
+  font-size: 12px;
+
+  text-align: left;
+}
+
+.mobile-item-context-menu button:active:not(:disabled) {
+  color:
+    var(--text-primary);
+
+  background:
+    var(--bg-hover);
+}
+
+.mobile-item-context-menu button:disabled {
+  cursor:
+    not-allowed;
+
+  opacity: 0.3;
+}
+
+.mobile-item-context-menu
+  button.danger {
+  color:
+    var(--danger);
+}
+
+.mobile-item-context-menu
+  button.danger:active {
+  background:
+    rgba(
+      160,
+      57,
+      68,
+      0.14
+    );
+}
+
+  .library-panel .story-item.active, .library-panel .chapter-item.active {
+    border-color: var(--accent-border);
+    background: var(--bg-active);
+  }
+
+  .library-panel .story-item.active::before, .library-panel .chapter-item.active::before {
+    top: 9px;
+    bottom: 9px;
+    width: 3px;
+  }
+
+  /* Touch-sized editor controls */
+  .editor-actions {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .primary, .secondary {
+    min-height: 38px;
+    padding: 0 11px;
+  }
+
+  .chapter-quick-navigation, .editor-view-switcher, .editor-toolbar-actions {
+    flex: 0 0 auto;
+  }
+
+  .chapter-quick-navigation button {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Versions sheet */
+  .versions-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    min-height: 54px;
+    padding: 10px 12px;
+    background: rgba(13, 14, 17, 0.96);
+    backdrop-filter: blur(12px);
+  }
+
+  .version-card-actions {
+    max-height: 48px;
+    opacity: 1;
+  }
+
+  /* Focus mode */
+  .focus-mode-bar {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 7px 10px;
+  }
+
+  .writer-shell.focus-mode .editor-workspace .editor {
+    height: 100%;
+    padding: 24px 16px calc(42px + env(safe-area-inset-bottom, 0px));
+    font-size: 17px;
+  }
+
+  /* ------------------------------------------
+   Command palette
+   ------------------------------------------ */
+
+  .command-palette-backdrop {
+    align-items:
+      stretch;
+
+    justify-content:
+      stretch;
+
+    padding:
+      env(
+        safe-area-inset-top,
+        0px
+      )
+      0
+      env(
+        safe-area-inset-bottom,
+        0px
+      );
+
+    background:
+      rgba(
+        8,
+        9,
+        11,
+        0.96
+      );
+
+    backdrop-filter:
+      none;
+  }
+
+  .command-palette {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+
+    border: 0;
+    border-radius: 0;
+
+    background:
+      #111216;
+
+    box-shadow:
+      none;
+  }
+
+  .command-palette-search {
+    flex:
+      0
+      0
+      auto;
+
+    min-height: 58px;
+
+    gap: 8px;
+
+    padding:
+      8px
+      10px;
+  }
+
+  .command-palette-search > span {
+    font-size: 22px;
+  }
+
+  .command-palette-search input {
+    min-width: 0;
+    min-height: 42px;
+
+    font-size: 16px;
+  }
+
+  .command-palette-search > kbd {
+    display: none;
+  }
+
+  .command-palette-close {
+    display: grid;
+
+    flex:
+      0
+      0
+      42px;
+
+    width: 42px;
+    height: 42px;
+
+    place-items: center;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      var(--radius-md);
+
+    color:
+      var(--text-secondary);
+
+    background:
+      transparent;
+
+    font-size: 20px;
+  }
+
+  .command-palette-close:active {
+    border-color:
+      var(--border-medium);
+
+    color:
+      var(--text-primary);
+
+    background:
+      var(--bg-hover);
+  }
+
+  .command-palette-results {
+    padding:
+      6px
+      8px
+      calc(
+        8px +
+        env(
+          safe-area-inset-bottom,
+          0px
+        )
+      );
+  }
+
+  .command-palette-item {
+    min-height: 56px;
+
+    gap: 10px;
+
+    padding:
+      10px
+      12px;
+
+    border-radius:
+      var(--radius-md);
+  }
+
+  .command-palette-item-title strong {
+    font-size: 13px;
+  }
+
+  .command-palette-item-title span {
+    font-size: 8px;
+  }
+
+  .command-palette-item small {
+    overflow: visible;
+
+    font-size: 10px;
+    line-height: 1.35;
+
+    text-overflow:
+      unset;
+
+    white-space:
+      normal;
+  }
+
+  .command-palette-item > kbd {
+    display: none;
+  }
+
+  .command-palette-footer {
+    display: none;
+  }
+
+  /* ------------------------------------------
+   Consolidated mobile behavior
+   ------------------------------------------ */
+
+  /* Command palette */
+
+  .command-palette-footer {
+    display: none;
+  }
+
+  /* ------------------------------------------
+   Editor search
+   ------------------------------------------ */
+
+  .editor-search-panel {
+    flex:
+      0
+      0
+      auto;
+
+    gap: 6px;
+
+    padding:
+      8px;
+
+    background:
+      rgba(
+        13,
+        14,
+        17,
+        0.98
+      );
+
+    box-shadow:
+      0
+      8px
+      24px
+      rgba(
+        0,
+        0,
+        0,
+        0.28
+      );
+  }
+
+  .editor-search-row {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 6px;
+  }
+
+  .editor-search-row input {
+    width: 100%;
+    height: 42px;
+
+    flex: none;
+
+    padding:
+      0
+      12px;
+
+    font-size: 16px;
+  }
+
+  .editor-search-controls {
+    display: grid;
+
+    width: 100%;
+
+    grid-template-columns:
+      auto
+      42px
+      42px
+      42px
+      minmax(
+        0,
+        1fr
+      )
+      42px;
+
+    align-items: center;
+
+    gap: 4px;
+  }
+
+  .editor-search-controls button {
+    min-width: 0;
+    height: 42px;
+  }
+
+  .editor-search-counter {
+    min-width: 48px;
+
+    font-size: 9px;
+  }
+
+  .editor-search-text-button {
+    min-width: 0;
+
+    padding:
+      0
+      10px !important;
+  }
+
+  .editor-search-close {
+    grid-column:
+      -2 /
+      -1;
+
+    font-size:
+      18px !important;
+  }
+
+  .editor-replace-actions {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      );
+
+    gap: 4px;
+  }
+
+  .editor-replace-actions button {
+    width: 100%;
+    height: 42px;
+  }
+
+  .editor-search-readonly {
+    grid-column:
+      1 /
+      -1;
+
+    padding:
+      3px
+      2px;
+
+    font-size: 9px;
+  }
+
+  /* Focus */
+
+  .focus-mode-meta span {
+    display: none;
+  }
+
+  /* Status */
+
+  .statusbar {
+    justify-content:
+      space-between;
+  }
+
+  /* Versions */
+
+  .version-list {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        auto-fill,
+        minmax(
+          180px,
+          1fr
+        )
+      );
+  }
+
+  /* Global search */
+
+  .global-search-shortcut {
+    display: none;
+  }
+  /* ------------------------------------------
+   Mobile editor navigation
+   ------------------------------------------ */
+
+  .mobile-editor-navigation {
+    display: grid;
+
+    flex:
+      0
+      0
+      auto;
+
+    width: 100%;
+
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      );
+
+    gap: 4px;
+
+    padding:
+      6px
+      8px
+      calc(
+        6px +
+        env(
+          safe-area-inset-bottom,
+          0px
+        )
+      );
+
+    border-top:
+      1px solid
+      var(--border-subtle);
+
+    background:
+      rgba(
+        13,
+        14,
+        17,
+        0.97
+      );
+
+    backdrop-filter:
+      blur(14px);
+  }
+
+  .mobile-editor-navigation button {
+    display: flex;
+
+    min-width: 0;
+    min-height: 48px;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      var(--radius-md);
+
+    color:
+      var(--text-muted);
+
+    background:
+      transparent;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+  }
+
+  .mobile-editor-navigation button:active {
+    background:
+      var(--bg-hover);
+  }
+
+  .mobile-editor-navigation button.active {
+    border-color:
+      var(--accent-border);
+
+    color:
+      var(--text-primary);
+
+    background:
+      var(--bg-active);
+  }
+
+  .mobile-editor-navigation-icon {
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  /* ------------------------------------------
+   Desktop workspace toolbar
+   ------------------------------------------ */
+
+  .editor-toolbar {
+    display: none !important;
+  }
+
+  /* ------------------------------------------
+    Mobile formatting toolbar
+    ------------------------------------------ */
+
+  .format-toolbar-desktop {
+    display: none !important;
+  }
+
+  .format-toolbar-mobile-shell {
+    display: block;
+
+    position: relative;
+
+    flex:
+      0
+      0
+      auto;
+
+    width: 100%;
+
+    border-bottom:
+      1px solid
+      var(--border-subtle);
+
+    background:
+      #101114;
+  }
+
+  .format-toolbar-mobile {
+    display: grid;
+
+    width: 100%;
+    min-height: 48px;
+
+    grid-template-columns:
+      repeat(
+        6,
+        minmax(0, 1fr)
+      );
+
+    gap: 2px;
+
+    padding:
+      4px
+      8px;
+  }
+
+  .format-toolbar-mobile > button {
+    display: grid;
+
+    min-width: 0;
+    height: 40px;
+
+    place-items: center;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      var(--radius-md);
+
+    color:
+      var(--text-muted);
+
+    background:
+      transparent;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+  }
+
+  .format-toolbar-mobile > button:active,
+  .format-toolbar-mobile > button.active {
+    border-color:
+      var(--accent-border);
+
+    color:
+      var(--text-primary);
+
+    background:
+      var(--bg-hover);
+  }
+
+  .format-toolbar-mobile
+    .format-bold {
+    font-weight: 800;
+  }
+
+  .format-toolbar-mobile
+    .format-italic {
+    font-family:
+      Georgia,
+      serif;
+
+    font-style: italic;
+  }
+
+  .format-toolbar-mobile
+    .format-dialogue {
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: 19px;
+  }
+
+  .format-thought-mobile {
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-style: italic;
+  }
+
+  /* ------------------------------------------
+    Mobile formatting menu
+    ------------------------------------------ */
+
+  .mobile-format-menu {
+    display: grid;
+
+    position: absolute;
+
+    top:
+      calc(
+        100% +
+        6px
+      );
+
+    right: 8px;
+    left: 8px;
+
+    z-index: 500;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 4px;
+
+    max-height:
+      min(
+        46dvh,
+        360px
+      );
+
+    overflow-y: auto;
+
+    padding: 6px;
+
+    border:
+      1px solid
+      var(--border-medium);
+
+    border-radius:
+      var(--radius-lg);
+
+    background:
+      var(--bg-elevated);
+
+    box-shadow:
+      0
+      16px
+      48px
+      rgba(
+        0,
+        0,
+        0,
+        0.5
+      );
+  }
+
+  .mobile-format-menu button {
+    display: grid;
+
+    min-width: 0;
+    min-height: 46px;
+
+    grid-template-columns:
+      34px
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+      0
+      10px;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      var(--radius-md);
+
+    color:
+      var(--text-secondary);
+
+    background:
+      transparent;
+
+    text-align: left;
+
+    cursor: pointer;
+  }
+
+  .mobile-format-menu button:active {
+    border-color:
+      var(--border-subtle);
+
+    color:
+      var(--text-primary);
+
+    background:
+      var(--bg-hover);
+  }
+
+  .mobile-format-menu button strong {
+    color:
+      var(--text-primary);
+
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .mobile-format-menu button span {
+    overflow: hidden;
+
+    font-size: 11px;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  .mobile-format-menu-wide {
+    grid-column:
+      1 /
+      -1;
+  }
+
+  /* ==================================================
+   V4.0.3C5 — FINAL MOBILE WORKSPACE POLISH
+   ================================================== */
+
+  /* ------------------------------------------
+    Top bar
+    ------------------------------------------ */
+
+  .mobile-topbar {
+    flex:
+      0
+      0
+      52px;
+
+    min-height: 52px;
+
+    padding:
+      4px
+      8px;
+  }
+
+  .mobile-topbar-context span {
+    margin-bottom: 1px;
+
+    font-size: 9px;
+  }
+
+  .mobile-topbar-context strong {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  /* ------------------------------------------
+    Desktop editor header
+    ------------------------------------------ */
+
+  /*
+  * El contexto ya vive en la topbar móvil.
+  * No necesitamos repetir historia,
+  * capítulo y acciones aquí.
+  */
+
+  .editor-header {
+    display: none !important;
+  }
+
+  /* ------------------------------------------
+    Historical version banner
+    ------------------------------------------ */
+
+  .mobile-version-banner {
+    display: flex;
+
+    flex:
+      0
+      0
+      auto;
+
+    min-height: 52px;
+
+    align-items: center;
+    justify-content:
+      space-between;
+
+    gap: 10px;
+
+    padding:
+      6px
+      10px;
+
+    border-bottom:
+      1px solid
+      var(--accent-border);
+
+    background:
+      var(--accent-soft);
+  }
+
+  .mobile-version-banner-context {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+  }
+
+  .mobile-version-banner-context span {
+    overflow: hidden;
+
+    color:
+      var(--text-muted);
+
+    font-size: 8px;
+    font-weight: 650;
+
+    letter-spacing:
+      0.08em;
+
+    text-overflow:
+      ellipsis;
+
+    white-space: nowrap;
+  }
+
+  .mobile-version-banner-context strong {
+    overflow: hidden;
+
+    color:
+      var(--text-primary);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-overflow:
+      ellipsis;
+
+    white-space: nowrap;
+  }
+
+  .mobile-version-banner-actions {
+    display: flex;
+
+    flex:
+      0
+      0
+      auto;
+
+    align-items: center;
+
+    gap: 5px;
+  }
+
+  .mobile-version-banner-actions button {
+    min-height: 36px;
+
+    border:
+      1px solid
+      var(--border-medium);
+
+    border-radius:
+      var(--radius-md);
+
+    padding:
+      0
+      10px;
+
+    color:
+      var(--text-secondary);
+
+    background:
+      var(--bg-elevated);
+
+    font-size: 9px;
+  }
+
+  .mobile-version-banner-actions button:active {
+    color:
+      var(--text-primary);
+
+    background:
+      var(--bg-hover);
+  }
+
+  .mobile-version-banner-actions
+    button.primary {
+    border-color:
+      var(--accent-border);
+
+    color:
+      var(--text-primary);
+
+    background:
+      var(--accent-soft);
+  }
+
+  /* ------------------------------------------
+    Writing viewport
+    ------------------------------------------ */
+
+  .editor-panel {
+    min-height: 0 !important;
+  }
+
+  .editor-workspace {
+    min-height: 0;
+
+    flex:
+      1
+      1
+      auto;
+
+    overscroll-behavior:
+      contain;
+  }
+
+  .editor-workspace .editor {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+
+    padding:
+      18px
+      16px
+      24px;
+
+    font-size: 17px;
+    line-height: 1.72;
+
+    scroll-padding-top:
+      20px;
+
+    scroll-padding-bottom:
+      80px;
+  }
+
+  .editor-workspace
+    .mdx-preview {
+    min-height: 100%;
+
+    padding:
+      20px
+      16px
+      28px;
+  }
+
+  /* ------------------------------------------
+    Status
+    ------------------------------------------ */
+
+  .statusbar {
+    display: flex;
+
+    flex:
+      0
+      0
+      28px;
+
+    width: 100%;
+    min-height: 28px;
+
+    align-items: center;
+
+    gap: 8px;
+
+    overflow: hidden;
+
+    padding:
+      0
+      10px;
+
+    border-top:
+      1px solid
+      var(--border-subtle);
+
+    background:
+      #0d0e11;
+
+    white-space:
+      nowrap;
+  }
+
+  .statusbar span {
+    flex:
+      0
+      0
+      auto;
+
+    overflow: hidden;
+
+    font-size: 8px;
+
+    text-overflow:
+      ellipsis;
+  }
+
+  .statusbar-characters {
+    display: none;
+  }
+
+  .statusbar-state {
+    margin-left: auto;
+  }
+
+  .statusbar-readonly {
+    color:
+      var(--text-muted);
+  }
+
+  /* ------------------------------------------
+    Bottom navigation
+    ------------------------------------------ */
+
+  .mobile-editor-navigation {
+    min-height: 54px;
+
+    padding:
+      4px
+      6px
+      calc(
+        4px +
+        env(
+          safe-area-inset-bottom,
+          0px
+        )
+      );
+  }
+
+  .mobile-editor-navigation button {
+    min-height: 44px;
+
+    gap: 2px;
+  }
+
+  .mobile-editor-navigation-icon {
+    font-size: 16px;
+  }
+
+  .mobile-editor-navigation button span:last-child {
+    font-size: 9px;
+  }
+}
