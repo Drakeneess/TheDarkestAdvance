@@ -193,6 +193,188 @@ export function moveChapter(
   )
 }
 
+export function reorderChapter(
+  chapterId: string,
+  targetChapterId: string,
+) {
+  if (
+    chapterId ===
+    targetChapterId
+  ) {
+    return
+  }
+
+  const source =
+    chapters.findOne(
+      {
+        id:
+          chapterId,
+      },
+      {
+        reactive: false,
+      },
+    )
+
+  const target =
+    chapters.findOne(
+      {
+        id:
+          targetChapterId,
+      },
+      {
+        reactive: false,
+      },
+    )
+
+  if (
+    !source ||
+    !target
+  ) {
+    return
+  }
+
+  if (
+    !isActive(source) ||
+    !isActive(target)
+  ) {
+    return
+  }
+
+  /**
+   * Nunca permitimos arrastrar un capítulo
+   * dentro de otra historia.
+   */
+  if (
+    source.storyId !==
+    target.storyId
+  ) {
+    return
+  }
+
+  const siblings =
+    chapters
+      .find(
+        {
+          storyId:
+            source.storyId,
+        },
+        {
+          reactive: false,
+
+          sort: {
+            order: 1,
+          },
+        },
+      )
+      .fetch()
+      .filter(
+        isActive,
+      )
+
+  const sourceIndex =
+    siblings.findIndex(
+      (chapter) =>
+        chapter.id ===
+        source.id,
+    )
+
+  const targetIndex =
+    siblings.findIndex(
+      (chapter) =>
+        chapter.id ===
+        target.id,
+    )
+
+  if (
+    sourceIndex === -1 ||
+    targetIndex === -1 ||
+    sourceIndex ===
+      targetIndex
+  ) {
+    return
+  }
+
+  const reordered = [
+    ...siblings,
+  ]
+
+  const [
+    movedChapter,
+  ] =
+    reordered.splice(
+      sourceIndex,
+      1,
+    )
+
+  if (!movedChapter) {
+    return
+  }
+
+  reordered.splice(
+    targetIndex,
+    0,
+    movedChapter,
+  )
+
+  const timestamp =
+    now()
+
+  let changed = false
+
+  /**
+   * Después del drop normalizamos todo
+   * a 1, 2, 3...
+   *
+   * Solo escribimos los capítulos cuya
+   * posición realmente cambió.
+   */
+  reordered.forEach(
+    (
+      chapter,
+      index,
+    ) => {
+      const expectedOrder =
+        index + 1
+
+      if (
+        chapter.order ===
+        expectedOrder
+      ) {
+        return
+      }
+
+      chapters.updateOne(
+        {
+          id:
+            chapter.id,
+        },
+        {
+          $set: {
+            order:
+              expectedOrder,
+
+            ...createUpdateMetadata(
+              chapter.revision,
+              timestamp,
+            ),
+          },
+        },
+      )
+
+      changed = true
+    },
+  )
+
+  if (!changed) {
+    return
+  }
+
+  touchStory(
+    source.storyId,
+    timestamp,
+  )
+}
+
 export function duplicateChapter(
   chapter: Chapter,
 ): Chapter {

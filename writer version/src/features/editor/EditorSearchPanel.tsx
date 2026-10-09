@@ -140,7 +140,7 @@ export function EditorSearchPanel({
 
           <button
             type="button"
-            title="Coincidencia anterior — Shift+Enter"
+            title="Coincidencia anterior"
             aria-label="Coincidencia anterior"
             disabled={
               matchCount === 0
@@ -154,7 +154,7 @@ export function EditorSearchPanel({
 
           <button
             type="button"
-            title="Siguiente coincidencia — Enter"
+            title="Siguiente coincidencia"
             aria-label="Siguiente coincidencia"
             disabled={
               matchCount === 0
@@ -201,7 +201,7 @@ export function EditorSearchPanel({
           <button
             type="button"
             className="editor-search-close"
-            title="Cerrar — Esc"
+            title="Cerrar"
             aria-label="Cerrar búsqueda"
             onClick={
               onClose

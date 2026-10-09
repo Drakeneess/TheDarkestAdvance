@@ -162,7 +162,7 @@ export function EditorToolbar({
         <div className="format-toolbar-group">
           <button
             type="button"
-            title="Deshacer — Ctrl+Z"
+            title="Deshacer"
             onMouseDown={(event) =>
               event.preventDefault()
             }
@@ -175,7 +175,7 @@ export function EditorToolbar({
 
           <button
             type="button"
-            title="Rehacer — Ctrl+Shift+Z"
+            title="Rehacer"
             onMouseDown={(event) =>
               event.preventDefault()
             }
@@ -193,7 +193,7 @@ export function EditorToolbar({
           <button
             type="button"
             className="format-bold"
-            title="Negrita — Ctrl+B"
+            title="Negrita"
             onMouseDown={(event) =>
               event.preventDefault()
             }
@@ -207,7 +207,7 @@ export function EditorToolbar({
           <button
             type="button"
             className="format-italic"
-            title="Cursiva — Ctrl+I"
+            title="Cursiva"
             onMouseDown={(event) =>
               event.preventDefault()
             }
@@ -221,7 +221,7 @@ export function EditorToolbar({
           <button
             type="button"
             className="format-strike"
-            title="Tachado — Ctrl+Shift+S"
+            title="Tachado"
             onMouseDown={(event) =>
               event.preventDefault()
             }

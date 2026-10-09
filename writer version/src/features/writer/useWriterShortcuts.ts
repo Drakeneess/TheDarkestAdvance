@@ -23,14 +23,16 @@ export function useWriterShortcuts({
        * búsqueda global.
        */
       if (
-        (
-          event.ctrlKey ||
-          event.metaKey
-        ) &&
-        event.key.toLowerCase() ===
-          'k'
-      ) {
-        event.preventDefault()
+  (event.ctrlKey || event.metaKey) &&
+    event.key.toLowerCase() === 'k'
+  ) {
+    if (
+      isMobileViewport()
+    ) {
+      return
+    }
+
+    event.preventDefault()
 
         window.dispatchEvent(
           new Event(
@@ -70,6 +72,12 @@ export function useWriterShortcuts({
 
         onNextChapter()
       }
+    }
+
+    function isMobileViewport() {
+      return window.matchMedia(
+        '(max-width: 760px)',
+      ).matches
     }
 
     window.addEventListener(

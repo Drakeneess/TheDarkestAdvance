@@ -14,6 +14,7 @@ import {
 import {
   getOutboxMutation,
   getSyncEntityState,
+  markMutationRejected,
   removeOutboxMutation,
   saveSyncEntityState,
 } from './storage'
@@ -205,12 +206,24 @@ export async function processMutationAcknowledgements(
 
       case 'rejected': {
         /**
-         * No eliminamos el outbox.
+         * Rejected es terminal.
          *
-         * Un rejected necesita diagnóstico;
-         * no vamos a perder silenciosamente
-         * la operación local.
+         * Conservamos el outbox para diagnóstico
+         * y posible recuperación manual, pero ya
+         * no volverá a formar parte de
+         * getPendingMutations().
          */
+        markMutationRejected(
+          ack.mutationId,
+          {
+            code:
+              ack.error.code,
+
+            message:
+              ack.error.message,
+          },
+        )
+
         rejected.push({
           mutationId:
             ack.mutationId,

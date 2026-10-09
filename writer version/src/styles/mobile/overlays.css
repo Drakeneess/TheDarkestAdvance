@@ -1,0 +1,61 @@
+/* ==================================================
+   MOBILE · OVERLAYS
+   ================================================== */
+
+.mobile-backdrop,
+.mobile-action-menu {
+  display: none;
+}
+
+@media (max-width: 760px) {
+
+  .mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.58);
+  }
+
+  .mobile-menu-backdrop {
+    z-index: 1400;
+    background: rgba(0, 0, 0, 0.32);
+  }
+
+  .mobile-action-menu {
+    display: grid;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 58px);
+    right: 10px;
+    z-index: 1402;
+    width: min(250px, calc(100vw - 20px));
+    padding: 6px;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-action-menu button {
+    min-height: 46px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    background: transparent;
+    text-align: left;
+  }
+
+  .mobile-action-menu button:active {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  .mobile-action-menu button:disabled {
+    opacity: 0.35;
+  }
+}

@@ -40,6 +40,7 @@ import {
   duplicateChapter,
   moveChapter,
   renameChapter,
+  reorderChapter
 } from '../chapters/chapters.service'
 
 import {
@@ -977,6 +978,16 @@ export function useWriterWorkspace() {
     )
   }
 
+  function handleReorderChapter(
+    chapterId: string,
+    targetChapterId: string,
+  ) {
+    reorderChapter(
+      chapterId,
+      targetChapterId,
+    )
+  }
+
   function handleDuplicateChapter(
     chapter: Chapter,
   ) {
@@ -1296,6 +1307,7 @@ export function useWriterWorkspace() {
 
     handleRenameChapter,
     handleMoveChapter,
+    handleReorderChapter,
     handleDuplicateChapter,
     handleDeleteChapter,
 

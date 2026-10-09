@@ -133,7 +133,7 @@ select:focus-visible {
 
 .library-panel {
   height: 100vh;
-  overflow-y: auto;
+  overflow-y: auto !important;
 
   padding: 18px 14px;
 
@@ -1014,3 +1014,431 @@ h2 {
   }
 }
 
+/* ==================================================
+   Chapter DnD · final layout override
+   ================================================== */
+
+.chapter-item {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+}
+
+.chapter-item-main {
+  display: grid;
+
+  width: 100%;
+  min-width: 0;
+
+  grid-template-columns:
+    30px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+}
+
+.chapter-drag-handle {
+  display: grid;
+
+  width: 30px;
+  min-width: 30px;
+  min-height: 38px;
+
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+
+  color:
+    var(--text-muted);
+
+  background:
+    transparent;
+
+  font: inherit;
+  font-size: 15px;
+
+  cursor: grab;
+
+  user-select: none;
+
+  touch-action: none;
+}
+
+.chapter-drag-handle:hover {
+  color:
+    var(--text-primary);
+
+  background:
+    var(--bg-hover);
+}
+
+.chapter-drag-handle:active {
+  cursor: grabbing;
+}
+
+.chapter-item-select {
+  display: flex;
+
+  width: auto !important;
+  min-width: 0;
+
+  flex:
+    1
+    1
+    auto;
+
+  align-items: center;
+
+  gap: 9px;
+
+  overflow: hidden;
+
+  padding:
+    9px
+    8px;
+}
+
+.chapter-item-select small {
+  min-width: 25px;
+
+  flex:
+    0
+    0
+    25px;
+}
+
+.chapter-item-select span {
+  min-width: 0;
+
+  flex:
+    1
+    1
+    auto;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chapter-item.dragging {
+  z-index: 50;
+
+  opacity: 0.72;
+
+  border-color:
+    var(--accent-border);
+
+  background:
+    var(--bg-active);
+
+  box-shadow:
+    0
+    10px
+    24px
+    rgba(
+      0,
+      0,
+      0,
+      0.32
+    );
+}
+
+/* ------------------------------------------
+   Desktop
+   ------------------------------------------ */
+
+@media (min-width: 761px) {
+  .mobile-item-menu-trigger {
+    display: none !important;
+  }
+}
+
+
+/* ------------------------------------------
+   Mobile
+   ------------------------------------------ */
+
+@media (max-width: 760px) {
+  /*
+   * Anula el antiguo carrusel horizontal.
+   */
+  .chapter-list {
+    display: flex !important;
+
+    width: 100% !important;
+    min-width: 0;
+
+    flex-direction:
+      column !important;
+
+    gap: 5px !important;
+
+    overflow:
+      visible !important;
+
+    padding-bottom:
+      0 !important;
+  }
+
+  .chapter-item {
+    display: block;
+
+    width: 100% !important;
+    min-width: 0;
+
+    flex:
+      0
+      0
+      auto !important;
+  }
+
+  .chapter-item-main {
+    display: grid !important;
+
+    width: 100% !important;
+    min-width: 0;
+
+    grid-template-columns:
+      40px
+      minmax(0, 1fr)
+      40px !important;
+
+    align-items:
+      center;
+  }
+
+  .chapter-drag-handle {
+    display: grid !important;
+
+    width: 40px !important;
+    min-width: 40px !important;
+    min-height: 44px;
+
+    place-items: center;
+
+    font-size: 17px;
+  }
+
+  .chapter-item-select {
+    display: flex !important;
+
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 44px;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    padding:
+      8px
+      6px !important;
+  }
+
+  .chapter-item-select small {
+    min-width: 25px;
+
+    flex:
+      0
+      0
+      25px;
+  }
+
+  .chapter-item-select span {
+    min-width: 0;
+
+    flex:
+      1
+      1
+      auto;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /*
+   * Las acciones desktop ya NO deben ocupar
+   * una segunda fila en móvil.
+   *
+   * Ahora se accede a ellas mediante ⋮.
+   */
+  .chapter-item-actions {
+    display:
+      none !important;
+
+    max-height:
+      0 !important;
+
+    padding:
+      0 !important;
+
+    opacity:
+      0 !important;
+
+    overflow:
+      hidden !important;
+  }
+
+  .mobile-item-menu-trigger {
+    position:
+      static !important;
+
+    display:
+      grid !important;
+
+    width:
+      40px !important;
+
+    min-width:
+      40px !important;
+
+    min-height:
+      44px;
+
+    place-items:
+      center;
+
+    align-self:
+      stretch;
+
+    margin:
+      0 !important;
+
+    padding:
+      0 !important;
+
+    border:
+      0;
+
+    color:
+      var(--text-muted);
+
+    background:
+      transparent;
+
+    font:
+      inherit;
+
+    font-size:
+      18px;
+
+    cursor:
+      pointer;
+  }
+
+  .mobile-item-menu-trigger:active {
+    color:
+      var(--text-primary);
+
+    background:
+      var(--bg-hover);
+  }
+
+  .mobile-item-context-menu {
+    display:
+      grid;
+
+    position:
+      relative;
+
+    width:
+      calc(100% - 48px);
+
+    gap:
+      3px;
+
+    margin:
+      4px
+      4px
+      6px
+      44px;
+
+    padding:
+      5px;
+
+    border:
+      1px solid
+      var(--border-medium);
+
+    border-radius:
+      var(--radius-md);
+
+    background:
+      var(--bg-panel);
+
+    box-shadow:
+      0
+      8px
+      20px
+      rgba(
+        0,
+        0,
+        0,
+        0.28
+      );
+  }
+
+  .mobile-item-context-menu button {
+    display:
+      flex;
+
+    width:
+      100%;
+
+    min-height:
+      40px;
+
+    align-items:
+      center;
+
+    padding:
+      0
+      10px;
+
+    border:
+      0;
+
+    border-radius:
+      calc(
+        var(--radius-md) -
+        2px
+      );
+
+    color:
+      var(--text-secondary);
+
+    background:
+      transparent;
+
+    font:
+      inherit;
+
+    text-align:
+      left;
+  }
+
+  .mobile-item-context-menu button:active {
+    color:
+      var(--text-primary);
+
+    background:
+      var(--bg-hover);
+  }
+
+  .mobile-item-context-menu button.danger {
+    color:
+      var(--danger);
+  }
+
+  .mobile-item-context-menu button:disabled {
+    opacity:
+      0.3;
+  }
+}

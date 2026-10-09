@@ -17,6 +17,7 @@ import type {
   SyncCheckpoint,
   SyncEntityState,
   SyncOutboxItem,
+  SyncOutboxRejection,
 } from './sync-state'
 
 import {
@@ -268,6 +269,12 @@ export function enqueueMutation(
 
       lastAttemptAt:
         null,
+
+      status:
+        'pending',
+
+      rejection:
+        null,
     }
 
   syncOutbox.insert(
@@ -290,6 +297,13 @@ export function enqueueMutation(
   return item
 }
 
+/**
+ * Solo devuelve mutaciones que pueden
+ * enviarse por red.
+ *
+ * Un item antiguo que todavía no tenga
+ * `status` se considera pending.
+ */
 export function getPendingMutations() {
   return syncOutbox
     .find(
@@ -303,10 +317,106 @@ export function getPendingMutations() {
       },
     )
     .fetch()
+    .filter(
+      (item) =>
+        item.status !==
+        'rejected',
+    )
+}
+
+/**
+ * Los rejected permanecen guardados
+ * para diagnóstico y recuperación
+ * manual, pero nunca son reenviados
+ * automáticamente.
+ */
+export function getRejectedMutations() {
+  return syncOutbox
+    .find(
+      {},
+      {
+        reactive: false,
+
+        sort: {
+          createdAt: 1,
+        },
+      },
+    )
+    .fetch()
+    .filter(
+      (item) =>
+        item.status ===
+        'rejected',
+    )
 }
 
 export function markMutationAttempt(
   mutationId: string,
+) {
+  const item =
+    syncOutbox.findOne(
+      {
+        id:
+          mutationId,
+      },
+      {
+        reactive: false,
+      },
+    )
+
+  if (!item) {
+    return
+  }
+
+  /**
+   * Un rejected es terminal.
+   * Ni siquiera incrementamos attempts
+   * porque ya no debe volver a salir.
+   */
+  if (
+    item.status ===
+    'rejected'
+  ) {
+    return
+  }
+
+  syncOutbox.updateOne(
+    {
+      id:
+        mutationId,
+    },
+    {
+      $set: {
+        attempts:
+          item.attempts + 1,
+
+        lastAttemptAt:
+          new Date()
+            .toISOString(),
+
+        /**
+         * También normaliza items legacy
+         * que todavía no tenían status.
+         */
+        status:
+          'pending',
+
+        rejection:
+          null,
+      },
+    },
+  )
+}
+
+export function markMutationRejected(
+  mutationId: string,
+
+  rejection:
+    Pick<
+      SyncOutboxRejection,
+      | 'code'
+      | 'message'
+    >,
 ) {
   const item =
     syncOutbox.findOne(
@@ -330,12 +440,20 @@ export function markMutationAttempt(
     },
     {
       $set: {
-        attempts:
-          item.attempts + 1,
+        status:
+          'rejected',
 
-        lastAttemptAt:
-          new Date()
-            .toISOString(),
+        rejection: {
+          code:
+            rejection.code,
+
+          message:
+            rejection.message,
+
+          rejectedAt:
+            new Date()
+              .toISOString(),
+        },
       },
     },
   )
@@ -350,7 +468,16 @@ export function removeOutboxMutation(
   })
 }
 
-export function getPendingMutationForEntity(
+/**
+ * Devuelve cualquier outbox asociado
+ * a la entidad, incluyendo rejected.
+ *
+ * Esto es intencional:
+ * una mutación rechazada debe bloquear
+ * la creación automática de otra
+ * mutación idéntica.
+ */
+export function getOutboxMutationForEntity(
   entityType:
     SyncEntityType,
 
@@ -372,6 +499,25 @@ export function getPendingMutationForEntity(
       },
     ) ??
     null
+  )
+}
+
+/**
+ * Alias temporal para no romper los
+ * consumidores actuales.
+ *
+ * Más adelante sustituiremos su uso
+ * por getOutboxMutationForEntity().
+ */
+export function getPendingMutationForEntity(
+  entityType:
+    SyncEntityType,
+
+  entityId: string,
+) {
+  return getOutboxMutationForEntity(
+    entityType,
+    entityId,
   )
 }
 

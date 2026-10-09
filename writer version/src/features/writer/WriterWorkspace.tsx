@@ -344,6 +344,9 @@ export function WriterWorkspace() {
           onMoveChapter={
             writer.handleMoveChapter
           }
+          onReorderChapter={
+            writer.handleReorderChapter
+          }
           onDuplicateChapter={
             writer.handleDuplicateChapter
           }

@@ -4,6 +4,14 @@ import {
   useState,
 } from 'react'
 
+import {
+  useSortable,
+} from '@dnd-kit/sortable'
+
+import {
+  CSS,
+} from '@dnd-kit/utilities'
+
 import type {
   Chapter,
 } from '../../domain/models'
@@ -62,12 +70,14 @@ export function ChapterItem({
   const [
     isRenaming,
     setIsRenaming,
-  ] = useState(false)
+  ] =
+    useState(false)
 
   const [
     menuOpen,
     setMenuOpen,
-  ] = useState(false)
+  ] =
+    useState(false)
 
   const [
     renameValue,
@@ -76,6 +86,35 @@ export function ChapterItem({
     useState(
       chapter.title,
     )
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } =
+    useSortable({
+      id:
+        chapter.id,
+
+      disabled:
+        isRenaming,
+    })
+
+  function setItemRef(
+    node:
+      | HTMLDivElement
+      | null,
+  ) {
+    itemRef.current =
+      node
+
+    setNodeRef(
+      node,
+    )
+  }
 
   useEffect(() => {
     if (!menuOpen) {
@@ -109,7 +148,8 @@ export function ChapterItem({
       event: KeyboardEvent,
     ) {
       if (
-        event.key === 'Escape'
+        event.key ===
+        'Escape'
       ) {
         setMenuOpen(false)
       }
@@ -177,7 +217,9 @@ export function ChapterItem({
       return
     }
 
-    onRename(title)
+    onRename(
+      title,
+    )
 
     setIsRenaming(false)
   }
@@ -217,7 +259,22 @@ export function ChapterItem({
 
   return (
     <div
-      ref={itemRef}
+      ref={
+        setItemRef
+      }
+      style={{
+        transform:
+          isDragging
+            ? undefined
+            : CSS.Transform.toString(
+                transform,
+              ),
+
+        transition:
+          isDragging
+            ? undefined
+            : transition,
+      }}
       className={[
         'chapter-item',
 
@@ -228,11 +285,31 @@ export function ChapterItem({
         menuOpen
           ? 'mobile-menu-open'
           : '',
+
+        isDragging
+          ? 'dragging'
+          : '',
       ]
         .filter(Boolean)
         .join(' ')}
     >
       <div className="chapter-item-main">
+        <button
+          type="button"
+          className="chapter-drag-handle"
+          disabled={
+            isRenaming
+          }
+          aria-label={
+            `Reordenar ${chapter.title}`
+          }
+          title="Arrastrar para reordenar"
+          {...attributes}
+          {...listeners}
+        >
+          ⠿
+        </button>
+
         <button
           type="button"
           className="chapter-item-select"

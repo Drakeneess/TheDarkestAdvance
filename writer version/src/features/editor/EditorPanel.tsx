@@ -1127,7 +1127,7 @@ export function EditorPanel({
           </h2>
 
           <p>
-            Usa Ctrl+K para buscar
+            Usa la búsqueda para localizar
             rápidamente una historia,
             capítulo o fragmento.
           </p>
@@ -1251,7 +1251,7 @@ export function EditorPanel({
               disabled={
                 !previousChapter
               }
-              title="Capítulo anterior — Alt+↑"
+              title="Capítulo anterior"
               onClick={
                 onPreviousChapter
               }
@@ -1273,7 +1273,7 @@ export function EditorPanel({
               disabled={
                 !nextChapter
               }
-              title="Siguiente capítulo — Alt+↓"
+              title="Siguiente capítulo"
               onClick={
                 onNextChapter
               }
@@ -1330,7 +1330,7 @@ export function EditorPanel({
             <button
               type="button"
               className="command-palette-toggle"
-              title="Paleta de comandos — Ctrl+Shift+P"
+              title="Paleta de comandos"
               onClick={() =>
                 setCommandPaletteOpen(
                   true,
@@ -1356,7 +1356,7 @@ export function EditorPanel({
             <button
               type="button"
               className="editor-find-button"
-              title="Buscar — Ctrl+F"
+              title="Buscar"
               onClick={
                 search.openFind
               }
@@ -1424,7 +1424,7 @@ export function EditorPanel({
 
             <button
               type="button"
-              title="Paleta de comandos — Ctrl+Shift+P"
+              title="Paleta de comandos"
               onClick={() =>
                 setCommandPaletteOpen(
                   true,
@@ -1436,7 +1436,7 @@ export function EditorPanel({
 
             <button
               type="button"
-              title="Salir del modo concentración — Esc"
+              title="Salir del modo concentración"
               onClick={
                 handleToggleFocusMode
               }

@@ -1,0 +1,320 @@
+/* ==================================================
+   MOBILE · EDITOR
+   ================================================== */
+
+@media (max-width: 760px) {
+
+  .editor-panel {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    flex-direction: column;
+    overflow: hidden !important;
+  }
+
+  .editor-header {
+    flex: 0 0 auto;
+    min-height: 0 !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 9px 12px !important;
+    display: none !important;
+  }
+
+  .editor-header h2 {
+    font-size: 15px;
+  }
+
+  .editor-toolbar {
+    display: none !important;
+    flex: 0 0 auto;
+    min-height: 44px;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 5px 8px;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .format-toolbar {
+    position: static;
+    flex: 0 0 auto;
+    min-height: 44px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 5px 8px;
+    scrollbar-width: none;
+  }
+
+  .format-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .editor-workspace {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto !important;
+    min-height: 0;
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .editor-workspace .editor {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 18px 16px 24px;
+    font-size: 17px;
+    line-height: 1.72;
+    scroll-padding-top: 20px;
+    scroll-padding-bottom: 80px;
+  }
+
+  .editor-workspace.mode-preview {
+    overflow-y: auto;
+  }
+
+  .mdx-preview {
+    min-height: 100%;
+    padding: 24px 18px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .editor-workspace.mode-split {
+    display: block;
+    overflow-y: auto;
+  }
+
+  .editor-workspace.mode-split .editor {
+    height: 50dvh !important;
+    min-height: 50dvh !important;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .editor-workspace.mode-split .mdx-preview {
+    min-height: 50dvh;
+  }
+
+  .statusbar {
+    flex: 0 0 28px;
+    min-height: 28px;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 0 10px;
+    white-space: nowrap;
+    scrollbar-width: none;
+    justify-content: space-between;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    overflow: hidden;
+    border-top: 1px solid var(--border-subtle);
+    background: #0d0e11;
+  }
+
+  .statusbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .writer-shell.focus-mode {
+    height: 100dvh !important;
+    min-height: 0 !important;
+  }
+
+  .writer-shell.focus-mode .editor-panel {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .editor-actions {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .primary,
+  .secondary {
+    min-height: 38px;
+    padding: 0 11px;
+  }
+
+  .chapter-quick-navigation,
+  .editor-view-switcher,
+  .editor-toolbar-actions {
+    flex: 0 0 auto;
+  }
+
+  .chapter-quick-navigation button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .focus-mode-bar {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 7px 10px;
+  }
+
+  .writer-shell.focus-mode .editor-workspace .editor {
+    height: 100%;
+    padding: 24px 16px calc(42px + env(safe-area-inset-bottom, 0px));
+    font-size: 17px;
+  }
+
+  .focus-mode-meta span {
+    display: none;
+  }
+
+  .format-toolbar-desktop {
+    display: none !important;
+  }
+
+  .format-toolbar-mobile-shell {
+    display: block;
+    position: relative;
+    flex: 0 0 auto;
+    width: 100%;
+    border-bottom: 1px solid var(--border-subtle);
+    background: #101114;
+  }
+
+  .format-toolbar-mobile {
+    display: grid;
+    width: 100%;
+    min-height: 48px;
+    grid-template-columns: repeat( 6, minmax(0, 1fr) );
+    gap: 2px;
+    padding: 4px 8px;
+  }
+
+  .format-toolbar-mobile > button {
+    display: grid;
+    min-width: 0;
+    height: 40px;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .format-toolbar-mobile > button:active,
+  .format-toolbar-mobile > button.active {
+    border-color: var(--accent-border);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  .format-toolbar-mobile .format-bold {
+    font-weight: 800;
+  }
+
+  .format-toolbar-mobile .format-italic {
+    font-family: Georgia, serif;
+    font-style: italic;
+  }
+
+  .format-toolbar-mobile .format-dialogue {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+  }
+
+  .format-thought-mobile {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+  }
+
+  .mobile-format-menu {
+    display: grid;
+    position: absolute;
+    top: calc( 100% + 6px );
+    right: 8px;
+    left: 8px;
+    z-index: 500;
+    grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    gap: 4px;
+    max-height: min( 46dvh, 360px );
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+    box-shadow: 0 16px 48px rgba( 0, 0, 0, 0.5 );
+  }
+
+  .mobile-format-menu button {
+    display: grid;
+    min-width: 0;
+    min-height: 46px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .mobile-format-menu button:active {
+    border-color: var(--border-subtle);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  .mobile-format-menu button strong {
+    color: var(--text-primary);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .mobile-format-menu button span {
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-format-menu-wide {
+    grid-column: 1 / -1;
+  }
+
+  .editor-workspace .mdx-preview {
+    min-height: 100%;
+    padding: 20px 16px 28px;
+  }
+
+  .statusbar span {
+    flex: 0 0 auto;
+    overflow: hidden;
+    font-size: 8px;
+    text-overflow: ellipsis;
+  }
+
+  .statusbar-characters {
+    display: none;
+  }
+
+  .statusbar-state {
+    margin-left: auto;
+  }
+
+  .statusbar-readonly {
+    color: var(--text-muted);
+  }
+}

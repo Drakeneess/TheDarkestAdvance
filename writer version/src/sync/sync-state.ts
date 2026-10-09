@@ -76,16 +76,18 @@ export interface SyncEntityState {
     | null
 }
 
-export interface SyncOutboxItem {
-  /**
-   * Coincide con mutation.mutationId.
-   */
-  id: string
+export type SyncOutboxStatus =
+  | 'pending'
+  | 'rejected'
 
-  /**
-   * Permite localizar rápidamente
-   * la entidad afectada.
-   */
+export interface SyncOutboxRejection {
+  code: string
+  message: string
+  rejectedAt: string
+}
+
+export interface SyncOutboxItem {
+  id: string
   entityKey: string
 
   mutation:
@@ -97,6 +99,22 @@ export interface SyncOutboxItem {
 
   lastAttemptAt:
     | string
+    | null
+
+  /**
+   * pending:
+   * puede volver a enviarse.
+   *
+   * rejected:
+   * el servidor la rechazó de forma
+   * terminal y no debe reintentarse
+   * automáticamente.
+   */
+  status:
+    SyncOutboxStatus
+
+  rejection:
+    | SyncOutboxRejection
     | null
 }
 
