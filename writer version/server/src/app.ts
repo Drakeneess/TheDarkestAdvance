@@ -18,6 +18,10 @@ import {
 } from './publishing/routes'
 
 import {
+  publicRoutes,
+} from './public/routes'
+
+import {
   syncRoutes,
 } from './sync/routes'
 
@@ -111,6 +115,10 @@ export async function createApp() {
     {
       authenticateWriter,
     },
+  )
+
+  await app.register(
+    publicRoutes,
   )
 
   return app
