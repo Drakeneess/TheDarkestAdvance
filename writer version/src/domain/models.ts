@@ -20,6 +20,15 @@ export interface SyncMetadata {
 export interface Story
   extends SyncMetadata {
   id: string
+
+  /**
+   * Identidad estable para rutas públicas.
+   *
+   * Se genera al crear/importar la historia
+   * y no cambia al renombrarla.
+   */
+  slug: string
+
   title: string
   description: string
   createdAt: string
