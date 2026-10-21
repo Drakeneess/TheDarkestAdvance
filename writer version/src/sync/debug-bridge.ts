@@ -13,6 +13,10 @@ import {
   getRejectedMutations,
 } from './storage'
 
+import {
+  requestSync,
+} from './sync-runtime'
+
 export function installSyncDebugBridge() {
   if (
     import.meta.env.VITE_SYNC_DEBUG !==
@@ -28,6 +32,8 @@ export function installSyncDebugBridge() {
       setWriterSessionToken(
         token,
       )
+
+      return requestSync()
     },
 
     clearAuth() {
