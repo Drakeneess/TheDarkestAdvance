@@ -6,6 +6,10 @@ import {
 } from './auth'
 
 import {
+  getWriterCorsOrigins,
+} from './cors'
+
+import {
   db,
 } from './db'
 
@@ -22,6 +26,9 @@ export async function createApp() {
   const authenticateWriter =
     createWriterAuthenticator()
 
+  const corsOrigins =
+    getWriterCorsOrigins()
+
   app.decorateRequest(
     'authPrincipal',
     null,
@@ -30,7 +37,8 @@ export async function createApp() {
   await app.register(
     cors,
     {
-      origin: true,
+      origin:
+        corsOrigins,
     },
   )
 
