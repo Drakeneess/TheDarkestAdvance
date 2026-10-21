@@ -19,10 +19,35 @@ model PublishedStory {
   publishedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  chapters PublishedChapter[]
+
   @@id([workspaceId, storyId])
   @@index([workspaceId])
 
   @@map("published_stories")
+}
+
+model PublishedChapter {
+  workspaceId String
+  storyId     String
+  chapterId   String
+
+  sourceVersionId String
+  slug            String
+  title           String
+  order           Int
+  content         String
+
+  publishedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  story PublishedStory @relation(fields: [workspaceId, storyId], references: [workspaceId, storyId], onDelete: Cascade)
+
+  @@id([workspaceId, storyId, chapterId])
+  @@unique([workspaceId, storyId, slug])
+  @@index([workspaceId, storyId, order])
+
+  @@map("published_chapters")
 }
 
 model SyncWorkspaceAccess {
