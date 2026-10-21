@@ -2,6 +2,10 @@ import cors from '@fastify/cors'
 import Fastify from 'fastify'
 
 import {
+  createWriterAuthenticator,
+} from './auth'
+
+import {
   db,
 } from './db'
 
@@ -14,6 +18,14 @@ export async function createApp() {
     Fastify({
       logger: true,
     })
+
+  const authenticateWriter =
+    createWriterAuthenticator()
+
+  app.decorateRequest(
+    'authPrincipal',
+    null,
+  )
 
   await app.register(
     cors,
@@ -66,6 +78,9 @@ export async function createApp() {
 
   await app.register(
     syncRoutes,
+    {
+      authenticateWriter,
+    },
   )
 
   return app
