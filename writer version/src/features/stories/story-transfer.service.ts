@@ -11,6 +11,10 @@ import type {
 } from '../../domain/models'
 
 import {
+  createUniqueSlug,
+} from '../../domain/slug'
+
+import {
   createSyncMetadata,
   isActive,
 } from '../../domain/sync-metadata'
@@ -102,6 +106,25 @@ function sanitizeFilename(
     )
     .replace(/\s+/g, ' ')
     .slice(0, 100)
+}
+
+function getUsedStorySlugs() {
+  return stories
+    .find(
+      {},
+      {
+        reactive: false,
+      },
+    )
+    .fetch()
+    .map(
+      (story) => story.slug,
+    )
+    .filter(
+      (slug): slug is string =>
+        typeof slug === 'string' &&
+        slug.length > 0,
+    )
 }
 
 export function buildStoryExport(
@@ -308,11 +331,23 @@ export async function importStoryFile(
     )
   }
 
+  const importedStoryId = id()
+
   const importedStory:
     Story = {
     ...source.story,
 
-    id: id(),
+    id:
+      importedStoryId,
+
+    slug:
+      createUniqueSlug(
+        typeof source.story.slug === 'string'
+          ? source.story.slug
+          : source.story.title,
+        getUsedStorySlugs(),
+        `story-${importedStoryId.slice(0, 8)}`,
+      ),
 
     updatedAt:
       timestamp,
