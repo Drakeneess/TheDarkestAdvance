@@ -50,9 +50,19 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: writer version/server/package-lock.json
+          cache-dependency-path: |
+            writer version/package-lock.json
+            writer version/server/package-lock.json
 
-      - name: Install dependencies
+      - name: Install Writer client dependencies
+        working-directory: writer version
+        run: npm ci
+
+      - name: Build Writer client
+        working-directory: writer version
+        run: npm run build
+
+      - name: Install server dependencies
         run: npm ci
 
       - name: Typecheck server
