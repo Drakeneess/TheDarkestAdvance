@@ -10,6 +10,10 @@ import type {
 } from '../../domain/models'
 
 import {
+  createUniqueSlug,
+} from '../../domain/slug'
+
+import {
   createDeleteMetadata,
   createSyncMetadata,
   createUpdateMetadata,
@@ -23,6 +27,26 @@ function now() {
 
 function id() {
   return crypto.randomUUID()
+}
+
+function getUsedStorySlugs() {
+  return stories
+    .find(
+      {},
+      {
+        reactive: false,
+      },
+    )
+    .fetch()
+    .map(
+      (story) =>
+        story.slug,
+    )
+    .filter(
+      (slug): slug is string =>
+        typeof slug === 'string' &&
+        slug.length > 0,
+    )
 }
 
 function getChapterContent(
@@ -90,6 +114,10 @@ export function renameStory(
         title:
           normalizedTitle,
 
+        /**
+         * slug NO se actualiza aquí.
+         * Es identidad editorial estable.
+         */
         ...createUpdateMetadata(
           currentStory.revision,
           timestamp,
@@ -103,12 +131,22 @@ export function duplicateStory(
   story: Story,
 ): Story {
   const timestamp = now()
+  const duplicatedStoryId = id()
+  const duplicatedTitle =
+    `${story.title} · copia`
 
   const duplicatedStory: Story = {
-    id: id(),
+    id: duplicatedStoryId,
+
+    slug:
+      createUniqueSlug(
+        duplicatedTitle,
+        getUsedStorySlugs(),
+        `story-${duplicatedStoryId.slice(0, 8)}`,
+      ),
 
     title:
-      `${story.title} · copia`,
+      duplicatedTitle,
 
     description:
       story.description,
