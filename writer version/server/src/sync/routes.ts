@@ -1,5 +1,6 @@
 import type {
   FastifyInstance,
+  preHandlerAsyncHookHandler,
 } from 'fastify'
 
 import {
@@ -14,11 +15,21 @@ import {
   syncExchangeRequestSchema,
 } from './schemas'
 
+type SyncRoutesOptions = {
+  authenticateWriter:
+    preHandlerAsyncHookHandler
+}
+
 export async function syncRoutes(
   app: FastifyInstance,
+  options: SyncRoutesOptions,
 ) {
   app.post(
     '/api/sync/exchange',
+    {
+      preHandler:
+        options.authenticateWriter,
+    },
     async (
       request,
       reply,
