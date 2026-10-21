@@ -7,6 +7,24 @@ datasource db {
   provider = "postgresql"
 }
 
+model PublishedStory {
+  workspaceId String
+  storyId     String
+
+  slug        String @unique
+  title       String
+  description String
+  themeKey    String
+
+  publishedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@id([workspaceId, storyId])
+  @@index([workspaceId])
+
+  @@map("published_stories")
+}
+
 model SyncWorkspaceAccess {
   workspaceId String
   userId      String
