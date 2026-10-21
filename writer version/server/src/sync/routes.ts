@@ -1,6 +1,6 @@
 import type {
   FastifyInstance,
-  preHandlerHookHandler,
+  preHandlerAsyncHookHandler,
 } from 'fastify'
 
 import {
@@ -17,7 +17,7 @@ import {
 
 type SyncRoutesOptions = {
   authenticateWriter:
-    preHandlerHookHandler
+    preHandlerAsyncHookHandler
 }
 
 export async function syncRoutes(
