@@ -42,6 +42,33 @@ npm run mobile:android
 
 `mobile:android` compila React, sincroniza `dist` con el proyecto Android y abre Android Studio.
 
+## Servidor de sincronización
+
+El backend vive en `server/` y requiere PostgreSQL, `DATABASE_URL` y credenciales de Writer configuradas mediante `WRITER_AUTH_TOKENS`.
+
+Después de configurar `server/.env`:
+
+```bash
+cd server
+npm install
+npm run prisma:migrate
+npm run dev
+```
+
+### Conceder acceso a un workspace
+
+Autenticarse no concede acceso a ningún workspace automáticamente. Cada combinación `workspaceId` + `userId` debe existir en `sync_workspace_access` antes de sincronizar.
+
+Ejemplo para el workspace de desarrollo actual:
+
+```sql
+INSERT INTO "sync_workspace_access" ("workspaceId", "userId")
+VALUES ('writer-test', 'local-writer')
+ON CONFLICT ("workspaceId", "userId") DO NOTHING;
+```
+
+El `userId` debe coincidir con una clave configurada en `WRITER_AUTH_TOKENS`. El `workspaceId` enviado por el cliente no se considera prueba de acceso.
+
 ## Modelo actual
 
 - `stories`: obras/proyectos narrativos.
