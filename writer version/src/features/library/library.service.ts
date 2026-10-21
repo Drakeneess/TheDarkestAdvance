@@ -1,6 +1,9 @@
 import { chapterVersions, chapters, stories } from '../../data/database'
 import type { Chapter, ChapterVersion, Story } from '../../domain/models'
 import {
+  createUniqueSlug,
+} from '../../domain/slug'
+import {
   createSyncMetadata,
   createUpdateMetadata,
   getActiveEntity,
@@ -18,11 +21,40 @@ function id() {
   return crypto.randomUUID()
 }
 
+function getUsedStorySlugs() {
+  return stories
+    .find(
+      {},
+      {
+        reactive: false,
+      },
+    )
+    .fetch()
+    .map(
+      (story) =>
+        story.slug,
+    )
+    .filter(
+      (slug): slug is string =>
+        typeof slug === 'string' &&
+        slug.length > 0,
+    )
+}
+
 export function createStory(title: string, description = ''): Story {
   const timestamp = now()
+  const storyId = id()
 
   const story: Story = {
-    id: id(),
+    id: storyId,
+
+    slug:
+      createUniqueSlug(
+        title,
+        getUsedStorySlugs(),
+        `story-${storyId.slice(0, 8)}`,
+      ),
+
     title: title.trim(),
     description: description.trim(),
     createdAt: timestamp,
