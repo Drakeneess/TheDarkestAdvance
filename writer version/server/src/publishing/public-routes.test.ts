@@ -76,8 +76,6 @@ if (!TEST_DATABASE_URL) {
           themeKey: 'codex',
           chapters: {
             create: {
-              workspaceId:
-                WORKSPACE_ID,
               chapterId:
                 'public-chapter-id',
               sourceVersionId:
