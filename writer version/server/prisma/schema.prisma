@@ -7,6 +7,18 @@ datasource db {
   provider = "postgresql"
 }
 
+model SyncWorkspaceAccess {
+  workspaceId String
+  userId      String
+  role        String   @default("owner")
+  createdAt   DateTime @default(now())
+
+  @@id([workspaceId, userId])
+  @@index([userId, workspaceId])
+
+  @@map("sync_workspace_access")
+}
+
 model SyncEntity {
   workspaceId   String
   entityType    String

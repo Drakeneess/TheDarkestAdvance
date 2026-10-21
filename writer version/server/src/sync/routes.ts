@@ -8,6 +8,10 @@ import {
 } from './apply-mutation'
 
 import {
+  canAccessWorkspace,
+} from './authorize-workspace'
+
+import {
   pullChanges,
 } from './pull-changes'
 
@@ -51,8 +55,38 @@ export async function syncRoutes(
           })
       }
 
+      const principal =
+        request.authPrincipal
+
+      if (!principal) {
+        return reply
+          .status(401)
+          .send({
+            error:
+              'AUTHENTICATION_REQUIRED',
+          })
+      }
+
       const input =
         parsed.data
+
+      const isAuthorized =
+        await canAccessWorkspace({
+          workspaceId:
+            input.workspaceId,
+
+          userId:
+            principal.userId,
+        })
+
+      if (!isAuthorized) {
+        return reply
+          .status(403)
+          .send({
+            error:
+              'WORKSPACE_FORBIDDEN',
+          })
+      }
 
       const acknowledgements =
         []
