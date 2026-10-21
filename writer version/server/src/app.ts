@@ -39,6 +39,17 @@ export async function createApp() {
     {
       origin:
         corsOrigins,
+
+      methods: [
+        'GET',
+        'HEAD',
+        'POST',
+      ],
+
+      allowedHeaders: [
+        'Authorization',
+        'Content-Type',
+      ],
     },
   )
 
