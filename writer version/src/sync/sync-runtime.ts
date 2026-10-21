@@ -1,4 +1,8 @@
 import {
+  getWriterSessionToken,
+} from '../auth/session'
+
+import {
   runSync,
 } from './run-sync'
 
@@ -46,7 +50,10 @@ const errorListeners =
   >()
 
 async function executeSync() {
-  if (!navigator.onLine) {
+  if (
+    !navigator.onLine
+    || !getWriterSessionToken()
+  ) {
     return null
   }
 
@@ -161,7 +168,8 @@ export function startSyncRuntime(
     )
 
   /**
-   * Primer intercambio al arrancar.
+   * Primer intercambio al arrancar si
+   * ya existe una sesión autenticada.
    */
   if (
     navigator.onLine

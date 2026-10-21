@@ -1,4 +1,10 @@
 import {
+  clearWriterSessionToken,
+  getWriterSessionToken,
+  setWriterSessionToken,
+} from '../auth/session'
+
+import {
   scanSyncEntities,
 } from './scan-dirty'
 
@@ -6,6 +12,10 @@ import {
   getPendingMutations,
   getRejectedMutations,
 } from './storage'
+
+import {
+  requestSync,
+} from './sync-runtime'
 
 export function installSyncDebugBridge() {
   if (
@@ -16,6 +26,26 @@ export function installSyncDebugBridge() {
   }
 
   const debug = {
+    auth(
+      token: string,
+    ) {
+      setWriterSessionToken(
+        token,
+      )
+
+      return requestSync()
+    },
+
+    clearAuth() {
+      clearWriterSessionToken()
+    },
+
+    hasAuth() {
+      return Boolean(
+        getWriterSessionToken(),
+      )
+    },
+
     scan() {
       return scanSyncEntities()
     },
