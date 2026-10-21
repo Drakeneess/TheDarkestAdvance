@@ -88,6 +88,24 @@ window.__writerSyncDebug?.clearAuth()
 
 No uses una variable `VITE_*` para almacenar el Bearer token: Vite incorpora esas variables al bundle del cliente.
 
+### Pruebas de Secure Sync
+
+La suite de acceso necesita una base PostgreSQL separada. No apuntes `TEST_DATABASE_URL` a producción ni a una base con datos que quieras conservar.
+
+Primero aplica las migraciones sobre la base de test:
+
+```bash
+DATABASE_URL="postgresql://.../writer_sync_test" npm run prisma:deploy
+```
+
+Luego ejecuta:
+
+```bash
+TEST_DATABASE_URL="postgresql://.../writer_sync_test" npm run test:access
+```
+
+La suite limpia únicamente el workspace `secure-sync-test-workspace` y cubre acceso sin autenticación, workspace sin grant, allowlist CORS y un flujo autorizado con mutación aplicada + pull remoto.
+
 ## Modelo actual
 
 - `stories`: obras/proyectos narrativos.
