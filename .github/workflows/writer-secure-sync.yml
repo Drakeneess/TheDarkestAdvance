@@ -73,3 +73,6 @@ jobs:
 
       - name: Test secure sync access
         run: npm run test:access
+
+      - name: Test publishing service
+        run: npm run test:publishing
