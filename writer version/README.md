@@ -69,6 +69,25 @@ ON CONFLICT ("workspaceId", "userId") DO NOTHING;
 
 El `userId` debe coincidir con una clave configurada en `WRITER_AUTH_TOKENS`. El `workspaceId` enviado por el cliente no se considera prueba de acceso.
 
+### Sesión del cliente de sync
+
+La credencial Bearer se conserva en `sessionStorage`; no forma parte de las entidades de SignalDB, checkpoints ni mutaciones del outbox. Un 401 elimina la credencial local para evitar seguir usando una sesión rechazada.
+
+Mientras no exista una pantalla de autenticación, el bridge de desarrollo permite iniciar la sesión manualmente. Configura `VITE_SYNC_DEBUG=true` y, desde la consola del navegador:
+
+```js
+await window.__writerSyncDebug?.auth('<bearer-token>')
+```
+
+El helper guarda la sesión y solicita inmediatamente un ciclo de sync. También están disponibles:
+
+```js
+window.__writerSyncDebug?.hasAuth()
+window.__writerSyncDebug?.clearAuth()
+```
+
+No uses una variable `VITE_*` para almacenar el Bearer token: Vite incorpora esas variables al bundle del cliente.
+
 ## Modelo actual
 
 - `stories`: obras/proyectos narrativos.
