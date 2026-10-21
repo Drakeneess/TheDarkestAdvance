@@ -1,4 +1,10 @@
 import {
+  clearWriterSessionToken,
+  getWriterSessionToken,
+  setWriterSessionToken,
+} from '../auth/session'
+
+import {
   scanSyncEntities,
 } from './scan-dirty'
 
@@ -16,6 +22,24 @@ export function installSyncDebugBridge() {
   }
 
   const debug = {
+    auth(
+      token: string,
+    ) {
+      setWriterSessionToken(
+        token,
+      )
+    },
+
+    clearAuth() {
+      clearWriterSessionToken()
+    },
+
+    hasAuth() {
+      return Boolean(
+        getWriterSessionToken(),
+      )
+    },
+
     scan() {
       return scanSyncEntities()
     },
