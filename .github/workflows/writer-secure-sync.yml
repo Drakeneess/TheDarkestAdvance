@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - main
+      - 'feat/**'
+      - 'test/**'
     paths:
       - 'writer version/**'
       - '.github/workflows/writer-secure-sync.yml'
