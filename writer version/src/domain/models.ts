@@ -1,3 +1,7 @@
+import type {
+  StoryThemeKey,
+} from './story-theme'
+
 export interface SyncMetadata {
   /**
    * Revisión lógica del registro.
@@ -28,6 +32,12 @@ export interface Story
    * y no cambia al renombrarla.
    */
   slug: string
+
+  /**
+   * Intención visual/editorial semántica.
+   * La resolución concreta pertenece al Codex.
+   */
+  themeKey: StoryThemeKey
 
   title: string
   description: string
