@@ -66,8 +66,11 @@ export interface SyncEntityState {
     | null
 
   /**
-   * V4.1 no intenta resolver conflictos.
-   * Solo evita pisarlos.
+   * Los conflictos nunca se resuelven
+   * automáticamente. La entidad queda
+   * bloqueada hasta que el usuario elige
+   * explícitamente conservar local o usar
+   * el snapshot del servidor.
    */
   conflict: boolean
 
