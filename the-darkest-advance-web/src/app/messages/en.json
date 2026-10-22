@@ -4,7 +4,7 @@
     "homeLabel": "The Darkest Advance home",
     "openMenuLabel": "Open navigation menu",
     "closeMenuLabel": "Close navigation menu",
-    "mobileLabel": "Navigation protocol",
+    "mobileLabel": "Navigation",
     "items": {
       "codex": "Codex",
       "about": "Studio"
@@ -16,41 +16,41 @@
   },
   "home": {
     "hero": {
-      "style": "Dark Tactical Elegance",
+      "style": "Independent creative studio",
       "title": "The Darkest Advance",
       "tagline": "Worlds forged in instinct, ruin and precision.",
-      "primaryCta": "Enter the Codex",
+      "primaryCta": "Explore the Codex",
       "secondaryCta": "About the studio",
       "signal": {
-        "label": "Studio Signal",
-        "description": "Instinct refined into structure. Darkness shaped into systems.",
-        "archiveStatus": "ARCHIVE ONLINE",
-        "protocolStatus": "PROTOCOL: ACTIVE"
+        "label": "Focus",
+        "description": "Worldbuilding, narrative and interactive systems under a shared creative identity.",
+        "archiveStatus": "CODEX IN DEVELOPMENT",
+        "protocolStatus": "INDEPENDENT STUDIO"
       }
     },
     "studio": {
-      "eyebrow": "Studio Identity",
-      "title": "Darkness with structure.",
-      "bodyPrimary": "The Darkest Advance is a creative studio and identity dedicated to building dark, tactical and narratively intense worlds.",
-      "bodySecondary": "We create worlds where darkness is not decoration, but pressure, system and advance."
+      "eyebrow": "The studio",
+      "title": "Games, stories and systems.",
+      "bodyPrimary": "The Darkest Advance is an independent creative studio focused on video games, speculative fiction and interactive projects.",
+      "bodySecondary": "Each project is developed through its own visual, narrative and mechanical language, with an emphasis on identity, coherence and design."
     },
     "codex": {
-      "eyebrow": "The Archive",
+      "eyebrow": "Archive",
       "title": "The Drakeneess Codex",
-      "description": "A living archive of worlds, characters, factions, timelines, systems, symbols and creatures. Public access is being prepared while the archive takes shape.",
-      "status": "Archive access in preparation"
+      "description": "The Codex brings together documentation for worlds, characters, timelines and systems developed by the studio. Its public version is in preparation.",
+      "status": "Public access in preparation"
     }
   },
   "footer": {
-    "subtitle": "Games. Stories. Worlds. Systems.",
-    "status": "Signal active",
+    "subtitle": "Video games. Fiction. Worlds. Interactive systems.",
+    "status": "Site active",
     "navigationLabel": "Footer navigation",
     "meta": {
       "studio": {
         "label": "Studio"
       },
       "protocol": {
-        "label": "Protocol",
+        "label": "Visual direction",
         "value": "Dark Tactical Elegance"
       },
       "archive": {
@@ -62,11 +62,11 @@
     }
   },
   "notFound": {
-    "eyebrow": "ERROR 404 // CODEX INDEX FAILURE",
-    "title": "Entry not found in the archive.",
-    "description": "The route you are trying to open does not exist on this plane. It may have been erased, sealed or never written.",
-    "signal": "SIGNAL LOST",
-    "log": "The requested file is not responding. Remaining on this route will not produce any advance.",
+    "eyebrow": "ERROR 404",
+    "title": "Page not found.",
+    "description": "The route you are trying to open does not exist or is no longer available.",
+    "signal": "Route unavailable",
+    "log": "Return to the home page to continue browsing.",
     "home": "Return home"
   }
 }
