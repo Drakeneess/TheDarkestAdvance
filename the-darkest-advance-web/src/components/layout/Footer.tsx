@@ -3,9 +3,8 @@ import { Link } from "@/i18n/navigation";
 import { OfficialSeal } from "@/components/brand/OfficialSeal";
 
 const footerLinks = [
-  { key: "projects", href: "/projects" },
-  { key: "codex", href: "/codex" },
-  { key: "about", href: "/about" },
+  { key: "codex", href: "/#codex" },
+  { key: "about", href: "/#about" },
 ] as const;
 
 export function Footer() {
