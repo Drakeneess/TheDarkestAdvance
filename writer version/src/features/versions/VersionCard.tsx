@@ -280,6 +280,15 @@ export function VersionCard({
           <button
             type="button"
             className="danger"
+            disabled={
+              isPublished ||
+              isPublishing
+            }
+            title={
+              isPublished
+                ? 'Despublica esta versión antes de eliminarla.'
+                : undefined
+            }
             onClick={
               handleDelete
             }
