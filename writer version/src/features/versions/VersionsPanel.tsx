@@ -7,6 +7,14 @@ import {
   VersionCard,
 } from './VersionCard'
 
+interface PublicationFeedback {
+  kind:
+    | 'success'
+    | 'error'
+
+  message: string
+}
+
 interface VersionsPanelProps {
   chapter:
     | Chapter
@@ -20,6 +28,18 @@ interface VersionsPanelProps {
     | null
 
   versionLabel: string
+
+  publishedVersionId:
+    | string
+    | null
+
+  publishingVersionId:
+    | string
+    | null
+
+  publicationFeedback:
+    | PublicationFeedback
+    | null
 
   leftVersionId:
     | string
@@ -59,6 +79,12 @@ interface VersionsPanelProps {
         ChapterVersion,
     ) => void
 
+  onPublishVersion:
+    (
+      version:
+        ChapterVersion,
+    ) => void
+
   onRenameVersion:
     (
       version:
@@ -86,6 +112,10 @@ export function VersionsPanel({
   selectedVersionId,
   versionLabel,
 
+  publishedVersionId,
+  publishingVersionId,
+  publicationFeedback,
+
   leftVersionId,
   rightVersionId,
 
@@ -96,6 +126,7 @@ export function VersionsPanel({
   onVersionLabelChange,
   onSaveVersion,
   onSelectVersion,
+  onPublishVersion,
 
   onRenameVersion,
   onDuplicateVersion,
@@ -103,6 +134,10 @@ export function VersionsPanel({
 
   onClose,
 }: VersionsPanelProps) {
+  const publicationBusy =
+    publishingVersionId !==
+      null
+
   return (
     <aside className="versions-panel">
       <div className="versions-header-actions">
@@ -242,6 +277,25 @@ export function VersionsPanel({
             </div>
           )}
 
+          {publicationFeedback && (
+            <div
+              className={[
+                'publication-feedback',
+                publicationFeedback.kind,
+              ].join(' ')}
+              role={
+                publicationFeedback.kind ===
+                  'error'
+                  ? 'alert'
+                  : 'status'
+              }
+            >
+              {
+                publicationFeedback.message
+              }
+            </div>
+          )}
+
           <div className="version-list">
             {versions.length ===
               0 && (
@@ -275,6 +329,17 @@ export function VersionsPanel({
                     version.id ===
                     selectedVersionId
                   }
+                  isPublished={
+                    version.id ===
+                    publishedVersionId
+                  }
+                  isPublishing={
+                    version.id ===
+                    publishingVersionId
+                  }
+                  publishDisabled={
+                    publicationBusy
+                  }
                   isLeftCompare={
                     version.id ===
                     leftVersionId
@@ -285,6 +350,11 @@ export function VersionsPanel({
                   }
                   onSelect={() =>
                     onSelectVersion(
+                      version,
+                    )
+                  }
+                  onPublish={() =>
+                    onPublishVersion(
                       version,
                     )
                   }

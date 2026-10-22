@@ -19,6 +19,15 @@ interface VersionCardProps {
   isSelected:
     boolean
 
+  isPublished:
+    boolean
+
+  isPublishing:
+    boolean
+
+  publishDisabled:
+    boolean
+
   isLeftCompare:
     boolean
 
@@ -26,6 +35,9 @@ interface VersionCardProps {
     boolean
 
   onSelect:
+    () => void
+
+  onPublish:
     () => void
 
   onRename:
@@ -46,11 +58,15 @@ export function VersionCard({
 
   isCurrent,
   isSelected,
+  isPublished,
+  isPublishing,
+  publishDisabled,
 
   isLeftCompare,
   isRightCompare,
 
   onSelect,
+  onPublish,
   onRename,
   onDuplicate,
   onDelete,
@@ -122,6 +138,10 @@ export function VersionCard({
         isCurrent
           ? 'current'
           : '',
+
+        isPublished
+          ? 'published'
+          : '',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -148,6 +168,12 @@ export function VersionCard({
             {isRightCompare && (
               <span className="compare-badge">
                 contra
+              </span>
+            )}
+
+            {isPublished && (
+              <span className="published-badge">
+                publicada
               </span>
             )}
 
@@ -217,6 +243,24 @@ export function VersionCard({
         <div className="version-card-actions">
           <button
             type="button"
+            className="version-publish-button"
+            disabled={
+              publishDisabled ||
+              isPublished
+            }
+            onClick={
+              onPublish
+            }
+          >
+            {isPublishing
+              ? 'Publicando…'
+              : isPublished
+                ? 'Publicada'
+                : 'Publicar esta versión'}
+          </button>
+
+          <button
+            type="button"
             onClick={
               startRename
             }
@@ -236,6 +280,15 @@ export function VersionCard({
           <button
             type="button"
             className="danger"
+            disabled={
+              isPublished ||
+              isPublishing
+            }
+            title={
+              isPublished
+                ? 'Despublica esta versión antes de eliminarla.'
+                : undefined
+            }
             onClick={
               handleDelete
             }

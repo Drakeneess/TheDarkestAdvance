@@ -11,6 +11,10 @@ import {
 } from '../library/LibraryPanel'
 
 import {
+  useChapterPublishing,
+} from '../publishing/useChapterPublishing'
+
+import {
   VersionComparisonPanel,
 } from '../versions/VersionComparisonPanel'
 
@@ -46,6 +50,16 @@ export function WriterWorkspace() {
       writer.versions,
       writer.selectedChapterId,
     )
+
+  const publishing =
+    useChapterPublishing({
+      storyId:
+        writer.selectedStory
+          ?.id ?? null,
+
+      chapterId:
+        writer.selectedChapterId,
+    })
 
   const [
     versionsOpen,
@@ -504,6 +518,16 @@ export function WriterWorkspace() {
             writer.versionLabel
           }
 
+          publishedVersionId={
+            publishing.publishedVersionId
+          }
+          publishingVersionId={
+            publishing.publishingVersionId
+          }
+          publicationFeedback={
+            publishing.feedback
+          }
+
           leftVersionId={
             comparison.leftVersionId
           }
@@ -530,6 +554,9 @@ export function WriterWorkspace() {
           }
           onSelectVersion={
             writer.handleSelectVersion
+          }
+          onPublishVersion={
+            publishing.publishVersion
           }
 
           onRenameVersion={
