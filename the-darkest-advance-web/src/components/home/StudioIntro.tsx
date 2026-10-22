@@ -1,6 +1,6 @@
 export function StudioIntro() {
   return (
-    <section className="px-6 py-28">
+    <section id="about" className="scroll-mt-28 px-6 py-28">
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[0.8fr_1.2fr]">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-red-400">
@@ -20,7 +20,7 @@ export function StudioIntro() {
           </p>
 
           <p className="mt-6">
-            Each project grows from the same obsession: creatures, consequences,
+            Its identity grows from the same obsession: creatures, consequences,
             survival, freedom, transformation and the cost of advancing when
             everything around you insists on breaking.
           </p>

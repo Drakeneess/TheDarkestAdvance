@@ -1,6 +1,3 @@
-// src/middleware.ts
-// o src/proxy.ts en Next 16
-
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
 

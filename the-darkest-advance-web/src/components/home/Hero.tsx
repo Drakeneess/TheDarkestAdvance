@@ -22,11 +22,11 @@ export function Hero() {
           <p className="tda-hero__tagline">{t("tagline")}</p>
 
           <div className="tda-hero__actions">
-            <Link href="/codex" className="tda-button">
+            <Link href="/#codex" className="tda-button">
               {t("primaryCta")}
             </Link>
 
-            <Link href="/projects" className="tda-button-secondary">
+            <Link href="/#about" className="tda-button-secondary">
               {t("secondaryCta")}
             </Link>
           </div>

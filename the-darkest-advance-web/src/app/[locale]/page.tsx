@@ -1,6 +1,5 @@
 import { Hero } from "@/components/home/Hero";
 import { StudioIntro } from "@/components/home/StudioIntro";
-import { ProjectHighlights } from "@/components/home/ProjectHighlights";
 import { CodexGateway } from "@/components/home/CodexGateway";
 
 export default function HomePage() {
@@ -8,7 +7,6 @@ export default function HomePage() {
     <main>
       <Hero />
       <StudioIntro />
-      <ProjectHighlights />
       <CodexGateway />
     </main>
   );

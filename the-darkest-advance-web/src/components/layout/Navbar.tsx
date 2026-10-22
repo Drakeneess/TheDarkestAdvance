@@ -1,29 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { OfficialSeal } from "@/components/brand/OfficialSeal";
 
 const navItems = [
-  { key: "projects", href: "/projects" },
-  { key: "codex", href: "/codex" },
-  { key: "about", href: "/about" },
+  { key: "codex", href: "/#codex" },
+  { key: "about", href: "/#about" },
 ] as const;
 
 export function Navbar() {
   const t = useTranslations("navbar");
-  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMenuOpen(false);
-  }, [pathname]);
-
-  const getIsActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="tda-navbar">
@@ -50,26 +40,15 @@ export function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">
-          {navItems.map((item) => {
-            const isActive = getIsActive(item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isActive ? "page" : undefined}
-                className={[
-                  "relative text-xs font-bold uppercase tracking-[0.22em] transition",
-                  "after:absolute after:-bottom-2 after:left-0 after:h-px after:w-full after:origin-center after:scale-x-0 after:bg-red-500 after:transition-transform",
-                  isActive
-                    ? "text-red-300 after:scale-x-100"
-                    : "text-stone-400 hover:text-red-300 hover:after:scale-x-100",
-                ].join(" ")}
-              >
-                {t(`items.${item.key}`)}
-              </Link>
-            );
-          })}
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="relative text-xs font-bold uppercase tracking-[0.22em] text-stone-400 transition after:absolute after:-bottom-2 after:left-0 after:h-px after:w-full after:origin-center after:scale-x-0 after:bg-red-500 after:transition-transform hover:text-red-300 hover:after:scale-x-100"
+            >
+              {t(`items.${item.key}`)}
+            </Link>
+          ))}
         </div>
 
         <div className="flex items-center gap-3">
@@ -102,24 +81,17 @@ export function Navbar() {
             <p className="tda-mobile-nav__label">Navigation Protocol</p>
 
             <div className="tda-mobile-nav__links">
-              {navItems.map((item) => {
-                const isActive = getIsActive(item.href);
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive ? "page" : undefined}
-                    className={[
-                      "tda-mobile-nav__link",
-                      isActive ? "tda-mobile-nav__link--active" : "",
-                    ].join(" ")}
-                  >
-                    <span>{t(`items.${item.key}`)}</span>
-                    <span aria-hidden="true">/</span>
-                  </Link>
-                );
-              })}
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="tda-mobile-nav__link"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span>{t(`items.${item.key}`)}</span>
+                  <span aria-hidden="true">/</span>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
