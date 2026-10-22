@@ -25,6 +25,10 @@ import {
   publishChapterVersion,
 } from './service'
 
+import {
+  getChapterPublicationStatus,
+} from './status'
+
 const storyCommandSchema =
   z.object({
     workspaceId: z.string().min(1),
@@ -187,6 +191,43 @@ export async function publishingRoutes(
       }
 
       return unpublishStory(
+        parsed.data,
+      )
+    },
+  )
+
+  app.get(
+    '/api/publishing/chapters/status',
+    {
+      preHandler:
+        options.authenticateWriter,
+    },
+    async (request, reply) => {
+      const parsed =
+        chapterCommandSchema.safeParse(
+          request.query,
+        )
+
+      if (!parsed.success) {
+        return reply.status(400).send({
+          error:
+            'INVALID_PUBLISHING_REQUEST',
+          details:
+            parsed.error.flatten(),
+        })
+      }
+
+      if (
+        !await authorizeWorkspace(
+          request,
+          reply,
+          parsed.data.workspaceId,
+        )
+      ) {
+        return
+      }
+
+      return getChapterPublicationStatus(
         parsed.data,
       )
     },

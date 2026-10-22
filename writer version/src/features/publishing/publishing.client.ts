@@ -21,10 +21,14 @@ export class PublishingApiError extends Error {
   }
 }
 
-interface PublishChapterCommand {
+interface ChapterCommand {
   workspaceId: string
   storyId: string
   chapterId: string
+}
+
+interface PublishChapterCommand
+  extends ChapterCommand {
   sourceVersionId: string
 }
 
@@ -44,6 +48,20 @@ export interface PublishChapterResult {
     order: number
     content: string
   }
+}
+
+export interface ChapterPublicationStatus {
+  published: boolean
+
+  chapter: {
+    sourceVersionId: string
+    publishedAt: string
+    updatedAt: string
+  } | null
+}
+
+export interface UnpublishChapterResult {
+  unpublished: boolean
 }
 
 function isRecord(
@@ -72,39 +90,37 @@ async function readResponseBody(
   }
 }
 
-export async function publishChapterCommand(
-  command:
-    PublishChapterCommand,
-): Promise<PublishChapterResult> {
+async function publishingRequest<T>(
+  path: string,
+  init: RequestInit,
+  fallbackMessage: string,
+): Promise<T> {
   const authToken =
     getWriterSessionToken()
 
   if (!authToken) {
     throw new WriterSessionError(
       'MISSING_SESSION',
-      'No hay una sesión autenticada para publicar.',
+      'No hay una sesión autenticada para gestionar la publicación.',
     )
   }
 
+  const headers =
+    new Headers(
+      init.headers,
+    )
+
+  headers.set(
+    'Authorization',
+    `Bearer ${authToken}`,
+  )
+
   const response =
     await fetch(
-      `${getSyncApiUrl()}/api/publishing/chapters/publish`,
+      `${getSyncApiUrl()}${path}`,
       {
-        method:
-          'POST',
-
-        headers: {
-          'Authorization':
-            `Bearer ${authToken}`,
-
-          'Content-Type':
-            'application/json',
-        },
-
-        body:
-          JSON.stringify(
-            command,
-          ),
+        ...init,
+        headers,
       },
     )
 
@@ -133,7 +149,7 @@ export async function publishChapterCommand(
       isRecord(body) &&
       typeof body.message === 'string'
         ? body.message
-        : `La publicación falló (${response.status}).`
+        : `${fallbackMessage} (${response.status}).`
 
     throw new PublishingApiError(
       code,
@@ -142,6 +158,78 @@ export async function publishChapterCommand(
     )
   }
 
-  return body as
-    PublishChapterResult
+  return body as T
+}
+
+export function publishChapterCommand(
+  command:
+    PublishChapterCommand,
+): Promise<PublishChapterResult> {
+  return publishingRequest(
+    '/api/publishing/chapters/publish',
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type':
+          'application/json',
+      },
+
+      body:
+        JSON.stringify(
+          command,
+        ),
+    },
+    'La publicación falló',
+  )
+}
+
+export function getChapterPublicationStatusCommand(
+  command:
+    ChapterCommand,
+  signal?: AbortSignal,
+): Promise<ChapterPublicationStatus> {
+  const params =
+    new URLSearchParams({
+      workspaceId:
+        command.workspaceId,
+
+      storyId:
+        command.storyId,
+
+      chapterId:
+        command.chapterId,
+    })
+
+  return publishingRequest(
+    `/api/publishing/chapters/status?${params.toString()}`,
+    {
+      method: 'GET',
+      signal,
+    },
+    'No se pudo consultar el estado de publicación',
+  )
+}
+
+export function unpublishChapterCommand(
+  command:
+    ChapterCommand,
+): Promise<UnpublishChapterResult> {
+  return publishingRequest(
+    '/api/publishing/chapters/unpublish',
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type':
+          'application/json',
+      },
+
+      body:
+        JSON.stringify(
+          command,
+        ),
+    },
+    'No se pudo despublicar el capítulo',
+  )
 }
