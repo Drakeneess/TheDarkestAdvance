@@ -370,6 +370,9 @@ export async function importStoryFile(
     importedStory,
   )
 
+  const usedImportedChapterSlugs:
+    string[] = []
+
   /**
    * Primero insertamos los capítulos.
    */
@@ -395,6 +398,21 @@ export async function importStoryFile(
           )
         : null
 
+    const importedChapterSlug =
+      createUniqueSlug(
+        typeof sourceChapter.slug ===
+          'string' &&
+        sourceChapter.slug.trim().length > 0
+          ? sourceChapter.slug
+          : sourceChapter.title,
+        usedImportedChapterSlugs,
+        `chapter-${newChapterId.slice(0, 8)}`,
+      )
+
+    usedImportedChapterSlugs.push(
+      importedChapterSlug,
+    )
+
     const importedChapter:
       Chapter = {
       ...sourceChapter,
@@ -404,6 +422,9 @@ export async function importStoryFile(
 
       storyId:
         importedStory.id,
+
+      slug:
+        importedChapterSlug,
 
       currentVersionId:
         mappedCurrentVersionId,

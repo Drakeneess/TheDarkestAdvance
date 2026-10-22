@@ -9,6 +9,10 @@ import type {
 } from '../../domain/models'
 
 import {
+  createUniqueSlug,
+} from '../../domain/slug'
+
+import {
   createDeleteMetadata,
   createSyncMetadata,
   createUpdateMetadata,
@@ -21,6 +25,30 @@ function now() {
 
 function id() {
   return crypto.randomUUID()
+}
+
+function getUsedChapterSlugs(
+  storyId: string,
+) {
+  return chapters
+    .find(
+      {
+        storyId,
+      },
+      {
+        reactive: false,
+      },
+    )
+    .fetch()
+    .map(
+      (chapter) =>
+        chapter.slug,
+    )
+    .filter(
+      (slug): slug is string =>
+        typeof slug === 'string' &&
+        slug.length > 0,
+    )
 }
 
 function touchStory(
@@ -84,6 +112,10 @@ export function renameChapter(
         title:
           normalizedTitle,
 
+        /**
+         * slug NO se actualiza aquí.
+         * Es identidad editorial estable.
+         */
         ...createUpdateMetadata(
           currentChapter.revision,
           timestamp,
@@ -476,14 +508,27 @@ export function duplicateChapter(
     }
   }
 
+  const duplicatedChapterId = id()
+  const duplicatedTitle =
+    `${source.title} · copia`
+
   const duplicated: Chapter = {
-    id: id(),
+    id: duplicatedChapterId,
 
     storyId:
       source.storyId,
 
+    slug:
+      createUniqueSlug(
+        duplicatedTitle,
+        getUsedChapterSlugs(
+          source.storyId,
+        ),
+        `chapter-${duplicatedChapterId.slice(0, 8)}`,
+      ),
+
     title:
-      `${source.title} · copia`,
+      duplicatedTitle,
 
     order:
       source.order + 1,

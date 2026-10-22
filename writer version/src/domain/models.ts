@@ -49,6 +49,13 @@ export interface Chapter
   extends SyncMetadata {
   id: string
   storyId: string
+
+  /**
+   * Identidad estable para la ruta pública
+   * dentro de su historia.
+   */
+  slug: string
+
   title: string
   order: number
 
