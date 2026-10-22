@@ -42,8 +42,8 @@ export function Hero() {
           </p>
 
           <div className="tda-hero__signal-meta" aria-hidden="true">
-            <span>ARCHIVE ONLINE</span>
-            <span>PROTOCOL: ACTIVE</span>
+            <span>{t("signal.archiveStatus")}</span>
+            <span>{t("signal.protocolStatus")}</span>
           </div>
         </aside>
       </div>
