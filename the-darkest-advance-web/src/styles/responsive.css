@@ -1,4 +1,4 @@
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   :root {
     --parallax-soft-x: 0px;
     --parallax-soft-y: 0px;
@@ -10,6 +10,24 @@
     --parallax-strong-y: 0px;
   }
 
+  .parallax-soft,
+  .parallax-mid,
+  .parallax-strong {
+    transform: none;
+    will-change: auto;
+  }
+
+  .tda-ash-dust {
+    animation: none;
+    opacity: 0.3;
+  }
+
+  .tda-ember-dust {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
   .section-spacing {
     padding-block: 5rem;
   }

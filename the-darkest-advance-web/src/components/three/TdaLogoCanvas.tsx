@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Environment, Float } from "@react-three/drei";
+import { Float } from "@react-three/drei";
 import { Suspense } from "react";
 import { TdaLogoModel } from "./TdaLogoModel";
 
@@ -13,7 +13,7 @@ export function TdaLogoCanvas() {
           position: [0, 0, 5],
           fov: 35,
         }}
-        dpr={[1, 1.75]}
+        dpr={[1, 1.5]}
         gl={{
           antialias: true,
           alpha: true,
@@ -28,8 +28,6 @@ export function TdaLogoCanvas() {
           <Float speed={1.1} rotationIntensity={0.16} floatIntensity={0.22}>
             <TdaLogoModel />
           </Float>
-
-          <Environment preset="night" />
         </Suspense>
       </Canvas>
     </div>
