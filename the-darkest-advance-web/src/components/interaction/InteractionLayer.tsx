@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+const SETTLE_EPSILON = 0.0005;
+
 export function InteractionLayer() {
   useEffect(() => {
     const root = document.documentElement;
@@ -18,23 +20,9 @@ export function InteractionLayer() {
       scroll: 0,
     };
 
-    const updatePointer = (event: PointerEvent) => {
-      target.x = (event.clientX / window.innerWidth) * 2 - 1;
-      target.y = (event.clientY / window.innerHeight) * 2 - 1;
-    };
+    let animationFrame: number | null = null;
 
-    const updateScroll = () => {
-      const maxScroll =
-        document.documentElement.scrollHeight - window.innerHeight;
-
-      target.scroll = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-    };
-
-    const animate = () => {
-      current.x += (target.x - current.x) * 0.08;
-      current.y += (target.y - current.y) * 0.08;
-      current.scroll += (target.scroll - current.scroll) * 0.08;
-
+    const writeStyles = () => {
       root.style.setProperty("--input-x", current.x.toFixed(4));
       root.style.setProperty("--input-y", current.y.toFixed(4));
       root.style.setProperty("--scroll-progress", current.scroll.toFixed(4));
@@ -47,21 +35,64 @@ export function InteractionLayer() {
 
       root.style.setProperty("--parallax-strong-x", `${current.x * -28}px`);
       root.style.setProperty("--parallax-strong-y", `${current.y * -18}px`);
-
-      requestAnimationFrame(animate);
     };
 
+    const isSettled = () =>
+      Math.abs(target.x - current.x) < SETTLE_EPSILON &&
+      Math.abs(target.y - current.y) < SETTLE_EPSILON &&
+      Math.abs(target.scroll - current.scroll) < SETTLE_EPSILON;
+
+    const animate = () => {
+      current.x += (target.x - current.x) * 0.1;
+      current.y += (target.y - current.y) * 0.1;
+      current.scroll += (target.scroll - current.scroll) * 0.1;
+
+      if (isSettled()) {
+        current.x = target.x;
+        current.y = target.y;
+        current.scroll = target.scroll;
+        writeStyles();
+        animationFrame = null;
+        return;
+      }
+
+      writeStyles();
+      animationFrame = requestAnimationFrame(animate);
+    };
+
+    const requestAnimation = () => {
+      if (animationFrame === null) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    const updatePointer = (event: PointerEvent) => {
+      target.x = (event.clientX / window.innerWidth) * 2 - 1;
+      target.y = (event.clientY / window.innerHeight) * 2 - 1;
+      requestAnimation();
+    };
+
+    const updateScroll = () => {
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+      target.scroll = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      requestAnimation();
+    };
+
+    writeStyles();
     updateScroll();
 
     window.addEventListener("pointermove", updatePointer, { passive: true });
     window.addEventListener("scroll", updateScroll, { passive: true });
 
-    const animationFrame = requestAnimationFrame(animate);
-
     return () => {
       window.removeEventListener("pointermove", updatePointer);
       window.removeEventListener("scroll", updateScroll);
-      cancelAnimationFrame(animationFrame);
+
+      if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+      }
     };
   }, []);
 
