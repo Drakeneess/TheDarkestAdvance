@@ -524,6 +524,12 @@ export function WriterWorkspace() {
           publishingVersionId={
             publishing.publishingVersionId
           }
+          publicationStatusLoading={
+            publishing.statusLoading
+          }
+          unpublishing={
+            publishing.unpublishing
+          }
           publicationFeedback={
             publishing.feedback
           }
@@ -557,6 +563,9 @@ export function WriterWorkspace() {
           }
           onPublishVersion={
             publishing.publishVersion
+          }
+          onUnpublish={
+            publishing.unpublish
           }
 
           onRenameVersion={
