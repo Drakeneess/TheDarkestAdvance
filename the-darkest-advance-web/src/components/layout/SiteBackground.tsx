@@ -19,32 +19,18 @@ export function SiteBackground() {
   const [render3d, setRender3d] = useState(false);
 
   useEffect(() => {
-    if (reducedVisuals) {
-      setRender3d(false);
+    if (reducedVisuals || render3d) {
       return;
     }
 
-    let timeoutId: number | undefined;
-    let idleId: number | undefined;
-
-    const reveal = () => setRender3d(true);
-
-    if ("requestIdleCallback" in window) {
-      idleId = window.requestIdleCallback(reveal, { timeout: 1200 });
-    } else {
-      timeoutId = window.setTimeout(reveal, 450);
-    }
+    const timeoutId = window.setTimeout(() => {
+      setRender3d(true);
+    }, 450);
 
     return () => {
-      if (idleId !== undefined) {
-        window.cancelIdleCallback(idleId);
-      }
-
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
+      window.clearTimeout(timeoutId);
     };
-  }, [reducedVisuals]);
+  }, [reducedVisuals, render3d]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-black">
