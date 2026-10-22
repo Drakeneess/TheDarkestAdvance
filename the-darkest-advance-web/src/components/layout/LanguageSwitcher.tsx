@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTransition } from "react";
 import { routing } from "@/i18n/routing";
@@ -31,6 +31,7 @@ const languageOptions: {
 
 export function LanguageSwitcher() {
   const locale = useLocale() as Locale;
+  const t = useTranslations("languageSwitcher");
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -48,7 +49,7 @@ export function LanguageSwitcher() {
   return (
     <div
       className="flex items-center gap-1 rounded-full border border-red-950/60 bg-black/45 p-1 backdrop-blur-xl"
-      aria-label="Language selector"
+      aria-label={t("label")}
     >
       {languageOptions.map((option) => {
         const isActive = option.locale === locale;
@@ -59,7 +60,7 @@ export function LanguageSwitcher() {
             type="button"
             disabled={isPending}
             onClick={() => handleLocaleChange(option.locale)}
-            aria-label={`Change language to ${option.label}`}
+            aria-label={t("changeTo", { language: option.label })}
             aria-pressed={isActive}
             className={[
               "rounded-full px-3 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.18em] transition",
