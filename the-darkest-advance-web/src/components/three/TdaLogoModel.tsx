@@ -2,60 +2,44 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Group, MathUtils } from "three";
 
 export function TdaLogoModel() {
   const groupRef = useRef<Group>(null);
-  const autoRotationRef = useRef(0);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const scrollProgressRef = useRef(0);
 
   const { scene } = useGLTF("/models/tda-logo.glb");
 
-  const clonedScene = useMemo(() => {
-    return scene.clone(true);
-  }, [scene]);
-
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const clonedScene = useMemo(() => scene.clone(true), [scene]);
 
   useEffect(() => {
-    const updateMouse = (event: PointerEvent) => {
-      const x = (event.clientX / window.innerWidth) * 2 - 1;
-      const y = (event.clientY / window.innerHeight) * 2 - 1;
-
-      mouseRef.current = { x, y };
-    };
-
     const updateScroll = () => {
       const maxScroll =
         document.documentElement.scrollHeight - window.innerHeight;
 
-      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-      setScrollProgress(progress);
+      scrollProgressRef.current =
+        maxScroll > 0 ? window.scrollY / maxScroll : 0;
     };
 
     updateScroll();
-
-    window.addEventListener("pointermove", updateMouse, { passive: true });
     window.addEventListener("scroll", updateScroll, { passive: true });
 
     return () => {
-      window.removeEventListener("pointermove", updateMouse);
       window.removeEventListener("scroll", updateScroll);
     };
   }, []);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!groupRef.current) return;
 
-    const mouse = mouseRef.current;
-
+    const mouse = state.pointer;
     const mouseYaw = mouse.x * 0.35;
     const mousePitch = -mouse.y * 0.18;
-    const scrollYaw = scrollProgress * 0.25;
+    const scrollYaw = scrollProgressRef.current * 0.25;
 
     const targetX = -0.06 + mousePitch;
-    const targetY = autoRotationRef.current + mouseYaw + scrollYaw;
+    const targetY = mouseYaw + scrollYaw;
     const targetZ = mouse.x * -0.035;
 
     const smooth = 1 - Math.exp(-4 * delta);
