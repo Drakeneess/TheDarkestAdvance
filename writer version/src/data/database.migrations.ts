@@ -8,8 +8,16 @@ import type {
   Story,
 } from '../domain/models'
 
+import {
+  createUniqueSlug,
+} from '../domain/slug'
+
+import {
+  DEFAULT_STORY_THEME_KEY,
+} from '../domain/story-theme'
+
 export const DATABASE_SCHEMA_VERSION =
-  2
+  3
 
 const SCHEMA_VERSION_KEY =
   'writer:database-schema-version'
@@ -23,6 +31,15 @@ interface DatabaseCollections {
 
   chapterVersions:
     Collection<ChapterVersion>
+}
+
+function hasText(
+  value: unknown,
+): value is string {
+  return (
+    typeof value === 'string' &&
+    value.trim().length > 0
+  )
 }
 
 function needsRevisionMigration(
@@ -239,6 +256,184 @@ function migrateToVersion2(
   )
 }
 
+function migrateStoryEditorialFields(
+  collection:
+    Collection<Story>,
+) {
+  const records =
+    collection
+      .find(
+        {},
+        {
+          reactive: false,
+        },
+      )
+      .fetch()
+
+  /**
+   * Conservamos slugs válidos existentes.
+   * Los tombstones también reservan su slug
+   * para no reutilizar identidades antiguas.
+   */
+  const usedSlugs =
+    new Set(
+      records
+        .map(
+          (story) =>
+            story.slug,
+        )
+        .filter(
+          hasText,
+        ),
+    )
+
+  for (
+    const story
+      of records
+  ) {
+    const update:
+      Partial<Story> = {}
+
+    if (!hasText(story.slug)) {
+      const slug =
+        createUniqueSlug(
+          story.title,
+          usedSlugs,
+          `story-${story.id.slice(0, 8)}`,
+        )
+
+      update.slug = slug
+      usedSlugs.add(slug)
+    }
+
+    if (!hasText(story.themeKey)) {
+      update.themeKey =
+        DEFAULT_STORY_THEME_KEY
+    }
+
+    if (
+      Object.keys(
+        update,
+      ).length === 0
+    ) {
+      continue
+    }
+
+    /**
+     * Esta migración solo completa el esquema.
+     * No representa una edición del usuario:
+     * revision, timestamps y tombstones
+     * permanecen intactos.
+     */
+    collection.updateOne(
+      {
+        id: story.id,
+      },
+      {
+        $set: update,
+      },
+    )
+  }
+}
+
+function migrateChapterEditorialFields(
+  collection:
+    Collection<Chapter>,
+) {
+  const records =
+    collection
+      .find(
+        {},
+        {
+          reactive: false,
+        },
+      )
+      .fetch()
+
+  const usedByStory =
+    new Map<
+      string,
+      Set<string>
+    >()
+
+  for (
+    const chapter
+      of records
+  ) {
+    if (!hasText(chapter.slug)) {
+      continue
+    }
+
+    const used =
+      usedByStory.get(
+        chapter.storyId,
+      ) ?? new Set<string>()
+
+    used.add(chapter.slug)
+
+    usedByStory.set(
+      chapter.storyId,
+      used,
+    )
+  }
+
+  for (
+    const chapter
+      of records
+  ) {
+    if (hasText(chapter.slug)) {
+      continue
+    }
+
+    const used =
+      usedByStory.get(
+        chapter.storyId,
+      ) ?? new Set<string>()
+
+    const slug =
+      createUniqueSlug(
+        chapter.title,
+        used,
+        `chapter-${chapter.id.slice(0, 8)}`,
+      )
+
+    used.add(slug)
+
+    usedByStory.set(
+      chapter.storyId,
+      used,
+    )
+
+    /**
+     * Igual que Story, Chapter conserva
+     * revision, timestamps y tombstone.
+     */
+    collection.updateOne(
+      {
+        id: chapter.id,
+      },
+      {
+        $set: {
+          slug,
+        },
+      },
+    )
+  }
+}
+
+function migrateToVersion3(
+  collections:
+    DatabaseCollections,
+) {
+  migrateStoryEditorialFields(
+    collections.stories,
+  )
+
+  migrateChapterEditorialFields(
+    collections.chapters,
+  )
+}
+
 export function migrateDatabase(
   collections:
     DatabaseCollections,
@@ -248,18 +443,27 @@ export function migrateDatabase(
       SCHEMA_VERSION_KEY,
     )
 
-  const storedVersion =
+  const parsedVersion =
     rawVersion
       ? Number(rawVersion)
       : 1
 
-  if (
-    !Number.isFinite(
-      storedVersion,
-    ) ||
-    storedVersion < 2
-  ) {
+  const storedVersion =
+    Number.isFinite(
+      parsedVersion,
+    ) &&
+    parsedVersion >= 1
+      ? parsedVersion
+      : 1
+
+  if (storedVersion < 2) {
     migrateToVersion2(
+      collections,
+    )
+  }
+
+  if (storedVersion < 3) {
+    migrateToVersion3(
       collections,
     )
   }
