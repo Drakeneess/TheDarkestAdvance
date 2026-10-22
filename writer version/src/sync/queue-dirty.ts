@@ -23,11 +23,26 @@ function mutationId() {
   return crypto.randomUUID()
 }
 
+export interface QueueEntityMutationOptions {
+  /**
+   * Fuerza una mutación aunque la revisión
+   * local coincida con la última confirmada.
+   *
+   * Se usa antes de publicar para garantizar
+   * que metadata añadida por migraciones de
+   * esquema también exista en la réplica.
+   */
+  force?: boolean
+}
+
 export function queueEntityMutation(
   entityType:
     SyncEntityType,
 
   entityId: string,
+
+  options:
+    QueueEntityMutationOptions = {},
 ): SyncOutboxItem | null {
   const state =
     getSyncEntityState(
@@ -53,6 +68,10 @@ export function queueEntityMutation(
    * durante el envío, seguirá dirty
    * después del ACK y será enviada
    * en una mutación posterior.
+   *
+   * Esto también conserva rejected:
+   * publicar nunca debe saltarse un
+   * rechazo terminal previo.
    */
   const pending =
     getPendingMutationForEntity(
@@ -82,6 +101,7 @@ export function queueEntityMutation(
       }
 
       if (
+        !options.force &&
         state &&
         state.lastSyncedRevision ===
           entity.revision
@@ -128,6 +148,7 @@ export function queueEntityMutation(
       }
 
       if (
+        !options.force &&
         state &&
         state.lastSyncedRevision ===
           entity.revision
@@ -174,6 +195,7 @@ export function queueEntityMutation(
       }
 
       if (
+        !options.force &&
         state &&
         state.lastSyncedRevision ===
           entity.revision

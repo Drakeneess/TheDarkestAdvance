@@ -21,6 +21,11 @@ let intervalId:
 let running =
   false
 
+let activeSyncPromise:
+  Promise<RunSyncResult | null>
+  | null =
+    null
+
 let rerunRequested =
   false
 
@@ -49,21 +54,7 @@ const errorListeners =
     SyncRuntimeErrorListener
   >()
 
-async function executeSync() {
-  if (
-    !navigator.onLine
-    || !getWriterSessionToken()
-  ) {
-    return null
-  }
-
-  if (running) {
-    rerunRequested =
-      true
-
-    return null
-  }
-
+async function runSyncLoop() {
   running =
     true
 
@@ -96,7 +87,7 @@ async function executeSync() {
   } catch (error) {
     for (
       const listener
-      of errorListeners
+        of errorListeners
     ) {
       listener(
         error,
@@ -107,7 +98,41 @@ async function executeSync() {
   } finally {
     running =
       false
+
+    activeSyncPromise =
+      null
   }
+}
+
+function executeSync() {
+  if (
+    !navigator.onLine
+    || !getWriterSessionToken()
+  ) {
+    return Promise.resolve(
+      null,
+    )
+  }
+
+  if (activeSyncPromise) {
+    /**
+     * Un request explícito durante un sync
+     * activo no debe terminar antes que él.
+     *
+     * Pedimos otra vuelta y devolvemos la
+     * misma Promise: el loop solo resuelve
+     * después de consumir ese rerun.
+     */
+    rerunRequested =
+      true
+
+    return activeSyncPromise
+  }
+
+  activeSyncPromise =
+    runSyncLoop()
+
+  return activeSyncPromise
 }
 
 function handleOnline() {
@@ -126,6 +151,12 @@ function handleVisibilityChange() {
   void executeSync()
 }
 
+/**
+ * Solicita un ciclo completo y esperable.
+ *
+ * Si ya había uno en curso, fuerza una
+ * vuelta adicional antes de resolver.
+ */
 export function requestSync() {
   return executeSync()
 }
