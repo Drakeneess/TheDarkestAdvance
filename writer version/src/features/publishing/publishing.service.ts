@@ -4,6 +4,12 @@ import {
   stories,
 } from '../../data/database'
 
+import type {
+  Chapter,
+  ChapterVersion,
+  Story,
+} from '../../domain/models'
+
 import {
   getWriterSessionToken,
   WriterSessionError,
@@ -70,6 +76,12 @@ export interface PublishChapterVersionFromWriterInput {
   sourceVersionId: string
 }
 
+interface PublicationEntities {
+  story: Story
+  chapter: Chapter
+  version: ChapterVersion
+}
+
 interface TargetEntity {
   entityType: SyncEntityType
   entityId: string
@@ -77,105 +89,10 @@ interface TargetEntity {
   label: string
 }
 
-function assertEntityNotBlocked(
-  target: TargetEntity,
-) {
-  const state =
-    getSyncEntityState(
-      target.entityType,
-      target.entityId,
-    )
-
-  if (state?.conflict) {
-    throw new PublishingPreflightError(
-      'SYNC_CONFLICT',
-      `${target.label} tiene un conflicto de sincronización pendiente. Resuélvelo antes de publicar.`,
-    )
-  }
-
-  const outbox =
-    getOutboxMutationForEntity(
-      target.entityType,
-      target.entityId,
-    )
-
-  if (
-    outbox?.status ===
-      'rejected'
-  ) {
-    throw new PublishingPreflightError(
-      'SYNC_REJECTED',
-      outbox.rejection?.message ??
-        `${target.label} tiene una mutación rechazada y no puede publicarse.`,
-    )
-  }
-}
-
-function assertEntitySynchronized(
-  target: TargetEntity,
-) {
-  assertEntityNotBlocked(
-    target,
-  )
-
-  const state =
-    getSyncEntityState(
-      target.entityType,
-      target.entityId,
-    )
-
-  const outbox =
-    getOutboxMutationForEntity(
-      target.entityType,
-      target.entityId,
-    )
-
-  if (
-    outbox ||
-    state?.pendingMutationId
-  ) {
-    throw new PublishingPreflightError(
-      'SYNC_PENDING',
-      `${target.label} todavía tiene cambios pendientes de sincronización.`,
-    )
-  }
-
-  if (
-    !state ||
-    !state.serverVersion ||
-    state.lastSyncedRevision !==
-      target.revision
-  ) {
-    throw new PublishingPreflightError(
-      'SYNC_INCOMPLETE',
-      `${target.label} no quedó confirmado por el servidor y no puede publicarse todavía.`,
-    )
-  }
-}
-
-/**
- * Publica exclusivamente un ChapterVersion
- * existente. Un draft sin snapshot nunca
- * llega a este flujo.
- */
-export async function publishChapterVersionFromWriter(
+function loadPublicationEntities(
   input:
     PublishChapterVersionFromWriterInput,
-): Promise<PublishChapterResult> {
-  if (!navigator.onLine) {
-    throw new PublishingPreflightError(
-      'OFFLINE',
-      'Publicar requiere conexión. El borrador sigue disponible localmente.',
-    )
-  }
-
-  if (!getWriterSessionToken()) {
-    throw new WriterSessionError(
-      'MISSING_SESSION',
-      'Inicia una sesión del Writer antes de publicar.',
-    )
-  }
-
+): PublicationEntities {
   const story =
     stories.findOne(
       {
@@ -257,45 +174,247 @@ export async function publishChapterVersionFromWriter(
     )
   }
 
-  const targets:
-    TargetEntity[] = [
-      {
-        entityType: 'story',
-        entityId: story.id,
-        revision: story.revision,
-        label: 'La historia',
-      },
-      {
-        entityType: 'chapter',
-        entityId: chapter.id,
-        revision: chapter.revision,
-        label: 'El capítulo',
-      },
-      {
-        entityType:
-          'chapterVersion',
-        entityId: version.id,
-        revision: version.revision,
-        label: 'La versión',
-      },
-    ]
+  return {
+    story,
+    chapter,
+    version,
+  }
+}
+
+function buildTargets(
+  entities:
+    PublicationEntities,
+): TargetEntity[] {
+  return [
+    {
+      entityType: 'story',
+      entityId:
+        entities.story.id,
+      revision:
+        entities.story.revision,
+      label: 'La historia',
+    },
+    {
+      entityType: 'chapter',
+      entityId:
+        entities.chapter.id,
+      revision:
+        entities.chapter.revision,
+      label: 'El capítulo',
+    },
+    {
+      entityType:
+        'chapterVersion',
+      entityId:
+        entities.version.id,
+      revision:
+        entities.version.revision,
+      label: 'La versión',
+    },
+  ]
+}
+
+function getCurrentRevision(
+  target: TargetEntity,
+) {
+  switch (target.entityType) {
+    case 'story':
+      return stories.findOne(
+        { id: target.entityId },
+        { reactive: false },
+      )?.revision ?? null
+
+    case 'chapter':
+      return chapters.findOne(
+        { id: target.entityId },
+        { reactive: false },
+      )?.revision ?? null
+
+    case 'chapterVersion':
+      return chapterVersions.findOne(
+        { id: target.entityId },
+        { reactive: false },
+      )?.revision ?? null
+  }
+}
+
+function assertEntityNotBlocked(
+  target: TargetEntity,
+) {
+  const state =
+    getSyncEntityState(
+      target.entityType,
+      target.entityId,
+    )
+
+  if (state?.conflict) {
+    throw new PublishingPreflightError(
+      'SYNC_CONFLICT',
+      `${target.label} tiene un conflicto de sincronización pendiente. Resuélvelo antes de publicar.`,
+    )
+  }
+
+  const outbox =
+    getOutboxMutationForEntity(
+      target.entityType,
+      target.entityId,
+    )
+
+  if (
+    outbox?.status ===
+      'rejected'
+  ) {
+    throw new PublishingPreflightError(
+      'SYNC_REJECTED',
+      outbox.rejection?.message ??
+        `${target.label} tiene una mutación rechazada y no puede publicarse.`,
+    )
+  }
+}
+
+function assertEntitySynchronized(
+  target: TargetEntity,
+) {
+  assertEntityNotBlocked(
+    target,
+  )
+
+  const currentRevision =
+    getCurrentRevision(
+      target,
+    )
+
+  if (
+    currentRevision === null ||
+    currentRevision !==
+      target.revision
+  ) {
+    throw new PublishingPreflightError(
+      'SYNC_INCOMPLETE',
+      `${target.label} cambió durante la sincronización. Vuelve a intentar publicar.`,
+    )
+  }
+
+  const state =
+    getSyncEntityState(
+      target.entityType,
+      target.entityId,
+    )
+
+  const outbox =
+    getOutboxMutationForEntity(
+      target.entityType,
+      target.entityId,
+    )
+
+  if (
+    outbox ||
+    state?.pendingMutationId
+  ) {
+    throw new PublishingPreflightError(
+      'SYNC_PENDING',
+      `${target.label} todavía tiene cambios pendientes de sincronización.`,
+    )
+  }
+
+  if (
+    !state ||
+    !state.serverVersion ||
+    state.lastSyncedRevision !==
+      currentRevision
+  ) {
+    throw new PublishingPreflightError(
+      'SYNC_INCOMPLETE',
+      `${target.label} no quedó confirmado por el servidor y no puede publicarse todavía.`,
+    )
+  }
+}
+
+async function requireSyncResult(
+  message: string,
+) {
+  const result =
+    await requestSync()
+
+  if (!result) {
+    throw new PublishingPreflightError(
+      'SYNC_FAILED',
+      message,
+    )
+  }
+
+  return result
+}
+
+/**
+ * Publica exclusivamente un ChapterVersion
+ * existente. Un draft sin snapshot nunca
+ * llega a este flujo.
+ */
+export async function publishChapterVersionFromWriter(
+  input:
+    PublishChapterVersionFromWriterInput,
+): Promise<PublishChapterResult> {
+  if (!navigator.onLine) {
+    throw new PublishingPreflightError(
+      'OFFLINE',
+      'Publicar requiere conexión. El borrador sigue disponible localmente.',
+    )
+  }
+
+  if (!getWriterSessionToken()) {
+    throw new WriterSessionError(
+      'MISSING_SESSION',
+      'Inicia una sesión del Writer antes de publicar.',
+    )
+  }
 
   /**
-   * No intentamos publicar encima de un
-   * conflicto/rechazo ya conocido.
+   * Validamos que el usuario eligió una
+   * versión real antes de tocar la red.
    */
+  loadPublicationEntities(
+    input,
+  )
+
+  /**
+   * Paso 1: drenamos el outbox existente y
+   * consumimos cambios remotos.
+   *
+   * Esto evita reutilizar una mutación vieja
+   * cuyo payload haya sido creado antes de V3.
+   */
+  await requireSyncResult(
+    'No se pudo completar la sincronización inicial previa a la publicación.',
+  )
+
+  /**
+   * El pull anterior pudo modificar entidades.
+   * Las volvemos a leer y validar antes de
+   * construir el payload que será publicable.
+   */
+  const entities =
+    loadPublicationEntities(
+      input,
+    )
+
+  const targets =
+    buildTargets(
+      entities,
+    )
+
   targets.forEach(
     assertEntityNotBlocked,
   )
 
   /**
-   * Force es deliberado.
+   * Paso 2: refresh forzado del payload actual.
    *
    * Story/Chapter pueden haber recibido
    * slug/themeKey mediante una migración
    * de esquema sin incrementar revision.
    * El publish necesita que el servidor
-   * tenga exactamente el payload local.
+   * tenga exactamente este payload local.
    */
   for (
     const target
@@ -310,16 +429,16 @@ export async function publishChapterVersionFromWriter(
     )
   }
 
-  const syncResult =
-    await requestSync()
+  await requireSyncResult(
+    'No se pudo confirmar en el servidor la versión seleccionada para publicar.',
+  )
 
-  if (!syncResult) {
-    throw new PublishingPreflightError(
-      'SYNC_FAILED',
-      'No se pudo completar la sincronización previa a la publicación.',
-    )
-  }
-
+  /**
+   * También detecta ediciones locales que
+   * hayan ocurrido mientras el sync estaba
+   * en vuelo: en ese caso no publicamos una
+   * metadata que ya quedó obsoleta.
+   */
   targets.forEach(
     assertEntitySynchronized,
   )
@@ -329,12 +448,12 @@ export async function publishChapterVersionFromWriter(
       getWorkspaceId(),
 
     storyId:
-      story.id,
+      entities.story.id,
 
     chapterId:
-      chapter.id,
+      entities.chapter.id,
 
     sourceVersionId:
-      version.id,
+      entities.version.id,
   })
 }
