@@ -1,10 +1,18 @@
 {
   "navbar": {
+    "mainLabel": "Main navigation",
+    "homeLabel": "The Darkest Advance home",
+    "openMenuLabel": "Open navigation menu",
+    "closeMenuLabel": "Close navigation menu",
+    "mobileLabel": "Navigation protocol",
     "items": {
-      "projects": "Projects",
       "codex": "Codex",
-      "about": "About"
+      "about": "Studio"
     }
+  },
+  "languageSwitcher": {
+    "label": "Language selector",
+    "changeTo": "Change language to {language}"
   },
   "home": {
     "hero": {
@@ -15,8 +23,22 @@
       "secondaryCta": "About the studio",
       "signal": {
         "label": "Studio Signal",
-        "description": "Instinct refined into structure. Darkness shaped into systems."
+        "description": "Instinct refined into structure. Darkness shaped into systems.",
+        "archiveStatus": "ARCHIVE ONLINE",
+        "protocolStatus": "PROTOCOL: ACTIVE"
       }
+    },
+    "studio": {
+      "eyebrow": "Studio Identity",
+      "title": "Darkness with structure.",
+      "bodyPrimary": "The Darkest Advance is a creative studio and identity dedicated to building dark, tactical and narratively intense worlds.",
+      "bodySecondary": "We create worlds where darkness is not decoration, but pressure, system and advance."
+    },
+    "codex": {
+      "eyebrow": "The Archive",
+      "title": "The Drakeneess Codex",
+      "description": "A living archive of worlds, characters, factions, timelines, systems, symbols and creatures. Public access is being prepared while the archive takes shape.",
+      "status": "Archive access in preparation"
     }
   },
   "footer": {
@@ -41,11 +63,10 @@
   },
   "notFound": {
     "eyebrow": "ERROR 404 // CODEX INDEX FAILURE",
-    "title": "Entry not archived.",
-    "description": "The route you are trying to open does not exist on this plane. It may have been erased, sealed, or never written.",
+    "title": "Entry not found in the archive.",
+    "description": "The route you are trying to open does not exist on this plane. It may have been erased, sealed or never written.",
     "signal": "SIGNAL LOST",
-    "log": "The requested file is not responding. Remaining on this route will not advance the mission.",
-    "home": "Return home",
-    "codex": "Enter the Codex"
+    "log": "The requested file is not responding. Remaining on this route will not produce any advance.",
+    "home": "Return home"
   }
 }
