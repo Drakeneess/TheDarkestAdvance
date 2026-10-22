@@ -195,16 +195,41 @@ export function duplicateStory(
         isActive,
       )
 
+  const usedChapterSlugs:
+    string[] = []
+
   for (
     const sourceChapter
       of sourceChapters
   ) {
+    const duplicatedChapterId =
+      id()
+
+    const duplicatedChapterSlug =
+      createUniqueSlug(
+        typeof sourceChapter.slug ===
+          'string' &&
+        sourceChapter.slug.trim().length > 0
+          ? sourceChapter.slug
+          : sourceChapter.title,
+        usedChapterSlugs,
+        `chapter-${duplicatedChapterId.slice(0, 8)}`,
+      )
+
+    usedChapterSlugs.push(
+      duplicatedChapterSlug,
+    )
+
     const duplicatedChapter:
       Chapter = {
-      id: id(),
+      id:
+        duplicatedChapterId,
 
       storyId:
         duplicatedStory.id,
+
+      slug:
+        duplicatedChapterSlug,
 
       title:
         sourceChapter.title,

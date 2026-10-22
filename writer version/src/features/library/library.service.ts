@@ -44,6 +44,30 @@ function getUsedStorySlugs() {
     )
 }
 
+function getUsedChapterSlugs(
+  storyId: string,
+) {
+  return chapters
+    .find(
+      {
+        storyId,
+      },
+      {
+        reactive: false,
+      },
+    )
+    .fetch()
+    .map(
+      (chapter) =>
+        chapter.slug,
+    )
+    .filter(
+      (slug): slug is string =>
+        typeof slug === 'string' &&
+        slug.length > 0,
+    )
+}
+
 export function createStory(title: string, description = ''): Story {
   const timestamp = now()
   const storyId = id()
@@ -112,11 +136,21 @@ export function createChapter(
       )
 
   const timestamp = now()
+  const chapterId = id()
 
   const chapter: Chapter = {
-    id: id(),
+    id: chapterId,
 
     storyId,
+
+    slug:
+      createUniqueSlug(
+        title,
+        getUsedChapterSlugs(
+          storyId,
+        ),
+        `chapter-${chapterId.slice(0, 8)}`,
+      ),
 
     title:
       title.trim(),
