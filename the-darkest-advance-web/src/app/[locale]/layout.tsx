@@ -8,7 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 const descriptions: Record<string, string> = {
   es: "Mundos forjados en instinto, ruina y precisión.",
   en: "Worlds forged in instinct, ruin and precision.",
-  ru: "Миры, выкованные инстинктом, руиной и точностью.",
+  ru: "Миры, выкованные из инстинкта, руин и точности.",
 };
 
 const languageAlternates = {
