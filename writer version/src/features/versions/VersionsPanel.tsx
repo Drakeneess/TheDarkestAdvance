@@ -37,6 +37,12 @@ interface VersionsPanelProps {
     | string
     | null
 
+  publicationStatusLoading:
+    boolean
+
+  unpublishing:
+    boolean
+
   publicationFeedback:
     | PublicationFeedback
     | null
@@ -85,6 +91,9 @@ interface VersionsPanelProps {
         ChapterVersion,
     ) => void
 
+  onUnpublish:
+    () => void
+
   onRenameVersion:
     (
       version:
@@ -114,6 +123,8 @@ export function VersionsPanel({
 
   publishedVersionId,
   publishingVersionId,
+  publicationStatusLoading,
+  unpublishing,
   publicationFeedback,
 
   leftVersionId,
@@ -127,6 +138,7 @@ export function VersionsPanel({
   onSaveVersion,
   onSelectVersion,
   onPublishVersion,
+  onUnpublish,
 
   onRenameVersion,
   onDuplicateVersion,
@@ -135,8 +147,32 @@ export function VersionsPanel({
   onClose,
 }: VersionsPanelProps) {
   const publicationBusy =
+    publicationStatusLoading ||
     publishingVersionId !==
-      null
+      null ||
+    unpublishing
+
+  const currentVersion =
+    chapter?.currentVersionId
+      ? (
+          versions.find(
+            (version) =>
+              version.id ===
+              chapter.currentVersionId,
+          ) ?? null
+        )
+      : null
+
+  const publishedVersion =
+    publishedVersionId
+      ? (
+          versions.find(
+            (version) =>
+              version.id ===
+              publishedVersionId,
+          ) ?? null
+        )
+      : null
 
   return (
     <aside className="versions-panel">
@@ -182,6 +218,68 @@ export function VersionsPanel({
             >
               Crear snapshot
             </button>
+          </div>
+
+          <div
+            className="publication-state"
+            aria-live="polite"
+          >
+            <div className="publication-state-row">
+              <span>
+                Borrador
+              </span>
+
+              <strong>
+                Trabajo local
+              </strong>
+            </div>
+
+            <div className="publication-state-row">
+              <span>
+                Snapshot actual
+              </span>
+
+              <strong>
+                {currentVersion
+                  ?.label ??
+                  'Sin snapshot'}
+              </strong>
+            </div>
+
+            <div className="publication-state-row">
+              <span>
+                Publicado
+              </span>
+
+              <strong>
+                {publicationStatusLoading
+                  ? 'Consultando…'
+                  : publishedVersion
+                    ? publishedVersion.label
+                    : publishedVersionId
+                      ? 'Versión no disponible localmente'
+                      : 'No publicado'}
+              </strong>
+            </div>
+
+            {!publicationStatusLoading &&
+              publishedVersionId &&
+              !publishedVersion && (
+                <button
+                  type="button"
+                  className="secondary publication-state-unpublish"
+                  disabled={
+                    publicationBusy
+                  }
+                  onClick={
+                    onUnpublish
+                  }
+                >
+                  {unpublishing
+                    ? 'Despublicando…'
+                    : 'Despublicar versión remota'}
+                </button>
+              )}
           </div>
 
           {versions.length >= 2 && (
@@ -309,75 +407,87 @@ export function VersionsPanel({
               (
                 version,
                 index,
-              ) => (
-                <VersionCard
-                  key={
-                    version.id
-                  }
-                  version={
-                    version
-                  }
-                  indexNumber={
-                    versions.length -
-                    index
-                  }
-                  isCurrent={
-                    version.id ===
-                    chapter.currentVersionId
-                  }
-                  isSelected={
-                    version.id ===
-                    selectedVersionId
-                  }
-                  isPublished={
-                    version.id ===
-                    publishedVersionId
-                  }
-                  isPublishing={
-                    version.id ===
-                    publishingVersionId
-                  }
-                  publishDisabled={
-                    publicationBusy
-                  }
-                  isLeftCompare={
-                    version.id ===
-                    leftVersionId
-                  }
-                  isRightCompare={
-                    version.id ===
-                    rightVersionId
-                  }
-                  onSelect={() =>
-                    onSelectVersion(
-                      version,
-                    )
-                  }
-                  onPublish={() =>
-                    onPublishVersion(
-                      version,
-                    )
-                  }
-                  onRename={(
-                    label,
-                  ) =>
-                    onRenameVersion(
-                      version,
+              ) => {
+                const isPublished =
+                  version.id ===
+                  publishedVersionId
+
+                return (
+                  <VersionCard
+                    key={
+                      version.id
+                    }
+                    version={
+                      version
+                    }
+                    indexNumber={
+                      versions.length -
+                      index
+                    }
+                    isCurrent={
+                      version.id ===
+                      chapter.currentVersionId
+                    }
+                    isSelected={
+                      version.id ===
+                      selectedVersionId
+                    }
+                    isPublished={
+                      isPublished
+                    }
+                    isPublishing={
+                      version.id ===
+                      publishingVersionId
+                    }
+                    isUnpublishing={
+                      isPublished &&
+                      unpublishing
+                    }
+                    publishDisabled={
+                      publicationBusy
+                    }
+                    isLeftCompare={
+                      version.id ===
+                      leftVersionId
+                    }
+                    isRightCompare={
+                      version.id ===
+                      rightVersionId
+                    }
+                    onSelect={() =>
+                      onSelectVersion(
+                        version,
+                      )
+                    }
+                    onPublish={() =>
+                      onPublishVersion(
+                        version,
+                      )
+                    }
+                    onUnpublish={
+                      onUnpublish
+                    }
+                    onRename={(
                       label,
-                    )
-                  }
-                  onDuplicate={() =>
-                    onDuplicateVersion(
-                      version,
-                    )
-                  }
-                  onDelete={() =>
-                    onDeleteVersion(
-                      version,
-                    )
-                  }
-                />
-              ),
+                    ) =>
+                      onRenameVersion(
+                        version,
+                        label,
+                      )
+                    }
+                    onDuplicate={() =>
+                      onDuplicateVersion(
+                        version,
+                      )
+                    }
+                    onDelete={() =>
+                      onDeleteVersion(
+                        version,
+                      )
+                    }
+                  />
+                )
+              },
             )}
           </div>
         </>
