@@ -9,6 +9,7 @@
     "start": "tsx src/server.ts",
     "typecheck": "tsc --noEmit",
     "test:access": "prisma generate && node --import tsx --test src/secure-sync.test.ts",
+    "test:conflict-policy": "prisma generate && node --import tsx --test src/sync/conflict-rebase.test.ts",
     "test:publishing": "prisma generate && node --import tsx --test src/publishing/*.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
