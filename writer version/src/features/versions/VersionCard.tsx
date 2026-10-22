@@ -25,6 +25,9 @@ interface VersionCardProps {
   isPublishing:
     boolean
 
+  isUnpublishing:
+    boolean
+
   publishDisabled:
     boolean
 
@@ -38,6 +41,9 @@ interface VersionCardProps {
     () => void
 
   onPublish:
+    () => void
+
+  onUnpublish:
     () => void
 
   onRename:
@@ -60,6 +66,7 @@ export function VersionCard({
   isSelected,
   isPublished,
   isPublishing,
+  isUnpublishing,
   publishDisabled,
 
   isLeftCompare,
@@ -67,6 +74,7 @@ export function VersionCard({
 
   onSelect,
   onPublish,
+  onUnpublish,
   onRename,
   onDuplicate,
   onDelete,
@@ -111,6 +119,19 @@ export function VersionCard({
     onRename(label)
 
     setIsRenaming(false)
+  }
+
+  function handleUnpublish() {
+    const accepted =
+      window.confirm(
+        `¿Despublicar la versión "${version.label}"?\n\nEl snapshot seguirá disponible en Writer.`,
+      )
+
+    if (!accepted) {
+      return
+    }
+
+    onUnpublish()
   }
 
   function handleDelete() {
@@ -243,20 +264,27 @@ export function VersionCard({
         <div className="version-card-actions">
           <button
             type="button"
-            className="version-publish-button"
-            disabled={
-              publishDisabled ||
+            className={
               isPublished
+                ? 'version-unpublish-button'
+                : 'version-publish-button'
+            }
+            disabled={
+              publishDisabled
             }
             onClick={
-              onPublish
+              isPublished
+                ? handleUnpublish
+                : onPublish
             }
           >
             {isPublishing
               ? 'Publicando…'
-              : isPublished
-                ? 'Publicada'
-                : 'Publicar esta versión'}
+              : isUnpublishing
+                ? 'Despublicando…'
+                : isPublished
+                  ? 'Despublicar'
+                  : 'Publicar esta versión'}
           </button>
 
           <button
@@ -282,7 +310,8 @@ export function VersionCard({
             className="danger"
             disabled={
               isPublished ||
-              isPublishing
+              isPublishing ||
+              isUnpublishing
             }
             title={
               isPublished
