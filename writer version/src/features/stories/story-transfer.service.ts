@@ -15,6 +15,10 @@ import {
 } from '../../domain/slug'
 
 import {
+  DEFAULT_STORY_THEME_KEY,
+} from '../../domain/story-theme'
+
+import {
   createSyncMetadata,
   isActive,
 } from '../../domain/sync-metadata'
@@ -348,6 +352,13 @@ export async function importStoryFile(
         getUsedStorySlugs(),
         `story-${importedStoryId.slice(0, 8)}`,
       ),
+
+    themeKey:
+      typeof source.story.themeKey ===
+        'string' &&
+      source.story.themeKey.trim().length > 0
+        ? source.story.themeKey
+        : DEFAULT_STORY_THEME_KEY,
 
     updatedAt:
       timestamp,

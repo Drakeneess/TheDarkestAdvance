@@ -14,6 +14,10 @@ import {
 } from '../../domain/slug'
 
 import {
+  DEFAULT_STORY_THEME_KEY,
+} from '../../domain/story-theme'
+
+import {
   createDeleteMetadata,
   createSyncMetadata,
   createUpdateMetadata,
@@ -144,6 +148,13 @@ export function duplicateStory(
         getUsedStorySlugs(),
         `story-${duplicatedStoryId.slice(0, 8)}`,
       ),
+
+    themeKey:
+      typeof story.themeKey ===
+        'string' &&
+      story.themeKey.trim().length > 0
+        ? story.themeKey
+        : DEFAULT_STORY_THEME_KEY,
 
     title:
       duplicatedTitle,

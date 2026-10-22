@@ -4,6 +4,9 @@ import {
   createUniqueSlug,
 } from '../../domain/slug'
 import {
+  DEFAULT_STORY_THEME_KEY,
+} from '../../domain/story-theme'
+import {
   createSyncMetadata,
   createUpdateMetadata,
   getActiveEntity,
@@ -54,6 +57,9 @@ export function createStory(title: string, description = ''): Story {
         getUsedStorySlugs(),
         `story-${storyId.slice(0, 8)}`,
       ),
+
+    themeKey:
+      DEFAULT_STORY_THEME_KEY,
 
     title: title.trim(),
     description: description.trim(),
