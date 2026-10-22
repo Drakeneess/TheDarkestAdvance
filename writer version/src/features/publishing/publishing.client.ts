@@ -105,18 +105,22 @@ async function publishingRequest<T>(
     )
   }
 
+  const headers =
+    new Headers(
+      init.headers,
+    )
+
+  headers.set(
+    'Authorization',
+    `Bearer ${authToken}`,
+  )
+
   const response =
     await fetch(
       `${getSyncApiUrl()}${path}`,
       {
         ...init,
-
-        headers: {
-          'Authorization':
-            `Bearer ${authToken}`,
-
-          ...init.headers,
-        },
+        headers,
       },
     )
 
