@@ -161,6 +161,12 @@ if (!TEST_DATABASE_URL) {
           `Bearer ${TOKEN}`,
       }
 
+      const statusUrl =
+        '/api/publishing/chapters/status' +
+        `?workspaceId=${WORKSPACE_ID}` +
+        `&storyId=${STORY_ID}` +
+        `&chapterId=${CHAPTER_ID}`
+
       await t.test(
         'exige autenticación',
         async () => {
@@ -178,6 +184,17 @@ if (!TEST_DATABASE_URL) {
 
           assert.equal(
             response.statusCode,
+            401,
+          )
+
+          const statusResponse =
+            await app.inject({
+              method: 'GET',
+              url: statusUrl,
+            })
+
+          assert.equal(
+            statusResponse.statusCode,
             401,
           )
         },
@@ -203,6 +220,18 @@ if (!TEST_DATABASE_URL) {
             response.statusCode,
             403,
           )
+
+          const statusResponse =
+            await app.inject({
+              method: 'GET',
+              url: statusUrl,
+              headers: authHeaders,
+            })
+
+          assert.equal(
+            statusResponse.statusCode,
+            403,
+          )
         },
       )
 
@@ -212,6 +241,31 @@ if (!TEST_DATABASE_URL) {
           userId: USER_ID,
         },
       })
+
+      await t.test(
+        'informa estado no publicado',
+        async () => {
+          const response =
+            await app.inject({
+              method: 'GET',
+              url: statusUrl,
+              headers: authHeaders,
+            })
+
+          assert.equal(
+            response.statusCode,
+            200,
+          )
+
+          assert.deepEqual(
+            response.json(),
+            {
+              published: false,
+              chapter: null,
+            },
+          )
+        },
+      )
 
       await t.test(
         'publica historia y capítulo desde comandos editoriales',
@@ -265,6 +319,51 @@ if (!TEST_DATABASE_URL) {
           assert.equal(
             body.chapter.content,
             '# Routes content',
+          )
+
+          const statusResponse =
+            await app.inject({
+              method: 'GET',
+              url: statusUrl,
+              headers: authHeaders,
+            })
+
+          const statusBody =
+            statusResponse.json() as {
+              published: boolean
+              chapter: {
+                sourceVersionId: string
+                publishedAt: string
+                updatedAt: string
+              } | null
+            }
+
+          assert.equal(
+            statusResponse.statusCode,
+            200,
+          )
+
+          assert.equal(
+            statusBody.published,
+            true,
+          )
+
+          assert.equal(
+            statusBody.chapter
+              ?.sourceVersionId,
+            VERSION_ID,
+          )
+
+          assert.equal(
+            typeof statusBody.chapter
+              ?.publishedAt,
+            'string',
+          )
+
+          assert.equal(
+            typeof statusBody.chapter
+              ?.updatedAt,
+            'string',
           )
         },
       )
@@ -320,6 +419,21 @@ if (!TEST_DATABASE_URL) {
           assert.deepEqual(
             chapterResponse.json(),
             { unpublished: true },
+          )
+
+          const unpublishedStatus =
+            await app.inject({
+              method: 'GET',
+              url: statusUrl,
+              headers: authHeaders,
+            })
+
+          assert.deepEqual(
+            unpublishedStatus.json(),
+            {
+              published: false,
+              chapter: null,
+            },
           )
 
           await app.inject({
