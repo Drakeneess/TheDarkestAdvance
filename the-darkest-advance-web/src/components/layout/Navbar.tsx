@@ -19,11 +19,11 @@ export function Navbar() {
     <header className="tda-navbar">
       <nav
         className="site-container flex h-[var(--navbar-height)] items-center justify-between gap-6"
-        aria-label="Main navigation"
+        aria-label={t("mainLabel")}
       >
         <Link
           href="/"
-          aria-label="The Darkest Advance Home"
+          aria-label={t("homeLabel")}
           className="group flex items-center gap-3"
         >
           <OfficialSeal className="tda-seal" />
@@ -57,7 +57,9 @@ export function Navbar() {
           <button
             type="button"
             className="tda-menu-button md:hidden"
-            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={
+              isMenuOpen ? t("closeMenuLabel") : t("openMenuLabel")
+            }
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
             onClick={() => setIsMenuOpen((current) => !current)}
@@ -78,7 +80,7 @@ export function Navbar() {
       >
         <div className="site-container">
           <div className="tda-mobile-nav__panel">
-            <p className="tda-mobile-nav__label">Navigation Protocol</p>
+            <p className="tda-mobile-nav__label">{t("mobileLabel")}</p>
 
             <div className="tda-mobile-nav__links">
               {navItems.map((item) => (
