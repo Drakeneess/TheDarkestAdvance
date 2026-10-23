@@ -1,0 +1,136 @@
+name: Writer to Codex E2E
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'writer version/**'
+      - '.github/workflows/writer-codex-e2e.yml'
+  push:
+    branches:
+      - main
+      - 'test/**'
+    paths:
+      - 'writer version/**'
+      - '.github/workflows/writer-codex-e2e.yml'
+
+jobs:
+  writer-codex-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: writer
+          POSTGRES_PASSWORD: writer
+          POSTGRES_DB: writer_sync_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U writer -d writer_sync_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://writer:writer@localhost:5432/writer_sync_e2e
+      TEST_DATABASE_URL: postgresql://writer:writer@localhost:5432/writer_sync_e2e
+      WRITER_AUTH_TOKENS: '{"writer-codex-e1-user":"writer-codex-e1-token-000000000000000000000000"}'
+      WRITER_CORS_ORIGINS: http://127.0.0.1:3100
+      E2E_WRITER_USER_ID: writer-codex-e1-user
+      E2E_WRITER_TOKEN: writer-codex-e1-token-000000000000000000000000
+      E2E_WRITER_BASE_URL: http://127.0.0.1:3101
+      E2E_CODEX_BASE_URL: http://127.0.0.1:3100
+      CODEX_API_URL: http://127.0.0.1:3101
+
+    steps:
+      - name: Checkout Writer
+        uses: actions/checkout@v4
+
+      - name: Checkout Codex
+        uses: actions/checkout@v4
+        with:
+          repository: Drakeneess/drakeneess-codex
+          ref: master
+          path: codex
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            writer version/server/package-lock.json
+            codex/package-lock.json
+
+      - name: Install Writer server dependencies
+        working-directory: writer version/server
+        run: npm ci
+
+      - name: Typecheck Writer server
+        working-directory: writer version/server
+        run: npm run typecheck
+
+      - name: Apply Writer migrations
+        working-directory: writer version/server
+        run: npm run prisma:deploy
+
+      - name: Install Codex dependencies
+        working-directory: codex
+        run: npm install --no-audit --no-fund
+
+      - name: Build Codex
+        working-directory: codex
+        run: npm run build
+
+      - name: Start Writer server
+        working-directory: writer version/server
+        run: |
+          PORT=3101 HOST=127.0.0.1 npm start > "$RUNNER_TEMP/writer-e1.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/writer-e1.pid"
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3101/health > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat "$RUNNER_TEMP/writer-e1.log"
+          exit 1
+
+      - name: Start Codex
+        working-directory: codex
+        run: |
+          npm run start -- -p 3100 -H 127.0.0.1 > "$RUNNER_TEMP/codex-e1.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/codex-e1.pid"
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3100/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat "$RUNNER_TEMP/codex-e1.log"
+          exit 1
+
+      - name: Run Writer to Codex lifecycle
+        working-directory: writer version/server
+        run: npm run test:e2e:codex
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          echo '--- Writer ---'
+          cat "$RUNNER_TEMP/writer-e1.log" || true
+          echo '--- Codex ---'
+          cat "$RUNNER_TEMP/codex-e1.log" || true
+
+      - name: Stop services
+        if: always()
+        run: |
+          test ! -f "$RUNNER_TEMP/codex-e1.pid" || kill "$(cat "$RUNNER_TEMP/codex-e1.pid")" || true
+          test ! -f "$RUNNER_TEMP/writer-e1.pid" || kill "$(cat "$RUNNER_TEMP/writer-e1.pid")" || true
