@@ -50,6 +50,25 @@ model PublishedChapter {
   @@map("published_chapters")
 }
 
+model PublicationAuditEvent {
+  id BigInt @id @default(autoincrement())
+
+  workspaceId String
+  action      String
+  actorUserId String?
+
+  storyId        String
+  chapterId      String?
+  sourceVersionId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, storyId, chapterId, createdAt])
+
+  @@map("publication_audit_events")
+}
+
 model SyncWorkspaceAccess {
   workspaceId String
   userId      String
