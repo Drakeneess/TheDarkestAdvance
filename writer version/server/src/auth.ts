@@ -21,6 +21,7 @@ declare module 'fastify' {
 
 type AuthTokenEntry = {
   userId: string
+  token: string
   digest: Buffer
 }
 
@@ -84,6 +85,7 @@ function parseAuthTokens(
 
       return {
         userId,
+        token,
         digest:
           digestToken(token),
       }
@@ -108,6 +110,21 @@ function readBearerToken(
     match?.[1]?.trim()
 
   return token || null
+}
+
+export function getWriterAuthTokenForUser(
+  userId: string,
+  rawTokens =
+    process.env.WRITER_AUTH_TOKENS,
+) {
+  return (
+    parseAuthTokens(rawTokens)
+      .find(
+        (entry) =>
+          entry.userId === userId,
+      )
+      ?.token ?? null
+  )
 }
 
 export function createWriterAuthenticator(
