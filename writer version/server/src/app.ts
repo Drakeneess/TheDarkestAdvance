@@ -6,6 +6,10 @@ import {
 } from './auth'
 
 import {
+  authRoutes,
+} from './auth-routes'
+
+import {
   getWriterCorsOrigins,
 } from './cors'
 
@@ -31,6 +35,7 @@ export async function createApp() {
       logger: {
         redact: [
           'req.headers.authorization',
+          'req.body.password',
         ],
       },
     })
@@ -105,6 +110,10 @@ export async function createApp() {
     async () => {
       await db.$disconnect()
     },
+  )
+
+  await app.register(
+    authRoutes,
   )
 
   await app.register(
