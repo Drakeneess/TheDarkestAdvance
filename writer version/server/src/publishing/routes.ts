@@ -145,9 +145,12 @@ export async function publishingRoutes(
 
       try {
         const story =
-          await publishStory(
-            parsed.data,
-          )
+          await publishStory({
+            ...parsed.data,
+            actorUserId:
+              request.authPrincipal
+                ?.userId ?? null,
+          })
 
         return { story }
       } catch (error) {
@@ -190,9 +193,12 @@ export async function publishingRoutes(
         return
       }
 
-      return unpublishStory(
-        parsed.data,
-      )
+      return unpublishStory({
+        ...parsed.data,
+        actorUserId:
+          request.authPrincipal
+            ?.userId ?? null,
+      })
     },
   )
 
@@ -265,9 +271,12 @@ export async function publishingRoutes(
       }
 
       try {
-        return await publishChapterVersion(
-          parsed.data,
-        )
+        return await publishChapterVersion({
+          ...parsed.data,
+          actorUserId:
+            request.authPrincipal
+              ?.userId ?? null,
+        })
       } catch (error) {
         return sendPublishingError(
           error,
@@ -308,9 +317,12 @@ export async function publishingRoutes(
         return
       }
 
-      return unpublishChapter(
-        parsed.data,
-      )
+      return unpublishChapter({
+        ...parsed.data,
+        actorUserId:
+          request.authPrincipal
+            ?.userId ?? null,
+      })
     },
   )
 }
