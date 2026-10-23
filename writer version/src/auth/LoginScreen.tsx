@@ -2,6 +2,10 @@ import {
   useState,
 } from 'react'
 
+import type {
+  FormEvent,
+} from 'react'
+
 import {
   loginWriter,
   WriterLoginError,
@@ -32,7 +36,7 @@ export function LoginScreen() {
 
   async function handleSubmit(
     event:
-      React.FormEvent<HTMLFormElement>,
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault()
 
