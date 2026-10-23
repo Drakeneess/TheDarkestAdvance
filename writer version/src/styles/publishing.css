@@ -168,3 +168,44 @@
   background:
     rgba(189, 89, 99, 0.08);
 }
+
+.publication-feedback.conflict {
+  border-color:
+    rgba(194, 147, 78, 0.42);
+
+  color: #dfbf8f;
+  background:
+    rgba(194, 147, 78, 0.09);
+}
+
+.publication-conflict-resolution {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+.publication-conflict-resolution p {
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.publication-conflict-actions {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.publication-conflict-actions button {
+  width: 100%;
+  min-height: 30px;
+
+  font-size: 9px;
+}

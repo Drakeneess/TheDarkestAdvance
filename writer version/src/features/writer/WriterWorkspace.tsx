@@ -530,6 +530,9 @@ export function WriterWorkspace() {
           unpublishing={
             publishing.unpublishing
           }
+          resolvingPublicationConflict={
+            publishing.resolvingConflict
+          }
           publicationFeedback={
             publishing.feedback
           }
@@ -563,6 +566,9 @@ export function WriterWorkspace() {
           }
           onPublishVersion={
             publishing.publishVersion
+          }
+          onResolvePublicationConflict={
+            publishing.resolvePublicationConflict
           }
           onUnpublish={
             publishing.unpublish

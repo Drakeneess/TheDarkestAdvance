@@ -74,5 +74,8 @@ jobs:
       - name: Test secure sync access
         run: npm run test:access
 
+      - name: Test conflict rebase policy
+        run: npm run test:conflict-policy
+
       - name: Test publishing service
         run: npm run test:publishing

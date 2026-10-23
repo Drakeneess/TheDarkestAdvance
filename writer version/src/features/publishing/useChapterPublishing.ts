@@ -13,20 +13,38 @@ import {
 } from '../../sync/config'
 
 import {
+  resolveSyncConflict,
+  SyncConflictResolutionError,
+} from '../../sync/conflict-resolution'
+
+import type {
+  SyncConflictResolutionStrategy,
+} from '../../sync/conflict-resolution'
+
+import {
   getChapterPublicationStatusCommand,
   unpublishChapterCommand,
 } from './publishing.client'
 
 import {
   publishChapterVersionFromWriter,
+  PublishingPreflightError,
+} from './publishing.service'
+
+import type {
+  PublishingConflictTarget,
 } from './publishing.service'
 
 export interface PublicationFeedback {
   kind:
     | 'success'
     | 'error'
+    | 'conflict'
 
   message: string
+
+  conflictTarget?:
+    PublishingConflictTarget
 }
 
 interface UseChapterPublishingInput {
@@ -62,6 +80,11 @@ export function useChapterPublishing({
   const [
     unpublishing,
     setUnpublishing,
+  ] = useState(false)
+
+  const [
+    resolvingConflict,
+    setResolvingConflict,
   ] = useState(false)
 
   const [
@@ -194,7 +217,8 @@ export function useChapterPublishing({
       !storyId ||
       !chapterId ||
       publishingVersionId ||
-      unpublishing
+      unpublishing ||
+      resolvingConflict
     ) {
       return
     }
@@ -247,6 +271,24 @@ export function useChapterPublishing({
         return
       }
 
+      if (
+        error instanceof
+          PublishingPreflightError &&
+        error.code ===
+          'SYNC_CONFLICT' &&
+        error.conflictTarget
+      ) {
+        setFeedback({
+          kind: 'conflict',
+          message:
+            error.message,
+          conflictTarget:
+            error.conflictTarget,
+        })
+
+        return
+      }
+
       setFeedback({
         kind: 'error',
 
@@ -262,12 +304,105 @@ export function useChapterPublishing({
     }
   }
 
+  async function resolvePublicationConflict(
+    strategy:
+      SyncConflictResolutionStrategy,
+  ) {
+    const target =
+      feedback?.kind ===
+        'conflict'
+        ? feedback.conflictTarget
+        : undefined
+
+    if (
+      !target ||
+      resolvingConflict ||
+      publishingVersionId ||
+      unpublishing
+    ) {
+      return
+    }
+
+    if (
+      strategy ===
+        'use-server' &&
+      !target.hasServerRecord
+    ) {
+      return
+    }
+
+    const targetKey =
+      activeSelectionRef.current
+
+    setResolvingConflict(true)
+
+    try {
+      await resolveSyncConflict({
+        entityType:
+          target.entityType,
+        entityId:
+          target.entityId,
+        strategy,
+      })
+
+      if (
+        activeSelectionRef.current !==
+          targetKey
+      ) {
+        return
+      }
+
+      setFeedback({
+        kind: 'success',
+        message:
+          strategy === 'keep-local'
+            ? `${target.label} quedó resincronizada conservando la versión local. Ya puedes intentar publicar otra vez.`
+            : `${target.label} quedó actualizada con la versión del servidor. Revisa el contenido y vuelve a publicar cuando corresponda.`,
+      })
+    } catch (error) {
+      if (
+        activeSelectionRef.current !==
+          targetKey
+      ) {
+        return
+      }
+
+      if (
+        error instanceof
+          SyncConflictResolutionError &&
+        error.code ===
+          'SYNC_CONFLICT'
+      ) {
+        setFeedback({
+          kind: 'conflict',
+          message:
+            error.message,
+          conflictTarget:
+            target,
+        })
+
+        return
+      }
+
+      setFeedback({
+        kind: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'No se pudo resolver el conflicto de sincronización.',
+      })
+    } finally {
+      setResolvingConflict(false)
+    }
+  }
+
   async function unpublish() {
     if (
       !storyId ||
       !chapterId ||
       publishingVersionId ||
       unpublishing ||
+      resolvingConflict ||
       !publishedVersionId
     ) {
       return
@@ -331,6 +466,7 @@ export function useChapterPublishing({
 
   return {
     publishVersion,
+    resolvePublicationConflict,
     unpublish,
 
     publishingVersionId,
@@ -338,6 +474,7 @@ export function useChapterPublishing({
 
     statusLoading,
     unpublishing,
+    resolvingConflict,
 
     feedback,
   }

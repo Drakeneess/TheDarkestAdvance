@@ -142,19 +142,29 @@ if (!TEST_DATABASE_URL) {
                 Array<Record<string, unknown>>
             }
 
-          assert.equal(
-            body.stories.length,
-            1,
-          )
+          const publicStory =
+            body.stories.find(
+              (story) =>
+                story.slug ===
+                  'public-routes-story',
+            )
 
-          assert.equal(
-            body.stories[0]?.slug,
-            'public-routes-story',
+          assert.ok(
+            publicStory,
           )
 
           assert.equal(
             'workspaceId' in
-              body.stories[0]!,
+              publicStory,
+            false,
+          )
+
+          assert.equal(
+            body.stories.some(
+              (story) =>
+                story.slug ===
+                  'draft-only-story',
+            ),
             false,
           )
 

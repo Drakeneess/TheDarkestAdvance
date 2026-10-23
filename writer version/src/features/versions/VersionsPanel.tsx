@@ -11,9 +11,18 @@ interface PublicationFeedback {
   kind:
     | 'success'
     | 'error'
+    | 'conflict'
 
   message: string
+
+  conflictTarget?: {
+    hasServerRecord: boolean
+  }
 }
+
+type ConflictResolutionStrategy =
+  | 'keep-local'
+  | 'use-server'
 
 interface VersionsPanelProps {
   chapter:
@@ -41,6 +50,9 @@ interface VersionsPanelProps {
     boolean
 
   unpublishing:
+    boolean
+
+  resolvingPublicationConflict:
     boolean
 
   publicationFeedback:
@@ -91,6 +103,12 @@ interface VersionsPanelProps {
         ChapterVersion,
     ) => void
 
+  onResolvePublicationConflict:
+    (
+      strategy:
+        ConflictResolutionStrategy,
+    ) => void
+
   onUnpublish:
     () => void
 
@@ -125,6 +143,7 @@ export function VersionsPanel({
   publishingVersionId,
   publicationStatusLoading,
   unpublishing,
+  resolvingPublicationConflict,
   publicationFeedback,
 
   leftVersionId,
@@ -138,6 +157,7 @@ export function VersionsPanel({
   onSaveVersion,
   onSelectVersion,
   onPublishVersion,
+  onResolvePublicationConflict,
   onUnpublish,
 
   onRenameVersion,
@@ -150,7 +170,8 @@ export function VersionsPanel({
     publicationStatusLoading ||
     publishingVersionId !==
       null ||
-    unpublishing
+    unpublishing ||
+    resolvingPublicationConflict
 
   const currentVersion =
     chapter?.currentVersionId
@@ -383,14 +404,67 @@ export function VersionsPanel({
               ].join(' ')}
               role={
                 publicationFeedback.kind ===
-                  'error'
+                  'error' ||
+                publicationFeedback.kind ===
+                  'conflict'
                   ? 'alert'
                   : 'status'
               }
             >
-              {
-                publicationFeedback.message
-              }
+              <div>
+                {
+                  publicationFeedback.message
+                }
+              </div>
+
+              {publicationFeedback.kind ===
+                'conflict' &&
+                publicationFeedback
+                  .conflictTarget && (
+                  <div className="publication-conflict-resolution">
+                    <p>
+                      Conservar local vuelve a enviar esta entidad sobre la versión remota actual. Usar servidor descarta los cambios locales de esta entidad. Ninguna opción publica automáticamente.
+                    </p>
+
+                    <div className="publication-conflict-actions">
+                      <button
+                        type="button"
+                        className="secondary"
+                        disabled={
+                          resolvingPublicationConflict
+                        }
+                        onClick={() =>
+                          onResolvePublicationConflict(
+                            'keep-local',
+                          )
+                        }
+                      >
+                        {resolvingPublicationConflict
+                          ? 'Resincronizando…'
+                          : 'Conservar local y resincronizar'}
+                      </button>
+
+                      {publicationFeedback
+                        .conflictTarget
+                        .hasServerRecord && (
+                        <button
+                          type="button"
+                          className="secondary"
+                          disabled={
+                            resolvingPublicationConflict
+                          }
+                          onClick={() =>
+                            onResolvePublicationConflict(
+                              'use-server',
+                            )
+                          }
+                        >
+                          Usar versión del servidor
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
             </div>
           )}
 

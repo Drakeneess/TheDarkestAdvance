@@ -57,11 +57,21 @@ export type PublishingPreflightErrorCode =
   | 'SYNC_INCOMPLETE'
   | 'SYNC_FAILED'
 
+export interface PublishingConflictTarget {
+  entityType: SyncEntityType
+  entityId: string
+  label: string
+  hasServerRecord: boolean
+}
+
 export class PublishingPreflightError extends Error {
   constructor(
     public readonly code:
       PublishingPreflightErrorCode,
     message: string,
+    public readonly conflictTarget:
+      | PublishingConflictTarget
+      | null = null,
   ) {
     super(message)
 
@@ -250,7 +260,18 @@ function assertEntityNotBlocked(
   if (state?.conflict) {
     throw new PublishingPreflightError(
       'SYNC_CONFLICT',
-      `${target.label} tiene un conflicto de sincronización pendiente. Resuélvelo antes de publicar.`,
+      `${target.label} tiene un conflicto de sincronización pendiente. Elige qué versión conservar y resincroniza antes de publicar.`,
+      {
+        entityType:
+          target.entityType,
+        entityId:
+          target.entityId,
+        label:
+          target.label,
+        hasServerRecord:
+          state.conflictServerRecord !==
+          null,
+      },
     )
   }
 
