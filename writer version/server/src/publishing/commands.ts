@@ -17,6 +17,7 @@ import {
 export type PublishStoryInput = {
   workspaceId: string
   storyId: string
+  actorUserId?: string | null
 }
 
 export type UnpublishStoryInput =
@@ -26,11 +27,13 @@ export type UnpublishChapterInput = {
   workspaceId: string
   storyId: string
   chapterId: string
+  actorUserId?: string | null
 }
 
 export async function publishStory({
   workspaceId,
   storyId,
+  actorUserId = null,
 }: PublishStoryInput) {
   return db.$transaction(
     async (tx) => {
@@ -94,30 +97,42 @@ export async function publishStory({
         )
       }
 
-      return tx.publishedStory.upsert({
-        where: {
-          workspaceId_storyId: {
+      const publishedStory =
+        await tx.publishedStory.upsert({
+          where: {
+            workspaceId_storyId: {
+              workspaceId,
+              storyId,
+            },
+          },
+          create: {
             workspaceId,
             storyId,
+            slug: story.slug,
+            title: story.title,
+            description:
+              story.description,
+            themeKey: story.themeKey,
           },
-        },
-        create: {
+          update: {
+            slug: story.slug,
+            title: story.title,
+            description:
+              story.description,
+            themeKey: story.themeKey,
+          },
+        })
+
+      await tx.publicationAuditEvent.create({
+        data: {
           workspaceId,
+          action: 'story.publish',
+          actorUserId,
           storyId,
-          slug: story.slug,
-          title: story.title,
-          description:
-            story.description,
-          themeKey: story.themeKey,
-        },
-        update: {
-          slug: story.slug,
-          title: story.title,
-          description:
-            story.description,
-          themeKey: story.themeKey,
         },
       })
+
+      return publishedStory
     },
     {
       isolationLevel:
@@ -131,37 +146,148 @@ export async function publishStory({
 export async function unpublishStory({
   workspaceId,
   storyId,
+  actorUserId = null,
 }: UnpublishStoryInput) {
-  const result =
-    await db.publishedStory.deleteMany({
-      where: {
-        workspaceId,
-        storyId,
-      },
-    })
+  return db.$transaction(
+    async (tx) => {
+      const publishedStory =
+        await tx.publishedStory.findUnique({
+          where: {
+            workspaceId_storyId: {
+              workspaceId,
+              storyId,
+            },
+          },
+          select: {
+            storyId: true,
+            chapters: {
+              select: {
+                chapterId: true,
+                sourceVersionId: true,
+              },
+            },
+          },
+        })
 
-  return {
-    unpublished:
-      result.count > 0,
-  }
+      if (!publishedStory) {
+        return {
+          unpublished: false,
+        }
+      }
+
+      await tx.publishedStory.delete({
+        where: {
+          workspaceId_storyId: {
+            workspaceId,
+            storyId,
+          },
+        },
+      })
+
+      await tx.publicationAuditEvent.create({
+        data: {
+          workspaceId,
+          action: 'story.unpublish',
+          actorUserId,
+          storyId,
+        },
+      })
+
+      if (
+        publishedStory.chapters.length >
+          0
+      ) {
+        await tx.publicationAuditEvent.createMany({
+          data:
+            publishedStory.chapters.map(
+              (chapter) => ({
+                workspaceId,
+                action:
+                  'chapter.unpublish',
+                actorUserId,
+                storyId,
+                chapterId:
+                  chapter.chapterId,
+                sourceVersionId:
+                  chapter.sourceVersionId,
+              }),
+            ),
+        })
+      }
+
+      return {
+        unpublished: true,
+      }
+    },
+    {
+      isolationLevel:
+        Prisma
+          .TransactionIsolationLevel
+          .Serializable,
+    },
+  )
 }
 
 export async function unpublishChapter({
   workspaceId,
   storyId,
   chapterId,
+  actorUserId = null,
 }: UnpublishChapterInput) {
-  const result =
-    await db.publishedChapter.deleteMany({
-      where: {
-        workspaceId,
-        storyId,
-        chapterId,
-      },
-    })
+  return db.$transaction(
+    async (tx) => {
+      const publishedChapter =
+        await tx.publishedChapter.findUnique({
+          where: {
+            workspaceId_storyId_chapterId: {
+              workspaceId,
+              storyId,
+              chapterId,
+            },
+          },
+          select: {
+            sourceVersionId: true,
+          },
+        })
 
-  return {
-    unpublished:
-      result.count > 0,
-  }
+      if (!publishedChapter) {
+        return {
+          unpublished: false,
+        }
+      }
+
+      await tx.publishedChapter.delete({
+        where: {
+          workspaceId_storyId_chapterId: {
+            workspaceId,
+            storyId,
+            chapterId,
+          },
+        },
+      })
+
+      await tx.publicationAuditEvent.create({
+        data: {
+          workspaceId,
+          action: 'chapter.unpublish',
+          actorUserId,
+          storyId,
+          chapterId,
+          sourceVersionId:
+            publishedChapter
+              .sourceVersionId,
+        },
+      })
+
+      return {
+        unpublished: true,
+      }
+    },
+    {
+      isolationLevel:
+        Prisma
+          .TransactionIsolationLevel
+          .Serializable,
+    },
+  )
 }

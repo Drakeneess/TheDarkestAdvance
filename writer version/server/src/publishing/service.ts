@@ -21,6 +21,7 @@ export type PublishChapterVersionInput = {
   storyId: string
   chapterId: string
   sourceVersionId: string
+  actorUserId?: string | null
 }
 
 export async function publishChapterVersion({
@@ -28,6 +29,7 @@ export async function publishChapterVersion({
   storyId,
   chapterId,
   sourceVersionId,
+  actorUserId = null,
 }: PublishChapterVersionInput) {
   return db.$transaction(
     async (tx) => {
@@ -268,6 +270,17 @@ export async function publishChapterVersion({
             content: version.content,
           },
         })
+
+      await tx.publicationAuditEvent.create({
+        data: {
+          workspaceId,
+          action: 'chapter.publish',
+          actorUserId,
+          storyId,
+          chapterId,
+          sourceVersionId,
+        },
+      })
 
       return {
         story: publishedStory,

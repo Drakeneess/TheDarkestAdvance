@@ -28,7 +28,11 @@ import {
 export async function createApp() {
   const app =
     Fastify({
-      logger: true,
+      logger: {
+        redact: [
+          'req.headers.authorization',
+        ],
+      },
     })
 
   const authenticateWriter =
