@@ -68,6 +68,9 @@ jobs:
       - name: Typecheck server
         run: npm run typecheck
 
+      - name: Test credential login
+        run: npm run test:auth
+
       - name: Apply migrations
         run: npm run prisma:deploy
 
