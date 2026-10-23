@@ -79,7 +79,7 @@ jobs:
 
       - name: Install Codex dependencies
         working-directory: codex
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Build Codex
         working-directory: codex
