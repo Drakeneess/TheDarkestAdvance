@@ -41,7 +41,13 @@ import {
 const VERSIONS_OPEN_KEY =
   'writer:versions-open'
 
-export function WriterWorkspace() {
+interface WriterWorkspaceProps {
+  onLogout: () => void
+}
+
+export function WriterWorkspace({
+  onLogout,
+}: WriterWorkspaceProps) {
   const writer =
     useWriterWorkspace()
 
@@ -144,6 +150,16 @@ export function WriterWorkspace() {
         .filter(Boolean)
         .join(' ')}
     >
+      {!focus.isFocusMode && (
+        <button
+          type="button"
+          className="writer-session-logout"
+          onClick={onLogout}
+        >
+          Cerrar sesión
+        </button>
+      )}
+
       {!focus.isFocusMode && (
         <>
           <header className="mobile-topbar">
@@ -290,6 +306,20 @@ export function WriterWorkspace() {
                   }}
                 >
                   Focus Mode
+                </button>
+
+                <button
+                  type="button"
+                  className="mobile-action-danger"
+                  onClick={() => {
+                    setMobileMenuOpen(
+                      false,
+                    )
+
+                    onLogout()
+                  }}
+                >
+                  Cerrar sesión
                 </button>
               </div>
             </>
