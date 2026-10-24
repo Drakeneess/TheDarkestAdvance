@@ -44,16 +44,12 @@ const EXTENSION_CONTENT_TYPE:
   Record<
     string,
     StoryAssetContentType
-  > = Object.fromEntries(
-    Object.entries(
-      CONTENT_TYPE_EXTENSION,
-    ).map(
-      ([contentType, extension]) => [
-        extension,
-        contentType,
-      ],
-    ),
-  )
+  > = {
+  jpg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  avif: 'image/avif',
+}
 
 const ASSET_ID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(?:jpg|png|webp|avif)$/i
