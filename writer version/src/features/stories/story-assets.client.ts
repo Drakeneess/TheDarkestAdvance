@@ -118,9 +118,12 @@ export async function uploadStoryAsset(
   if (!response.ok) {
     const code =
       isRecord(body) &&
-      typeof body.error === 'string'
-        ? body.error
-        : 'STORY_ASSET_UPLOAD_FAILED'
+      typeof body.code === 'string'
+        ? body.code
+        : isRecord(body) &&
+            typeof body.error === 'string'
+          ? body.error
+          : 'STORY_ASSET_UPLOAD_FAILED'
 
     const messages:
       Record<string, string> = {
@@ -138,6 +141,8 @@ export async function uploadStoryAsset(
         'Tu sesión no tiene acceso al workspace de esta historia.',
       FST_ERR_CTP_BODY_TOO_LARGE:
         'El archivo supera el límite de 10 MiB.',
+      FST_ERR_CTP_INVALID_MEDIA_TYPE:
+        'El formato no está permitido. Usa JPEG, PNG, WebP o AVIF.',
     }
 
     throw new StoryAssetUploadError(
