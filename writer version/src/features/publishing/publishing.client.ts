@@ -21,15 +21,48 @@ export class PublishingApiError extends Error {
   }
 }
 
-interface ChapterCommand {
+interface StoryCommand {
   workspaceId: string
   storyId: string
+}
+
+interface ChapterCommand
+  extends StoryCommand {
   chapterId: string
 }
 
 interface PublishChapterCommand
   extends ChapterCommand {
   sourceVersionId: string
+}
+
+export interface PublishStoryResult {
+  story: {
+    storyId: string
+    slug: string
+    title: string
+    description: string
+    themeKey: string
+    profile: unknown
+    assets: unknown
+    visuals: unknown
+    publishedAt: string
+    updatedAt: string
+  }
+}
+
+export interface StoryPublicationStatus {
+  published: boolean
+
+  story: {
+    slug: string
+    publishedAt: string
+    updatedAt: string
+  } | null
+}
+
+export interface UnpublishStoryResult {
+  unpublished: boolean
 }
 
 export interface PublishChapterResult {
@@ -159,6 +192,73 @@ async function publishingRequest<T>(
   }
 
   return body as T
+}
+
+export function publishStoryCommand(
+  command: StoryCommand,
+): Promise<PublishStoryResult> {
+  return publishingRequest(
+    '/api/publishing/stories/publish',
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type':
+          'application/json',
+      },
+
+      body:
+        JSON.stringify(
+          command,
+        ),
+    },
+    'No se pudo publicar la historia',
+  )
+}
+
+export function getStoryPublicationStatusCommand(
+  command: StoryCommand,
+  signal?: AbortSignal,
+): Promise<StoryPublicationStatus> {
+  const params =
+    new URLSearchParams({
+      workspaceId:
+        command.workspaceId,
+
+      storyId:
+        command.storyId,
+    })
+
+  return publishingRequest(
+    `/api/publishing/stories/status?${params.toString()}`,
+    {
+      method: 'GET',
+      signal,
+    },
+    'No se pudo consultar el estado de publicación de la historia',
+  )
+}
+
+export function unpublishStoryCommand(
+  command: StoryCommand,
+): Promise<UnpublishStoryResult> {
+  return publishingRequest(
+    '/api/publishing/stories/unpublish',
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type':
+          'application/json',
+      },
+
+      body:
+        JSON.stringify(
+          command,
+        ),
+    },
+    'No se pudo despublicar la historia',
+  )
 }
 
 export function publishChapterCommand(
