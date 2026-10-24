@@ -85,6 +85,28 @@ export function isStoryHexColor(
   )
 }
 
+export function isStoryPublicAssetUrl(
+  value: unknown,
+): value is string {
+  if (typeof value !== 'string') {
+    return false
+  }
+
+  try {
+    const url =
+      new URL(
+        value.trim(),
+      )
+
+    return (
+      url.protocol === 'http:' ||
+      url.protocol === 'https:'
+    )
+  } catch {
+    return false
+  }
+}
+
 function normalizeOptionalHexColor(
   value: unknown,
 ) {
@@ -94,6 +116,24 @@ function normalizeOptionalHexColor(
   if (
     !normalized ||
     !isStoryHexColor(
+      normalized,
+    )
+  ) {
+    return null
+  }
+
+  return normalized
+}
+
+function normalizeOptionalPublicAssetUrl(
+  value: unknown,
+) {
+  const normalized =
+    normalizeOptionalText(value)
+
+  if (
+    !normalized ||
+    !isStoryPublicAssetUrl(
       normalized,
     )
   ) {
@@ -241,17 +281,17 @@ export function normalizeStoryAssets(
 
   return {
     coverImageUrl:
-      normalizeOptionalText(
+      normalizeOptionalPublicAssetUrl(
         value.coverImageUrl,
       ),
 
     heroImageUrl:
-      normalizeOptionalText(
+      normalizeOptionalPublicAssetUrl(
         value.heroImageUrl,
       ),
 
     logoImageUrl:
-      normalizeOptionalText(
+      normalizeOptionalPublicAssetUrl(
         value.logoImageUrl,
       ),
   }
