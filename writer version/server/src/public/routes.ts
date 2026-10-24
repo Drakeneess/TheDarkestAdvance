@@ -23,6 +23,9 @@ const publicStorySelect = {
   title: true,
   description: true,
   themeKey: true,
+  profile: true,
+  assets: true,
+  visuals: true,
   publishedAt: true,
   updatedAt: true,
 } as const
