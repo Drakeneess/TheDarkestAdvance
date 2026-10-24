@@ -1,6 +1,11 @@
 import { chapterVersions, chapters, stories } from '../../data/database'
 import type { Chapter, ChapterVersion, Story } from '../../domain/models'
 import {
+  createDefaultStoryAssets,
+  createDefaultStoryProfile,
+  createDefaultStoryVisuals,
+} from '../../domain/story-profile'
+import {
   createUniqueSlug,
 } from '../../domain/slug'
 import {
@@ -87,6 +92,16 @@ export function createStory(title: string, description = ''): Story {
 
     title: title.trim(),
     description: description.trim(),
+
+    profile:
+      createDefaultStoryProfile(),
+
+    assets:
+      createDefaultStoryAssets(),
+
+    visuals:
+      createDefaultStoryVisuals(),
+
     createdAt: timestamp,
     updatedAt: timestamp,
 
