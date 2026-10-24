@@ -2,6 +2,10 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  createReadStream,
+} from 'node:fs'
+
+import {
   mkdtemp,
   rm,
 } from 'node:fs/promises'
@@ -44,7 +48,8 @@ function fakePng(
 }
 
 async function readStream(
-  stream: NodeJS.ReadableStream,
+  stream:
+    ReturnType<typeof createReadStream>,
 ) {
   const chunks: Buffer[] = []
 
