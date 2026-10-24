@@ -54,6 +54,18 @@ const EXTENSION_CONTENT_TYPE:
 const ASSET_ID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(?:jpg|png|webp|avif)$/i
 
+const PNG_SIGNATURE =
+  Buffer.from([
+    0x89,
+    0x50,
+    0x4e,
+    0x47,
+    0x0d,
+    0x0a,
+    0x1a,
+    0x0a,
+  ])
+
 export interface StoryAssetRecord {
   assetId: string
   contentType: StoryAssetContentType
@@ -89,6 +101,85 @@ export function isStoryAssetContentType(
       value as StoryAssetContentType,
     )
   )
+}
+
+function hasPrefix(
+  bytes: Buffer,
+  prefix: Buffer,
+) {
+  return (
+    bytes.length >=
+      prefix.length &&
+    bytes.subarray(
+      0,
+      prefix.length,
+    ).equals(prefix)
+  )
+}
+
+function hasValidImageSignature(
+  bytes: Buffer,
+  contentType: StoryAssetContentType,
+) {
+  switch (contentType) {
+    case 'image/jpeg':
+      return (
+        bytes.length >= 3 &&
+        bytes[0] === 0xff &&
+        bytes[1] === 0xd8 &&
+        bytes[2] === 0xff
+      )
+
+    case 'image/png':
+      return hasPrefix(
+        bytes,
+        PNG_SIGNATURE,
+      )
+
+    case 'image/webp':
+      return (
+        bytes.length >= 12 &&
+        bytes.toString(
+          'ascii',
+          0,
+          4,
+        ) === 'RIFF' &&
+        bytes.toString(
+          'ascii',
+          8,
+          12,
+        ) === 'WEBP'
+      )
+
+    case 'image/avif': {
+      if (
+        bytes.length < 16 ||
+        bytes.toString(
+          'ascii',
+          4,
+          8,
+        ) !== 'ftyp'
+      ) {
+        return false
+      }
+
+      const brands =
+        bytes
+          .subarray(
+            8,
+            Math.min(
+              bytes.length,
+              40,
+            ),
+          )
+          .toString('ascii')
+
+      return (
+        brands.includes('avif') ||
+        brands.includes('avis')
+      )
+    }
+  }
 }
 
 function getContentTypeFromAssetId(
@@ -132,6 +223,17 @@ export async function storeStoryAsset(
   ) {
     throw new Error(
       'INVALID_STORY_ASSET_SIZE',
+    )
+  }
+
+  if (
+    !hasValidImageSignature(
+      bytes,
+      contentType,
+    )
+  ) {
+    throw new Error(
+      'INVALID_STORY_ASSET_CONTENT',
     )
   }
 
