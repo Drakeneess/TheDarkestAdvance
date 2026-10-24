@@ -135,8 +135,8 @@ export async function uploadStoryAsset(
         'El archivo supera el límite de 10 MiB.',
       STORY_ASSET_BODY_REQUIRED:
         'No se recibió un archivo válido.',
-      STORY_NOT_FOUND:
-        'La historia ya no está disponible para recibir assets.',
+      STORY_ASSET_PUBLIC_URL_NOT_CONFIGURED:
+        'El backend no tiene configurada una URL pública estable para assets.',
       WORKSPACE_FORBIDDEN:
         'Tu sesión no tiene acceso al workspace de esta historia.',
       FST_ERR_CTP_BODY_TOO_LARGE:
