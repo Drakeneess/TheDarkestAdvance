@@ -8,10 +8,6 @@ import type {
 import { z } from 'zod'
 
 import {
-  db,
-} from '../db'
-
-import {
   canAccessWorkspace,
 } from '../sync/authorize-workspace'
 
@@ -251,35 +247,6 @@ export async function storyAssetRoutes(
         )
       ) {
         return
-      }
-
-      const story =
-        await db.syncEntity.findUnique({
-          where: {
-            workspaceId_entityType_entityId: {
-              workspaceId:
-                query.data.workspaceId,
-              entityType:
-                'story',
-              entityId:
-                params.data.storyId,
-            },
-          },
-          select: {
-            deletedAt: true,
-          },
-        })
-
-      if (
-        !story ||
-        story.deletedAt
-      ) {
-        return reply
-          .status(404)
-          .send({
-            error:
-              'STORY_NOT_FOUND',
-          })
       }
 
       const rawContentType =
