@@ -22,8 +22,16 @@ import type {
 } from '../../domain/story-profile'
 
 import {
+  isStoryHexColor,
+} from '../../domain/story-profile'
+
+import {
   StoryPublicationControls,
 } from '../publishing/StoryPublicationControls'
+
+import {
+  StoryAssetField,
+} from './StoryAssetField'
 
 import {
   updateStoryEditorialProfile,
@@ -67,6 +75,15 @@ function optionalText(
     value.trim()
 
   return normalized || null
+}
+
+function previewColor(
+  value: string,
+  fallback: string,
+) {
+  return isStoryHexColor(value)
+    ? value.trim()
+    : fallback
 }
 
 export function StoryProfileEditor({
@@ -230,14 +247,20 @@ export function StoryProfileEditor({
     useMemo<CSSProperties>(
       () => ({
         background:
-          background.trim() ||
-          '#0b0c10',
+          previewColor(
+            background,
+            '#0b0c10',
+          ),
         borderColor:
-          accent.trim() ||
-          'rgba(123, 147, 190, 0.36)',
+          previewColor(
+            accent,
+            '#7b93be',
+          ),
         color:
-          accentSoft.trim() ||
-          '#c6d1e5',
+          previewColor(
+            accentSoft,
+            '#c6d1e5',
+          ),
       }),
       [
         background,
@@ -250,11 +273,15 @@ export function StoryProfileEditor({
     useMemo<CSSProperties>(
       () => ({
         background:
-          panel.trim() ||
-          '#111217',
+          previewColor(
+            panel,
+            '#111217',
+          ),
         borderColor:
-          accent.trim() ||
-          'rgba(123, 147, 190, 0.28)',
+          previewColor(
+            accent,
+            '#7b93be',
+          ),
       }),
       [panel, accent],
     )
@@ -753,53 +780,41 @@ export function StoryProfileEditor({
                   <h3>Recursos</h3>
                 </div>
 
-                <label>
-                  <span>Portada</span>
-                  <input
-                    type="url"
-                    value={coverImageUrl}
-                    placeholder="https://…"
-                    onChange={(event) => {
-                      setCoverImageUrl(
-                        event.target.value,
-                      )
-                      markIdentityDirty()
-                    }}
-                  />
-                </label>
+                <StoryAssetField
+                  storyId={story.id}
+                  kind="cover"
+                  label="Portada"
+                  value={coverImageUrl}
+                  onChange={(value) => {
+                    setCoverImageUrl(value)
+                    markIdentityDirty()
+                  }}
+                />
 
-                <label>
-                  <span>Hero</span>
-                  <input
-                    type="url"
-                    value={heroImageUrl}
-                    placeholder="https://…"
-                    onChange={(event) => {
-                      setHeroImageUrl(
-                        event.target.value,
-                      )
-                      markIdentityDirty()
-                    }}
-                  />
-                </label>
+                <StoryAssetField
+                  storyId={story.id}
+                  kind="hero"
+                  label="Hero / banner"
+                  value={heroImageUrl}
+                  onChange={(value) => {
+                    setHeroImageUrl(value)
+                    markIdentityDirty()
+                  }}
+                />
 
-                <label>
-                  <span>Logo de la obra</span>
-                  <input
-                    type="url"
-                    value={logoImageUrl}
-                    placeholder="https://…"
-                    onChange={(event) => {
-                      setLogoImageUrl(
-                        event.target.value,
-                      )
-                      markIdentityDirty()
-                    }}
-                  />
-                </label>
+                <StoryAssetField
+                  storyId={story.id}
+                  kind="logo"
+                  label="Logo / emblema"
+                  value={logoImageUrl}
+                  onChange={(value) => {
+                    setLogoImageUrl(value)
+                    markIdentityDirty()
+                  }}
+                />
 
                 <small>
-                  F5 usa URLs públicas. La subida y gestión de archivos no forma parte de este contrato.
+                  Subir genera una URL pública versionada nueva. La referencia solo entra en la historia al guardar la identidad; el asset anterior se conserva para no romper publicaciones ya servidas.
                 </small>
               </section>
 
@@ -827,8 +842,9 @@ export function StoryProfileEditor({
                         aria-hidden="true"
                         style={{
                           background:
-                            accent.trim() ||
-                            'transparent',
+                            isStoryHexColor(accent)
+                              ? accent.trim()
+                              : 'transparent',
                         }}
                       />
                     </div>
@@ -851,8 +867,9 @@ export function StoryProfileEditor({
                         aria-hidden="true"
                         style={{
                           background:
-                            accentSoft.trim() ||
-                            'transparent',
+                            isStoryHexColor(accentSoft)
+                              ? accentSoft.trim()
+                              : 'transparent',
                         }}
                       />
                     </div>
@@ -875,8 +892,9 @@ export function StoryProfileEditor({
                         aria-hidden="true"
                         style={{
                           background:
-                            background.trim() ||
-                            'transparent',
+                            isStoryHexColor(background)
+                              ? background.trim()
+                              : 'transparent',
                         }}
                       />
                     </div>
@@ -899,8 +917,9 @@ export function StoryProfileEditor({
                         aria-hidden="true"
                         style={{
                           background:
-                            panel.trim() ||
-                            'transparent',
+                            isStoryHexColor(panel)
+                              ? panel.trim()
+                              : 'transparent',
                         }}
                       />
                     </div>
@@ -908,7 +927,7 @@ export function StoryProfileEditor({
                 </div>
 
                 <small>
-                  Valores vacíos heredan del tema. Writer no almacena CSS arbitrario.
+                  Solo se guardan colores hex válidos (#RGB, #RGBA, #RRGGBB o #RRGGBBAA). Vacío o inválido hereda del tema.
                 </small>
               </section>
 
@@ -923,7 +942,7 @@ export function StoryProfileEditor({
                     <span>Fuente de títulos</span>
                     <input
                       value={displayFontKey}
-                      placeholder="Hereda del tema"
+                      placeholder="serif / sans / mono"
                       onChange={(event) => {
                         setDisplayFontKey(
                           event.target.value,
@@ -937,7 +956,7 @@ export function StoryProfileEditor({
                     <span>Fuente de lectura</span>
                     <input
                       value={bodyFontKey}
-                      placeholder="Hereda del tema"
+                      placeholder="serif / sans / mono"
                       onChange={(event) => {
                         setBodyFontKey(
                           event.target.value,
@@ -951,7 +970,7 @@ export function StoryProfileEditor({
                     <span>Ornamento</span>
                     <input
                       value={ornamentKey}
-                      placeholder="Hereda del tema"
+                      placeholder="section / diamond / star / none"
                       onChange={(event) => {
                         setOrnamentKey(
                           event.target.value,
@@ -965,7 +984,7 @@ export function StoryProfileEditor({
                     <span>Textura</span>
                     <input
                       value={textureKey}
-                      placeholder="Hereda del tema"
+                      placeholder="none / grain / paper / scanlines"
                       onChange={(event) => {
                         setTextureKey(
                           event.target.value,
@@ -977,7 +996,7 @@ export function StoryProfileEditor({
                 </div>
 
                 <small>
-                  Son claves, no nombres de clases. F6 será quien las resuelva en el Codex.
+                  Son claves registradas, no nombres de clases. Una clave desconocida cae al valor del tema en el Codex.
                 </small>
               </section>
 
