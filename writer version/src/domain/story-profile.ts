@@ -43,6 +43,9 @@ export interface StoryVisuals {
   readerWidth: StoryReaderWidth
 }
 
+const HEX_COLOR_PATTERN =
+  /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i
+
 function isRecord(
   value: unknown,
 ): value is Record<string, unknown> {
@@ -69,6 +72,35 @@ function normalizeOptionalText(
   return normalized.length > 0
     ? normalized
     : null
+}
+
+export function isStoryHexColor(
+  value: unknown,
+): value is string {
+  return (
+    typeof value === 'string' &&
+    HEX_COLOR_PATTERN.test(
+      value.trim(),
+    )
+  )
+}
+
+function normalizeOptionalHexColor(
+  value: unknown,
+) {
+  const normalized =
+    normalizeOptionalText(value)
+
+  if (
+    !normalized ||
+    !isStoryHexColor(
+      normalized,
+    )
+  ) {
+    return null
+  }
+
+  return normalized
 }
 
 function normalizeStringList(
@@ -234,22 +266,22 @@ export function normalizeStoryVisuals(
 
   return {
     accent:
-      normalizeOptionalText(
+      normalizeOptionalHexColor(
         value.accent,
       ),
 
     accentSoft:
-      normalizeOptionalText(
+      normalizeOptionalHexColor(
         value.accentSoft,
       ),
 
     background:
-      normalizeOptionalText(
+      normalizeOptionalHexColor(
         value.background,
       ),
 
     panel:
-      normalizeOptionalText(
+      normalizeOptionalHexColor(
         value.panel,
       ),
 
