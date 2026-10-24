@@ -1,5 +1,26 @@
 import { z } from 'zod'
 
+const publicAssetUrlSchema =
+  z.string().refine(
+    (value) => {
+      try {
+        const url =
+          new URL(value)
+
+        return (
+          url.protocol === 'http:' ||
+          url.protocol === 'https:'
+        )
+      } catch {
+        return false
+      }
+    },
+    {
+      message:
+        'El asset debe usar una URL pública http/https válida.',
+    },
+  )
+
 const storyProfileSchema =
   z.object({
     subtitle:
@@ -49,20 +70,17 @@ const storyProfileSchema =
 const storyAssetsSchema =
   z.object({
     coverImageUrl:
-      z
-        .string()
+      publicAssetUrlSchema
         .nullable()
         .default(null),
 
     heroImageUrl:
-      z
-        .string()
+      publicAssetUrlSchema
         .nullable()
         .default(null),
 
     logoImageUrl:
-      z
-        .string()
+      publicAssetUrlSchema
         .nullable()
         .default(null),
   })
