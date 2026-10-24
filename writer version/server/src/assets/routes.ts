@@ -78,6 +78,13 @@ function getPublicAssetBaseUrl(
       .replace(/\/+$/, '')
   }
 
+  if (
+    process.env.NODE_ENV ===
+    'production'
+  ) {
+    return null
+  }
+
   const forwardedProtocol =
     readForwardedHeader(
       request.headers[
@@ -103,9 +110,7 @@ function getPublicAssetBaseUrl(
     request.headers.host
 
   if (!host) {
-    throw new Error(
-      'STORY_ASSET_PUBLIC_BASE_URL no está configurada y la petición no contiene host.',
-    )
+    return null
   }
 
   return (
@@ -297,6 +302,17 @@ export async function storyAssetRoutes(
         getPublicAssetBaseUrl(
           request,
         )
+
+      if (!baseUrl) {
+        return reply
+          .status(503)
+          .send({
+            error:
+              'STORY_ASSET_PUBLIC_URL_NOT_CONFIGURED',
+            message:
+              'Configura STORY_ASSET_PUBLIC_BASE_URL antes de subir assets en producción.',
+          })
+      }
 
       return reply
         .status(201)
