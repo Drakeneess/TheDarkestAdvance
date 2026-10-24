@@ -11,6 +11,17 @@ import {
   uploadStoryAsset,
 } from './story-assets.client'
 
+const MAX_ASSET_BYTES =
+  10 * 1024 * 1024
+
+const SUPPORTED_ASSET_TYPES =
+  new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/avif',
+  ])
+
 interface StoryAssetFieldProps {
   storyId: string
   kind: StoryAssetKind
@@ -68,6 +79,27 @@ export function StoryAssetField({
     file: File,
   ) {
     if (uploading) {
+      return
+    }
+
+    if (
+      !SUPPORTED_ASSET_TYPES.has(
+        file.type,
+      )
+    ) {
+      setFeedback(
+        'Formato no permitido. Usa JPEG, PNG, WebP o AVIF.',
+      )
+      return
+    }
+
+    if (
+      file.size === 0 ||
+      file.size > MAX_ASSET_BYTES
+    ) {
+      setFeedback(
+        'El archivo debe pesar entre 1 byte y 10 MiB.',
+      )
       return
     }
 
