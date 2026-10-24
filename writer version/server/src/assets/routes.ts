@@ -254,6 +254,22 @@ export async function storyAssetRoutes(
         return
       }
 
+      const baseUrl =
+        getPublicAssetBaseUrl(
+          request,
+        )
+
+      if (!baseUrl) {
+        return reply
+          .status(503)
+          .send({
+            error:
+              'STORY_ASSET_PUBLIC_URL_NOT_CONFIGURED',
+            message:
+              'Configura STORY_ASSET_PUBLIC_BASE_URL antes de subir assets en producción.',
+          })
+      }
+
       const rawContentType =
         request.headers[
           'content-type'
@@ -296,22 +312,6 @@ export async function storyAssetRoutes(
           error,
           reply,
         )
-      }
-
-      const baseUrl =
-        getPublicAssetBaseUrl(
-          request,
-        )
-
-      if (!baseUrl) {
-        return reply
-          .status(503)
-          .send({
-            error:
-              'STORY_ASSET_PUBLIC_URL_NOT_CONFIGURED',
-            message:
-              'Configura STORY_ASSET_PUBLIC_BASE_URL antes de subir assets en producción.',
-          })
       }
 
       return reply
