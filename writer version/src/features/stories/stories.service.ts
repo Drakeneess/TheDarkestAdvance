@@ -10,7 +10,9 @@ import type {
 } from '../../domain/models'
 
 import type {
+  StoryAssets,
   StoryStatus,
+  StoryVisuals,
 } from '../../domain/story-profile'
 
 import {
@@ -108,6 +110,12 @@ export interface StoryEditorialProfileInput {
   contentRating: string | null
 }
 
+export interface StoryVisualIdentityInput {
+  themeKey: string
+  assets: StoryAssets
+  visuals: StoryVisuals
+}
+
 export function updateStoryEditorialProfile(
   story: Story,
   input: StoryEditorialProfileInput,
@@ -174,6 +182,64 @@ export function updateStoryEditorialProfile(
          * slug permanece estable aunque cambie
          * el título editorial de la obra.
          */
+        ...createUpdateMetadata(
+          currentStory.revision,
+          timestamp,
+        ),
+      },
+    },
+  )
+}
+
+export function updateStoryVisualIdentity(
+  story: Story,
+  input: StoryVisualIdentityInput,
+) {
+  const themeKey =
+    input.themeKey.trim()
+
+  if (!themeKey) {
+    throw new Error(
+      'La historia necesita una clave de tema base.',
+    )
+  }
+
+  const timestamp = now()
+
+  const currentStory =
+    getActiveEntity(
+      stories.findOne(
+        {
+          id: story.id,
+        },
+        {
+          reactive: false,
+        },
+      ),
+    )
+
+  if (!currentStory) {
+    throw new Error(
+      'La historia ya no está disponible.',
+    )
+  }
+
+  stories.updateOne(
+    {
+      id: story.id,
+    },
+    {
+      $set: {
+        themeKey,
+        assets:
+          normalizeStoryAssets(
+            input.assets,
+          ),
+        visuals:
+          normalizeStoryVisuals(
+            input.visuals,
+          ),
+
         ...createUpdateMetadata(
           currentStory.revision,
           timestamp,
