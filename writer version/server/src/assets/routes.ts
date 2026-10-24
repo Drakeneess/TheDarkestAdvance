@@ -154,6 +154,41 @@ async function authorizeWorkspace(
   return true
 }
 
+function sendStorageError(
+  error: unknown,
+  reply: FastifyReply,
+) {
+  if (!(error instanceof Error)) {
+    throw error
+  }
+
+  if (
+    error.message ===
+      'INVALID_STORY_ASSET_SIZE'
+  ) {
+    return reply
+      .status(413)
+      .send({
+        error:
+          'STORY_ASSET_TOO_LARGE',
+      })
+  }
+
+  if (
+    error.message ===
+      'INVALID_STORY_ASSET_CONTENT'
+  ) {
+    return reply
+      .status(415)
+      .send({
+        error:
+          'STORY_ASSET_CONTENT_MISMATCH',
+      })
+  }
+
+  throw error
+}
+
 export async function storyAssetRoutes(
   app: FastifyInstance,
   options: StoryAssetRoutesOptions,
@@ -276,11 +311,20 @@ export async function storyAssetRoutes(
           })
       }
 
-      const asset =
-        await storeStoryAsset(
-          request.body,
-          rawContentType,
+      let asset
+
+      try {
+        asset =
+          await storeStoryAsset(
+            request.body,
+            rawContentType,
+          )
+      } catch (error) {
+        return sendStorageError(
+          error,
+          reply,
         )
+      }
 
       const baseUrl =
         getPublicAssetBaseUrl(
