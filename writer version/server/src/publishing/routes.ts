@@ -27,6 +27,7 @@ import {
 
 import {
   getChapterPublicationStatus,
+  getStoryPublicationStatus,
 } from './status'
 
 const storyCommandSchema =
@@ -112,6 +113,43 @@ export async function publishingRoutes(
   app: FastifyInstance,
   options: PublishingRoutesOptions,
 ) {
+  app.get(
+    '/api/publishing/stories/status',
+    {
+      preHandler:
+        options.authenticateWriter,
+    },
+    async (request, reply) => {
+      const parsed =
+        storyCommandSchema.safeParse(
+          request.query,
+        )
+
+      if (!parsed.success) {
+        return reply.status(400).send({
+          error:
+            'INVALID_PUBLISHING_REQUEST',
+          details:
+            parsed.error.flatten(),
+        })
+      }
+
+      if (
+        !await authorizeWorkspace(
+          request,
+          reply,
+          parsed.data.workspaceId,
+        )
+      ) {
+        return
+      }
+
+      return getStoryPublicationStatus(
+        parsed.data,
+      )
+    },
+  )
+
   app.post(
     '/api/publishing/stories/publish',
     {
