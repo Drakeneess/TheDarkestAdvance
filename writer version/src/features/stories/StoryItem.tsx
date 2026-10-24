@@ -8,6 +8,10 @@ import type {
   Story,
 } from '../../domain/models'
 
+import {
+  StoryPublicationControls,
+} from '../publishing/StoryPublicationControls'
+
 interface StoryItemProps {
   story: Story
 
@@ -323,6 +327,12 @@ export function StoryItem({
               Eliminar
             </button>
           </div>
+
+          {isSelected && (
+            <StoryPublicationControls
+              story={story}
+            />
+          )}
 
           {menuOpen && (
             <div
