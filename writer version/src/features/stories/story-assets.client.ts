@@ -126,6 +126,10 @@ export async function uploadStoryAsset(
       Record<string, string> = {
       STORY_ASSET_TYPE_NOT_SUPPORTED:
         'El formato no está permitido. Usa JPEG, PNG, WebP o AVIF.',
+      STORY_ASSET_CONTENT_MISMATCH:
+        'El contenido del archivo no coincide con el formato declarado.',
+      STORY_ASSET_TOO_LARGE:
+        'El archivo supera el límite de 10 MiB.',
       STORY_ASSET_BODY_REQUIRED:
         'No se recibió un archivo válido.',
       STORY_NOT_FOUND:
