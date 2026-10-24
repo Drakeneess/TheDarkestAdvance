@@ -4,6 +4,12 @@ import {
   stories,
 } from '../data/database'
 
+import {
+  normalizeStoryAssets,
+  normalizeStoryProfile,
+  normalizeStoryVisuals,
+} from '../domain/story-profile'
+
 import type {
   SyncEntityType,
   SyncServerRecord,
@@ -96,6 +102,25 @@ function applyServerRecord(
 ) {
   switch (record.entityType) {
     case 'story': {
+      const payload = {
+        ...record.payload,
+
+        profile:
+          normalizeStoryProfile(
+            record.payload.profile,
+          ),
+
+        assets:
+          normalizeStoryAssets(
+            record.payload.assets,
+          ),
+
+        visuals:
+          normalizeStoryVisuals(
+            record.payload.visuals,
+          ),
+      }
+
       const existing =
         stories.findOne(
           { id: record.entityId },
@@ -103,9 +128,7 @@ function applyServerRecord(
         )
 
       if (!existing) {
-        stories.insert(
-          record.payload,
-        )
+        stories.insert(payload)
         return
       }
 
@@ -114,21 +137,27 @@ function applyServerRecord(
         {
           $set: {
             slug:
-              record.payload.slug,
+              payload.slug,
             themeKey:
-              record.payload.themeKey,
+              payload.themeKey,
             title:
-              record.payload.title,
+              payload.title,
             description:
-              record.payload.description,
+              payload.description,
+            profile:
+              payload.profile,
+            assets:
+              payload.assets,
+            visuals:
+              payload.visuals,
             createdAt:
-              record.payload.createdAt,
+              payload.createdAt,
             updatedAt:
-              record.payload.updatedAt,
+              payload.updatedAt,
             revision:
-              record.payload.revision,
+              payload.revision,
             deletedAt:
-              record.payload.deletedAt,
+              payload.deletedAt,
           },
         },
       )
