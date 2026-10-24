@@ -10,6 +10,12 @@ import type {
 } from '../../domain/models'
 
 import {
+  normalizeStoryAssets,
+  normalizeStoryProfile,
+  normalizeStoryVisuals,
+} from '../../domain/story-profile'
+
+import {
   createUniqueSlug,
 } from '../../domain/slug'
 
@@ -162,12 +168,27 @@ export function duplicateStory(
     description:
       story.description,
 
+    profile:
+      normalizeStoryProfile(
+        story.profile,
+      ),
+
+    assets:
+      normalizeStoryAssets(
+        story.assets,
+      ),
+
+    visuals:
+      normalizeStoryVisuals(
+        story.visuals,
+      ),
+
     createdAt:
       timestamp,
 
     updatedAt:
       timestamp,
-    
+
     ...createSyncMetadata(),
   }
 
@@ -257,7 +278,7 @@ export function duplicateStory(
 
       updatedAt:
         timestamp,
-      
+
       ...createSyncMetadata(),
     }
 
