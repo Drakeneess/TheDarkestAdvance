@@ -192,6 +192,11 @@ if (!TEST_DATABASE_URL) {
           )
 
           assert.equal(
+            publicStory.chapterCount,
+            1,
+          )
+
+          assert.equal(
             body.stories.some(
               (story) =>
                 story.slug ===
