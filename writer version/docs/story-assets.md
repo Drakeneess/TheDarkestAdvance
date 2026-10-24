@@ -31,6 +31,8 @@ Tamaño máximo: **10 MiB** por archivo.
 
 SVG no forma parte de la v1. Para logos con transparencia usa PNG, WebP o AVIF.
 
+El servidor valida tanto el MIME declarado como la firma básica del archivo. Declarar bytes arbitrarios como `image/png` no crea un asset válido.
+
 ## Ciclo de vida
 
 Cada subida crea un objeto nuevo con un identificador UUID y extensión derivada del MIME:
@@ -51,6 +53,8 @@ Los objetos son **inmutables**. Reemplazar una portada no sobrescribe el archivo
 6. El asset anterior permanece disponible, por lo que una proyección pública anterior no queda rota durante la transición.
 
 No hay garbage collection automática en v1. La retención deliberada prioriza URLs estables y rollback editorial. Una política de GC futura debe demostrar que una URL ya no está referenciada por ninguna proyección/publicación antes de eliminar el archivo.
+
+Una subida cancelada antes de `Guardar identidad` puede dejar un asset huérfano. Esto es deliberado en v1 y entra en la misma futura política de GC.
 
 ## URL pública y caché
 
@@ -88,8 +92,9 @@ El body es el archivo binario directo y `Content-Type` debe ser uno de los MIME 
 La ruta exige:
 
 - sesión Writer válida;
-- acceso al workspace;
-- una Story sincronizada activa en ese workspace.
+- acceso al workspace.
+
+No exige que la Story ya exista en `SyncEntity`. Esto permite subir la portada de una historia recién creada antes de su primer sync. La pertenencia editorial se confirma cuando la URL se guarda en `Story.assets`.
 
 Subir un archivo **no modifica automáticamente la Story**. El usuario puede inspeccionar la nueva URL/preview y confirmarla con `Guardar identidad`.
 
