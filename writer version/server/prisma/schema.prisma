@@ -16,6 +16,10 @@ model PublishedStory {
   description String
   themeKey    String
 
+  profile Json @default("{\"subtitle\":\"\",\"authorName\":\"\",\"status\":\"ongoing\",\"language\":\"es\",\"genres\":[],\"tags\":[],\"contentRating\":null}")
+  assets  Json @default("{\"coverImageUrl\":null,\"heroImageUrl\":null,\"logoImageUrl\":null}")
+  visuals Json @default("{\"accent\":null,\"accentSoft\":null,\"background\":null,\"panel\":null,\"displayFontKey\":null,\"bodyFontKey\":null,\"ornamentKey\":null,\"textureKey\":null,\"readerWidth\":\"standard\"}")
+
   publishedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -91,8 +95,8 @@ model SyncEntity {
   payload       Json
   deletedAt     DateTime?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@id([workspaceId, entityType, entityId])
   @@index([workspaceId, serverVersion])
@@ -113,7 +117,7 @@ model SyncChange {
   sourceDeviceId   String
   sourceMutationId String?
 
-  createdAt        DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([workspaceId, cursor])
   @@index([workspaceId, entityType, entityId])
@@ -138,7 +142,7 @@ model SyncMutation {
 
   result          Json?
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([workspaceId, deviceId])
 

@@ -74,6 +74,38 @@ if (!TEST_DATABASE_URL) {
           description:
             'Only published projection',
           themeKey: 'codex',
+          profile: {
+            subtitle:
+              'Public subtitle',
+            authorName:
+              'Public Author',
+            status: 'ongoing',
+            language: 'es',
+            genres: [
+              'Fantasy',
+            ],
+            tags: [
+              'Psychological',
+            ],
+            contentRating: '16+',
+          },
+          assets: {
+            coverImageUrl:
+              'https://example.com/cover.png',
+            heroImageUrl: null,
+            logoImageUrl: null,
+          },
+          visuals: {
+            accent: '#55d6ff',
+            accentSoft: null,
+            background: null,
+            panel: null,
+            displayFontKey: null,
+            bodyFontKey: null,
+            ornamentKey: null,
+            textureKey: null,
+            readerWidth: 'wide',
+          },
           chapters: {
             create: {
               chapterId:
@@ -160,6 +192,11 @@ if (!TEST_DATABASE_URL) {
           )
 
           assert.equal(
+            publicStory.chapterCount,
+            1,
+          )
+
+          assert.equal(
             body.stories.some(
               (story) =>
                 story.slug ===
@@ -173,6 +210,43 @@ if (!TEST_DATABASE_URL) {
               'Never publish me',
             ),
             false,
+          )
+
+          const profile =
+            publicStory.profile as
+              Record<string, unknown>
+
+          const assets =
+            publicStory.assets as
+              Record<string, unknown>
+
+          const visuals =
+            publicStory.visuals as
+              Record<string, unknown>
+
+          assert.equal(
+            profile.subtitle,
+            'Public subtitle',
+          )
+
+          assert.deepEqual(
+            profile.genres,
+            ['Fantasy'],
+          )
+
+          assert.equal(
+            assets.coverImageUrl,
+            'https://example.com/cover.png',
+          )
+
+          assert.equal(
+            visuals.accent,
+            '#55d6ff',
+          )
+
+          assert.equal(
+            visuals.readerWidth,
+            'wide',
           )
         },
       )
@@ -216,6 +290,15 @@ if (!TEST_DATABASE_URL) {
             'sourceVersionId' in
               body.story.chapters[0]!,
             false,
+          )
+
+          const profile =
+            body.story.profile as
+              Record<string, unknown>
+
+          assert.equal(
+            profile.authorName,
+            'Public Author',
           )
         },
       )
@@ -261,6 +344,15 @@ if (!TEST_DATABASE_URL) {
           assert.equal(
             'storyId' in body.story,
             false,
+          )
+
+          const visuals =
+            body.story.visuals as
+              Record<string, unknown>
+
+          assert.equal(
+            visuals.readerWidth,
+            'wide',
           )
         },
       )

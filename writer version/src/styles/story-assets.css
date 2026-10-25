@@ -1,0 +1,90 @@
+.story-asset-field {
+  display: grid;
+  gap: 7px;
+
+  padding: 10px;
+
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.012);
+}
+
+.story-asset-field-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.story-asset-native-input {
+  position: absolute !important;
+
+  width: 1px !important;
+  height: 1px !important;
+
+  overflow: hidden !important;
+
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+
+  white-space: nowrap !important;
+}
+
+.story-asset-field-actions button {
+  min-height: 28px;
+
+  border:
+    1px solid
+    rgba(123, 147, 190, 0.28);
+
+  border-radius: 8px;
+
+  padding: 0 10px;
+
+  color: #b9c8e0;
+  background:
+    rgba(123, 147, 190, 0.07);
+
+  font-size: 9px;
+}
+
+.story-asset-field-actions button:hover:not(:disabled) {
+  border-color:
+    rgba(123, 147, 190, 0.46);
+
+  background:
+    rgba(123, 147, 190, 0.12);
+}
+
+.story-asset-field-actions button:disabled {
+  cursor: progress;
+  opacity: 0.55;
+}
+
+.story-asset-field-actions
+.story-asset-clear {
+  border-color:
+    rgba(189, 89, 99, 0.2);
+
+  color: #c89ca1;
+  background:
+    rgba(189, 89, 99, 0.045);
+}
+
+.story-asset-field-actions
+.story-asset-clear:hover:not(:disabled) {
+  border-color:
+    rgba(189, 89, 99, 0.38);
+
+  background:
+    rgba(189, 89, 99, 0.09);
+}
+
+.story-asset-feedback {
+  overflow-wrap: anywhere;
+
+  color: var(--text-muted);
+}

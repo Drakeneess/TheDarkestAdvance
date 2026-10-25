@@ -10,6 +10,10 @@ import {
 } from './auth-routes'
 
 import {
+  storyAssetRoutes,
+} from './assets/routes'
+
+import {
   getWriterCorsOrigins,
 } from './cors'
 
@@ -125,6 +129,13 @@ export async function createApp() {
 
   await app.register(
     publishingRoutes,
+    {
+      authenticateWriter,
+    },
+  )
+
+  await app.register(
+    storyAssetRoutes,
     {
       authenticateWriter,
     },

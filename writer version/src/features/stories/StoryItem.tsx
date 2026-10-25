@@ -8,6 +8,10 @@ import type {
   Story,
 } from '../../domain/models'
 
+import {
+  StoryProfileEditor,
+} from './StoryProfileEditor'
+
 interface StoryItemProps {
   story: Story
 
@@ -55,6 +59,11 @@ export function StoryItem({
   const [
     menuOpen,
     setMenuOpen,
+  ] = useState(false)
+
+  const [
+    profileOpen,
+    setProfileOpen,
   ] = useState(false)
 
   const [
@@ -137,6 +146,12 @@ export function StoryItem({
       (current) =>
         !current,
     )
+  }
+
+  function openProfile() {
+    setMenuOpen(false)
+    onSelect()
+    setProfileOpen(true)
   }
 
   function startRename() {
@@ -289,6 +304,15 @@ export function StoryItem({
             <button
               type="button"
               onClick={
+                openProfile
+              }
+            >
+              Ficha
+            </button>
+
+            <button
+              type="button"
+              onClick={
                 startRename
               }
             >
@@ -333,6 +357,16 @@ export function StoryItem({
                 type="button"
                 role="menuitem"
                 onClick={
+                  openProfile
+                }
+              >
+                Ficha
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={
                   startRename
                 }
               >
@@ -372,6 +406,15 @@ export function StoryItem({
             </div>
           )}
         </>
+      )}
+
+      {profileOpen && (
+        <StoryProfileEditor
+          story={story}
+          onClose={() => {
+            setProfileOpen(false)
+          }}
+        />
       )}
     </div>
   )

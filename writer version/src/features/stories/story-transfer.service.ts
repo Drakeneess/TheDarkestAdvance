@@ -11,6 +11,12 @@ import type {
 } from '../../domain/models'
 
 import {
+  normalizeStoryAssets,
+  normalizeStoryProfile,
+  normalizeStoryVisuals,
+} from '../../domain/story-profile'
+
+import {
   createUniqueSlug,
 } from '../../domain/slug'
 
@@ -28,6 +34,7 @@ interface StoryTransferFile {
   version:
     | 1
     | 2
+    | 3
 
   exportedAt: string
 
@@ -74,7 +81,8 @@ function parseTransferFile(
 
   if (
     value.version !== 1 &&
-    value.version !== 2
+    value.version !== 2 &&
+    value.version !== 3
   ) {
     throw new Error(
       'Versión de archivo no soportada.',
@@ -189,12 +197,29 @@ export function buildStoryExport(
     format:
       'writer-story',
 
-    version: 2,
+    version: 3,
 
     exportedAt:
       new Date().toISOString(),
 
-    story,
+    story: {
+      ...story,
+
+      profile:
+        normalizeStoryProfile(
+          story.profile,
+        ),
+
+      assets:
+        normalizeStoryAssets(
+          story.assets,
+        ),
+
+      visuals:
+        normalizeStoryVisuals(
+          story.visuals,
+        ),
+    },
 
     chapters:
       storyChapters,
@@ -359,6 +384,21 @@ export async function importStoryFile(
       source.story.themeKey.trim().length > 0
         ? source.story.themeKey
         : DEFAULT_STORY_THEME_KEY,
+
+    profile:
+      normalizeStoryProfile(
+        source.story.profile,
+      ),
+
+    assets:
+      normalizeStoryAssets(
+        source.story.assets,
+      ),
+
+    visuals:
+      normalizeStoryVisuals(
+        source.story.visuals,
+      ),
 
     updatedAt:
       timestamp,

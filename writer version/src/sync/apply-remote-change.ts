@@ -4,6 +4,12 @@ import {
   stories,
 } from '../data/database'
 
+import {
+  normalizeStoryAssets,
+  normalizeStoryProfile,
+  normalizeStoryVisuals,
+} from '../domain/story-profile'
+
 import type {
   SyncChange,
   SyncServerRecord,
@@ -133,6 +139,25 @@ function applyStory(
       }
     >,
 ) {
+  const payload = {
+    ...change.payload,
+
+    profile:
+      normalizeStoryProfile(
+        change.payload.profile,
+      ),
+
+    assets:
+      normalizeStoryAssets(
+        change.payload.assets,
+      ),
+
+    visuals:
+      normalizeStoryVisuals(
+        change.payload.visuals,
+      ),
+  }
+
   const existing =
     stories.findOne(
       {
@@ -145,9 +170,7 @@ function applyStory(
     )
 
   if (!existing) {
-    stories.insert(
-      change.payload,
-    )
+    stories.insert(payload)
 
     return
   }
@@ -159,23 +182,38 @@ function applyStory(
     },
     {
       $set: {
+        slug:
+          payload.slug,
+
+        themeKey:
+          payload.themeKey,
+
         title:
-          change.payload.title,
+          payload.title,
 
         description:
-          change.payload.description,
+          payload.description,
+
+        profile:
+          payload.profile,
+
+        assets:
+          payload.assets,
+
+        visuals:
+          payload.visuals,
 
         createdAt:
-          change.payload.createdAt,
+          payload.createdAt,
 
         updatedAt:
-          change.payload.updatedAt,
+          payload.updatedAt,
 
         revision:
-          change.payload.revision,
+          payload.revision,
 
         deletedAt:
-          change.payload.deletedAt,
+          payload.deletedAt,
       },
     },
   )
@@ -218,6 +256,9 @@ function applyChapter(
       $set: {
         storyId:
           change.payload.storyId,
+
+        slug:
+          change.payload.slug,
 
         title:
           change.payload.title,

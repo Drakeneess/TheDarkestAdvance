@@ -9,6 +9,18 @@ import type {
   Story,
 } from '../../domain/models'
 
+import type {
+  StoryAssets,
+  StoryStatus,
+  StoryVisuals,
+} from '../../domain/story-profile'
+
+import {
+  normalizeStoryAssets,
+  normalizeStoryProfile,
+  normalizeStoryVisuals,
+} from '../../domain/story-profile'
+
 import {
   createUniqueSlug,
 } from '../../domain/slug'
@@ -83,6 +95,157 @@ function getChapterContent(
   return (
     currentVersion?.content ??
     ''
+  )
+}
+
+export interface StoryEditorialProfileInput {
+  title: string
+  description: string
+  subtitle: string
+  authorName: string
+  status: StoryStatus
+  language: string
+  genres: string[]
+  tags: string[]
+  contentRating: string | null
+}
+
+export interface StoryVisualIdentityInput {
+  themeKey: string
+  assets: StoryAssets
+  visuals: StoryVisuals
+}
+
+export function updateStoryEditorialProfile(
+  story: Story,
+  input: StoryEditorialProfileInput,
+) {
+  const title =
+    input.title.trim()
+
+  if (!title) {
+    throw new Error(
+      'El título de la historia no puede quedar vacío.',
+    )
+  }
+
+  const timestamp = now()
+
+  const currentStory =
+    getActiveEntity(
+      stories.findOne(
+        {
+          id: story.id,
+        },
+        {
+          reactive: false,
+        },
+      ),
+    )
+
+  if (!currentStory) {
+    throw new Error(
+      'La historia ya no está disponible.',
+    )
+  }
+
+  const profile =
+    normalizeStoryProfile({
+      subtitle:
+        input.subtitle,
+      authorName:
+        input.authorName,
+      status:
+        input.status,
+      language:
+        input.language,
+      genres:
+        input.genres,
+      tags:
+        input.tags,
+      contentRating:
+        input.contentRating,
+    })
+
+  stories.updateOne(
+    {
+      id: story.id,
+    },
+    {
+      $set: {
+        title,
+        description:
+          input.description.trim(),
+        profile,
+
+        /**
+         * slug permanece estable aunque cambie
+         * el título editorial de la obra.
+         */
+        ...createUpdateMetadata(
+          currentStory.revision,
+          timestamp,
+        ),
+      },
+    },
+  )
+}
+
+export function updateStoryVisualIdentity(
+  story: Story,
+  input: StoryVisualIdentityInput,
+) {
+  const themeKey =
+    input.themeKey.trim()
+
+  if (!themeKey) {
+    throw new Error(
+      'La historia necesita una clave de tema base.',
+    )
+  }
+
+  const timestamp = now()
+
+  const currentStory =
+    getActiveEntity(
+      stories.findOne(
+        {
+          id: story.id,
+        },
+        {
+          reactive: false,
+        },
+      ),
+    )
+
+  if (!currentStory) {
+    throw new Error(
+      'La historia ya no está disponible.',
+    )
+  }
+
+  stories.updateOne(
+    {
+      id: story.id,
+    },
+    {
+      $set: {
+        themeKey,
+        assets:
+          normalizeStoryAssets(
+            input.assets,
+          ),
+        visuals:
+          normalizeStoryVisuals(
+            input.visuals,
+          ),
+
+        ...createUpdateMetadata(
+          currentStory.revision,
+          timestamp,
+        ),
+      },
+    },
   )
 }
 
@@ -162,12 +325,27 @@ export function duplicateStory(
     description:
       story.description,
 
+    profile:
+      normalizeStoryProfile(
+        story.profile,
+      ),
+
+    assets:
+      normalizeStoryAssets(
+        story.assets,
+      ),
+
+    visuals:
+      normalizeStoryVisuals(
+        story.visuals,
+      ),
+
     createdAt:
       timestamp,
 
     updatedAt:
       timestamp,
-    
+
     ...createSyncMetadata(),
   }
 
@@ -257,7 +435,7 @@ export function duplicateStory(
 
       updatedAt:
         timestamp,
-      
+
       ...createSyncMetadata(),
     }
 

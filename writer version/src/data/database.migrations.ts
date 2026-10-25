@@ -9,6 +9,12 @@ import type {
 } from '../domain/models'
 
 import {
+  normalizeStoryAssets,
+  normalizeStoryProfile,
+  normalizeStoryVisuals,
+} from '../domain/story-profile'
+
+import {
   createUniqueSlug,
 } from '../domain/slug'
 
@@ -17,7 +23,7 @@ import {
 } from '../domain/story-theme'
 
 export const DATABASE_SCHEMA_VERSION =
-  3
+  4
 
 const SCHEMA_VERSION_KEY =
   'writer:database-schema-version'
@@ -434,6 +440,68 @@ function migrateToVersion3(
   )
 }
 
+function migrateStoryProfiles(
+  collection:
+    Collection<Story>,
+) {
+  const records =
+    collection
+      .find(
+        {},
+        {
+          reactive: false,
+        },
+      )
+      .fetch()
+
+  for (
+    const story
+      of records
+  ) {
+    /**
+     * La V4 completa y normaliza el contrato,
+     * incluso si una build intermedia escribió
+     * datos parciales.
+     *
+     * No incrementamos revision ni updatedAt:
+     * esto es una migración de esquema local,
+     * no una edición del usuario.
+     */
+    collection.updateOne(
+      {
+        id: story.id,
+      },
+      {
+        $set: {
+          profile:
+            normalizeStoryProfile(
+              story.profile,
+            ),
+
+          assets:
+            normalizeStoryAssets(
+              story.assets,
+            ),
+
+          visuals:
+            normalizeStoryVisuals(
+              story.visuals,
+            ),
+        },
+      },
+    )
+  }
+}
+
+function migrateToVersion4(
+  collections:
+    DatabaseCollections,
+) {
+  migrateStoryProfiles(
+    collections.stories,
+  )
+}
+
 export function migrateDatabase(
   collections:
     DatabaseCollections,
@@ -464,6 +532,12 @@ export function migrateDatabase(
 
   if (storedVersion < 3) {
     migrateToVersion3(
+      collections,
+    )
+  }
+
+  if (storedVersion < 4) {
+    migrateToVersion4(
       collections,
     )
   }

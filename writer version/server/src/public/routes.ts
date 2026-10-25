@@ -23,6 +23,9 @@ const publicStorySelect = {
   title: true,
   description: true,
   themeKey: true,
+  profile: true,
+  assets: true,
+  visuals: true,
   publishedAt: true,
   updatedAt: true,
 } as const
@@ -42,15 +45,33 @@ export async function publicRoutes(
   app.get(
     '/api/public/stories',
     async () => {
-      const stories =
+      const records =
         await db.publishedStory.findMany({
-          select:
-            publicStorySelect,
+          select: {
+            ...publicStorySelect,
+            _count: {
+              select: {
+                chapters: true,
+              },
+            },
+          },
           orderBy: [
             { title: 'asc' },
             { slug: 'asc' },
           ],
         })
+
+      const stories =
+        records.map(
+          ({
+            _count,
+            ...story
+          }) => ({
+            ...story,
+            chapterCount:
+              _count.chapters,
+          }),
+        )
 
       return { stories }
     },

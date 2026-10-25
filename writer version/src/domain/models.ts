@@ -1,4 +1,10 @@
 import type {
+  StoryAssets,
+  StoryProfile,
+  StoryVisuals,
+} from './story-profile'
+
+import type {
   StoryThemeKey,
 } from './story-theme'
 
@@ -39,8 +45,33 @@ export interface Story
    */
   themeKey: StoryThemeKey
 
+  /**
+   * Identidad editorial base.
+   *
+   * Se mantiene fuera de profile porque título
+   * y descripción ya forman parte del dominio
+   * central de Story y son la fuente de verdad.
+   */
   title: string
   description: string
+
+  /**
+   * Metadata editorial adicional de la obra.
+   */
+  profile: StoryProfile
+
+  /**
+   * Referencias a recursos visuales de la obra.
+   * La subida/gestión física se implementa aparte.
+   */
+  assets: StoryAssets
+
+  /**
+   * Overrides semánticos sobre themeKey.
+   * Nunca contiene CSS arbitrario.
+   */
+  visuals: StoryVisuals
+
   createdAt: string
   updatedAt: string
 }
