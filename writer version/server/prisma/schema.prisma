@@ -19,6 +19,7 @@ model PublishedStory {
   profile Json @default("{\"subtitle\":\"\",\"authorName\":\"\",\"status\":\"ongoing\",\"language\":\"es\",\"genres\":[],\"tags\":[],\"contentRating\":null}")
   assets  Json @default("{\"coverImageUrl\":null,\"heroImageUrl\":null,\"logoImageUrl\":null}")
   visuals Json @default("{\"accent\":null,\"accentSoft\":null,\"background\":null,\"panel\":null,\"displayFontKey\":null,\"bodyFontKey\":null,\"ornamentKey\":null,\"textureKey\":null,\"readerWidth\":\"standard\"}")
+  layout  Json @default("{\"mode\":\"preset\",\"html\":\"\",\"css\":\"\"}")
 
   publishedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -61,8 +62,8 @@ model PublicationAuditEvent {
   action      String
   actorUserId String?
 
-  storyId        String
-  chapterId      String?
+  storyId         String
+  chapterId       String?
   sourceVersionId String?
 
   createdAt DateTime @default(now())
@@ -86,14 +87,14 @@ model SyncWorkspaceAccess {
 }
 
 model SyncEntity {
-  workspaceId   String
-  entityType    String
-  entityId      String
+  workspaceId String
+  entityType  String
+  entityId    String
 
   serverVersion BigInt
 
-  payload       Json
-  deletedAt     DateTime?
+  payload   Json
+  deletedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -105,14 +106,14 @@ model SyncEntity {
 }
 
 model SyncChange {
-  cursor           BigInt @id @default(autoincrement())
+  cursor BigInt @id @default(autoincrement())
 
-  workspaceId      String
-  entityType       String
-  entityId         String
+  workspaceId String
+  entityType  String
+  entityId    String
 
-  serverVersion    BigInt
-  payload          Json
+  serverVersion BigInt
+  payload       Json
 
   sourceDeviceId   String
   sourceMutationId String?
@@ -126,21 +127,21 @@ model SyncChange {
 }
 
 model SyncMutation {
-  mutationId      String @id
+  mutationId String @id
 
-  workspaceId     String
-  deviceId        String
+  workspaceId String
+  deviceId    String
 
-  entityType      String
-  entityId        String
+  entityType String
+  entityId   String
 
-  clientRevision  Int
-  status          String
+  clientRevision Int
+  status         String
 
-  serverVersion   BigInt?
-  cursor          BigInt?
+  serverVersion BigInt?
+  cursor        BigInt?
 
-  result          Json?
+  result Json?
 
   createdAt DateTime @default(now())
 
