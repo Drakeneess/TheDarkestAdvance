@@ -1,20 +1,12 @@
 import {
-  createReadStream,
-} from 'node:fs'
-
-import {
-  mkdir,
-  stat,
-  writeFile,
-} from 'node:fs/promises'
-
-import {
-  resolve,
-} from 'node:path'
-
-import {
+  createHash,
+  createHmac,
   randomUUID,
 } from 'node:crypto'
+
+import {
+  Readable,
+} from 'node:stream'
 
 export const STORY_ASSET_MAX_BYTES =
   10 * 1024 * 1024
@@ -66,6 +58,20 @@ const PNG_SIGNATURE =
     0x0a,
   ])
 
+const STORY_ASSET_OBJECT_PREFIX =
+  'stories/'
+
+interface StoryAssetS3Config {
+  endpoint: string
+  bucket: string
+  region: string
+  accessKeyId: string
+  secretAccessKey: string
+  urlStyle:
+    | 'virtual-host'
+    | 'path'
+}
+
 export interface StoryAssetRecord {
   assetId: string
   contentType: StoryAssetContentType
@@ -73,23 +79,57 @@ export interface StoryAssetRecord {
 }
 
 export interface StoryAssetReadable {
-  stream: ReturnType<
-    typeof createReadStream
-  >
+  stream: Readable
   contentType: StoryAssetContentType
   size: number
 }
 
-function getStorageDirectory() {
-  const configured =
-    process.env
-      .STORY_ASSET_STORAGE_DIR
-      ?.trim()
+function requiredEnvironmentValue(
+  name: string,
+) {
+  const value =
+    process.env[name]?.trim()
 
-  return resolve(
-    configured ||
-      '.data/story-assets',
-  )
+  if (!value) {
+    throw new Error(
+      'STORY_ASSET_STORAGE_NOT_CONFIGURED',
+    )
+  }
+
+  return value
+}
+
+function getS3Config(): StoryAssetS3Config {
+  const urlStyle =
+    process.env
+      .STORY_ASSET_S3_URL_STYLE
+      ?.trim() === 'path'
+      ? 'path'
+      : 'virtual-host'
+
+  return {
+    endpoint:
+      requiredEnvironmentValue(
+        'STORY_ASSET_S3_ENDPOINT',
+      ),
+    bucket:
+      requiredEnvironmentValue(
+        'STORY_ASSET_S3_BUCKET',
+      ),
+    region:
+      process.env
+        .STORY_ASSET_S3_REGION
+        ?.trim() || 'auto',
+    accessKeyId:
+      requiredEnvironmentValue(
+        'STORY_ASSET_S3_ACCESS_KEY_ID',
+      ),
+    secretAccessKey:
+      requiredEnvironmentValue(
+        'STORY_ASSET_S3_SECRET_ACCESS_KEY',
+      ),
+    urlStyle,
+  }
 }
 
 export function isStoryAssetContentType(
@@ -212,6 +252,185 @@ function assertSafeAssetId(
   }
 }
 
+function sha256Hex(
+  value: string | Buffer,
+) {
+  return createHash('sha256')
+    .update(value)
+    .digest('hex')
+}
+
+function hmac(
+  key: string | Buffer,
+  value: string,
+) {
+  return createHmac(
+    'sha256',
+    key,
+  )
+    .update(value)
+    .digest()
+}
+
+function encodePath(
+  value: string,
+) {
+  return value
+    .split('/')
+    .map(
+      (segment) =>
+        encodeURIComponent(segment),
+    )
+    .join('/')
+}
+
+function buildObjectUrl(
+  config: StoryAssetS3Config,
+  assetId: string,
+) {
+  const key =
+    `${STORY_ASSET_OBJECT_PREFIX}${assetId}`
+
+  const endpoint =
+    new URL(config.endpoint)
+
+  const basePath =
+    endpoint.pathname
+      .replace(/\/+$/, '')
+
+  if (
+    config.urlStyle ===
+      'virtual-host'
+  ) {
+    endpoint.hostname =
+      `${config.bucket}.${endpoint.hostname}`
+
+    endpoint.pathname =
+      `${basePath}/${encodePath(key)}`
+  } else {
+    endpoint.pathname =
+      `${basePath}/${encodeURIComponent(config.bucket)}/${encodePath(key)}`
+  }
+
+  endpoint.search = ''
+  endpoint.hash = ''
+
+  return endpoint
+}
+
+function formatAmzDate(
+  date: Date,
+) {
+  return date
+    .toISOString()
+    .replace(/[:-]|\.\d{3}/g, '')
+}
+
+function createSignedHeaders(
+  config: StoryAssetS3Config,
+  method: 'GET' | 'PUT',
+  url: URL,
+  payloadHash: string,
+  date = new Date(),
+) {
+  const amzDate =
+    formatAmzDate(date)
+
+  const shortDate =
+    amzDate.slice(0, 8)
+
+  const canonicalHeaders =
+    `host:${url.host}\n` +
+    `x-amz-content-sha256:${payloadHash}\n` +
+    `x-amz-date:${amzDate}\n`
+
+  const signedHeaders =
+    'host;x-amz-content-sha256;x-amz-date'
+
+  const canonicalRequest = [
+    method,
+    url.pathname,
+    '',
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash,
+  ].join('\n')
+
+  const credentialScope =
+    `${shortDate}/${config.region}/s3/aws4_request`
+
+  const stringToSign = [
+    'AWS4-HMAC-SHA256',
+    amzDate,
+    credentialScope,
+    sha256Hex(canonicalRequest),
+  ].join('\n')
+
+  const dateKey =
+    hmac(
+      `AWS4${config.secretAccessKey}`,
+      shortDate,
+    )
+
+  const regionKey =
+    hmac(
+      dateKey,
+      config.region,
+    )
+
+  const serviceKey =
+    hmac(
+      regionKey,
+      's3',
+    )
+
+  const signingKey =
+    hmac(
+      serviceKey,
+      'aws4_request',
+    )
+
+  const signature =
+    createHmac(
+      'sha256',
+      signingKey,
+    )
+      .update(stringToSign)
+      .digest('hex')
+
+  return {
+    Authorization:
+      'AWS4-HMAC-SHA256 ' +
+      `Credential=${config.accessKeyId}/${credentialScope}, ` +
+      `SignedHeaders=${signedHeaders}, ` +
+      `Signature=${signature}`,
+    'x-amz-content-sha256':
+      payloadHash,
+    'x-amz-date': amzDate,
+  }
+}
+
+async function readS3Error(
+  response: Response,
+) {
+  let details = ''
+
+  try {
+    details =
+      (await response.text())
+        .slice(0, 500)
+  } catch {
+    // Best effort only.
+  }
+
+  return (
+    `${response.status}` +
+    (details
+      ? `: ${details}`
+      : '')
+  )
+}
+
 export async function storeStoryAsset(
   bytes: Buffer,
   contentType: StoryAssetContentType,
@@ -237,6 +456,9 @@ export async function storeStoryAsset(
     )
   }
 
+  const config =
+    getS3Config()
+
   const extension =
     CONTENT_TYPE_EXTENSION[
       contentType
@@ -245,26 +467,42 @@ export async function storeStoryAsset(
   const assetId =
     `${randomUUID()}.${extension}`
 
-  const directory =
-    getStorageDirectory()
-
-  await mkdir(
-    directory,
-    {
-      recursive: true,
-    },
-  )
-
-  await writeFile(
-    resolve(
-      directory,
+  const url =
+    buildObjectUrl(
+      config,
       assetId,
-    ),
-    bytes,
-    {
-      flag: 'wx',
-    },
-  )
+    )
+
+  const payloadHash =
+    sha256Hex(bytes)
+
+  const response =
+    await fetch(
+      url,
+      {
+        method: 'PUT',
+        headers: {
+          ...createSignedHeaders(
+            config,
+            'PUT',
+            url,
+            payloadHash,
+          ),
+          'Content-Type':
+            contentType,
+          'Content-Length':
+            String(bytes.length),
+        },
+        body: bytes,
+      },
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      'STORY_ASSET_STORAGE_WRITE_FAILED ' +
+      await readS3Error(response),
+    )
+  }
 
   return {
     assetId,
@@ -289,43 +527,69 @@ export async function openStoryAsset(
     return null
   }
 
-  const path =
-    resolve(
-      getStorageDirectory(),
+  const config =
+    getS3Config()
+
+  const url =
+    buildObjectUrl(
+      config,
       assetId,
     )
 
-  let metadata:
-    Awaited<
-      ReturnType<typeof stat>
-    >
+  const payloadHash =
+    sha256Hex(Buffer.alloc(0))
 
-  try {
-    metadata =
-      await stat(path)
-  } catch (error) {
-    const code =
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error
-        ? error.code
-        : null
+  const response =
+    await fetch(
+      url,
+      {
+        method: 'GET',
+        headers:
+          createSignedHeaders(
+            config,
+            'GET',
+            url,
+            payloadHash,
+          ),
+      },
+    )
 
-    if (code === 'ENOENT') {
-      return null
-    }
-
-    throw error
+  if (response.status === 404) {
+    return null
   }
 
-  if (!metadata.isFile()) {
-    return null
+  if (!response.ok) {
+    throw new Error(
+      'STORY_ASSET_STORAGE_READ_FAILED ' +
+      await readS3Error(response),
+    )
+  }
+
+  const contentLength =
+    Number(
+      response.headers.get(
+        'content-length',
+      ),
+    )
+
+  if (
+    !Number.isSafeInteger(
+      contentLength,
+    ) ||
+    contentLength < 0 ||
+    !response.body
+  ) {
+    throw new Error(
+      'STORY_ASSET_STORAGE_INVALID_RESPONSE',
+    )
   }
 
   return {
     stream:
-      createReadStream(path),
+      Readable.fromWeb(
+        response.body,
+      ),
     contentType,
-    size: metadata.size,
+    size: contentLength,
   }
 }
