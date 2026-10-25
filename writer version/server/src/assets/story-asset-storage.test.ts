@@ -2,21 +2,8 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
-  createReadStream,
-} from 'node:fs'
-
-import {
-  mkdtemp,
-  rm,
-} from 'node:fs/promises'
-
-import {
-  tmpdir,
-} from 'node:os'
-
-import {
-  join,
-} from 'node:path'
+  Readable,
+} from 'node:stream'
 
 import {
   openStoryAsset,
@@ -48,8 +35,7 @@ function fakePng(
 }
 
 async function readStream(
-  stream:
-    ReturnType<typeof createReadStream>,
+  stream: Readable,
 ) {
   const chunks: Buffer[] = []
 
@@ -68,44 +54,160 @@ async function readStream(
 }
 
 test(
-  'story asset storage keeps versioned immutable files',
+  'story asset storage keeps versioned immutable objects',
   async (t) => {
-    const directory =
-      await mkdtemp(
-        join(
-          tmpdir(),
-          'writer-story-assets-',
-        ),
-      )
+    const previous = {
+      endpoint:
+        process.env.STORY_ASSET_S3_ENDPOINT,
+      bucket:
+        process.env.STORY_ASSET_S3_BUCKET,
+      region:
+        process.env.STORY_ASSET_S3_REGION,
+      accessKeyId:
+        process.env.STORY_ASSET_S3_ACCESS_KEY_ID,
+      secretAccessKey:
+        process.env.STORY_ASSET_S3_SECRET_ACCESS_KEY,
+      urlStyle:
+        process.env.STORY_ASSET_S3_URL_STYLE,
+    }
 
-    const previousDirectory =
-      process.env
-        .STORY_ASSET_STORAGE_DIR
+    process.env.STORY_ASSET_S3_ENDPOINT =
+      'https://storage.example.test'
+    process.env.STORY_ASSET_S3_BUCKET =
+      'test-bucket'
+    process.env.STORY_ASSET_S3_REGION =
+      'auto'
+    process.env.STORY_ASSET_S3_ACCESS_KEY_ID =
+      'test-access-key'
+    process.env.STORY_ASSET_S3_SECRET_ACCESS_KEY =
+      'test-secret-key'
+    process.env.STORY_ASSET_S3_URL_STYLE =
+      'path'
 
-    process.env
-      .STORY_ASSET_STORAGE_DIR =
-      directory
+    const objects =
+      new Map<string, {
+        bytes: Buffer
+        contentType: string
+      }>()
 
-    t.after(async () => {
-      if (
-        previousDirectory ===
-        undefined
-      ) {
-        delete process.env
-          .STORY_ASSET_STORAGE_DIR
-      } else {
-        process.env
-          .STORY_ASSET_STORAGE_DIR =
-          previousDirectory
+    const originalFetch =
+      globalThis.fetch
+
+    globalThis.fetch =
+      async (
+        input,
+        init,
+      ) => {
+        const url =
+          new URL(
+            typeof input === 'string'
+              ? input
+              : input instanceof URL
+                ? input.toString()
+                : input.url,
+          )
+
+        const method =
+          init?.method ?? 'GET'
+
+        const authorization =
+          new Headers(
+            init?.headers,
+          ).get('authorization')
+
+        assert.match(
+          authorization ?? '',
+          /^AWS4-HMAC-SHA256 /,
+        )
+
+        if (method === 'PUT') {
+          const bytes =
+            Buffer.from(
+              init?.body as Buffer,
+            )
+
+          objects.set(
+            url.pathname,
+            {
+              bytes,
+              contentType:
+                new Headers(
+                  init?.headers,
+                ).get(
+                  'content-type',
+                ) ??
+                'application/octet-stream',
+            },
+          )
+
+          return new Response(
+            null,
+            {
+              status: 200,
+            },
+          )
+        }
+
+        const object =
+          objects.get(
+            url.pathname,
+          )
+
+        if (!object) {
+          return new Response(
+            null,
+            {
+              status: 404,
+            },
+          )
+        }
+
+        return new Response(
+          object.bytes,
+          {
+            status: 200,
+            headers: {
+              'content-length':
+                String(
+                  object.bytes.length,
+                ),
+              'content-type':
+                object.contentType,
+            },
+          },
+        )
       }
 
-      await rm(
-        directory,
-        {
-          recursive: true,
-          force: true,
-        },
-      )
+    t.after(() => {
+      globalThis.fetch =
+        originalFetch
+
+      for (
+        const [key, value]
+          of Object.entries(previous)
+      ) {
+        const envName = {
+          endpoint:
+            'STORY_ASSET_S3_ENDPOINT',
+          bucket:
+            'STORY_ASSET_S3_BUCKET',
+          region:
+            'STORY_ASSET_S3_REGION',
+          accessKeyId:
+            'STORY_ASSET_S3_ACCESS_KEY_ID',
+          secretAccessKey:
+            'STORY_ASSET_S3_SECRET_ACCESS_KEY',
+          urlStyle:
+            'STORY_ASSET_S3_URL_STYLE',
+        }[key]!
+
+        if (value === undefined) {
+          delete process.env[envName]
+        } else {
+          process.env[envName] =
+            value
+        }
+      }
     })
 
     const firstBytes =

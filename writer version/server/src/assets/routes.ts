@@ -187,6 +187,20 @@ function sendStorageError(
       })
   }
 
+  if (
+    error.message ===
+      'STORY_ASSET_STORAGE_NOT_CONFIGURED'
+  ) {
+    return reply
+      .status(503)
+      .send({
+        error:
+          'STORY_ASSET_STORAGE_NOT_CONFIGURED',
+        message:
+          'Configura el bucket S3 de Story Assets antes de subir archivos.',
+      })
+  }
+
   throw error
 }
 
@@ -366,6 +380,19 @@ export async function storyAssetRoutes(
             .send({
               error:
                 'STORY_ASSET_NOT_FOUND',
+            })
+        }
+
+        if (
+          error instanceof Error &&
+          error.message ===
+            'STORY_ASSET_STORAGE_NOT_CONFIGURED'
+        ) {
+          return reply
+            .status(503)
+            .send({
+              error:
+                'STORY_ASSET_STORAGE_NOT_CONFIGURED',
             })
         }
 
