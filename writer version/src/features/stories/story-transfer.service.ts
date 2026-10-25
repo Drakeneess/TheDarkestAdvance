@@ -11,6 +11,10 @@ import type {
 } from '../../domain/models'
 
 import {
+  normalizeStoryCustomLayout,
+} from '../../domain/story-layout'
+
+import {
   normalizeStoryAssets,
   normalizeStoryProfile,
   normalizeStoryVisuals,
@@ -35,6 +39,7 @@ interface StoryTransferFile {
     | 1
     | 2
     | 3
+    | 4
 
   exportedAt: string
 
@@ -82,7 +87,8 @@ function parseTransferFile(
   if (
     value.version !== 1 &&
     value.version !== 2 &&
-    value.version !== 3
+    value.version !== 3 &&
+    value.version !== 4
   ) {
     throw new Error(
       'Versión de archivo no soportada.',
@@ -197,7 +203,7 @@ export function buildStoryExport(
     format:
       'writer-story',
 
-    version: 3,
+    version: 4,
 
     exportedAt:
       new Date().toISOString(),
@@ -218,6 +224,11 @@ export function buildStoryExport(
       visuals:
         normalizeStoryVisuals(
           story.visuals,
+        ),
+
+      layout:
+        normalizeStoryCustomLayout(
+          story.layout,
         ),
     },
 
@@ -325,9 +336,6 @@ export async function importStoryFile(
   const timestamp =
     new Date().toISOString()
 
-  /**
-   * IDs antiguos → IDs nuevos.
-   */
   const chapterIdMap =
     new Map<
       string,
@@ -400,6 +408,11 @@ export async function importStoryFile(
         source.story.visuals,
       ),
 
+    layout:
+      normalizeStoryCustomLayout(
+        source.story.layout,
+      ),
+
     updatedAt:
       timestamp,
 
@@ -413,9 +426,6 @@ export async function importStoryFile(
   const usedImportedChapterSlugs:
     string[] = []
 
-  /**
-   * Primero insertamos los capítulos.
-   */
   for (
     const sourceChapter
       of sourceChapters
@@ -477,10 +487,6 @@ export async function importStoryFile(
     )
   }
 
-  /**
-   * Después reconstruimos snapshots
-   * y relaciones parentVersionId.
-   */
   for (
     const sourceVersion
       of sourceVersions
