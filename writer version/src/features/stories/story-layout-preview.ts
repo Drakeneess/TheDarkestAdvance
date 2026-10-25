@@ -12,6 +12,16 @@ const STATUS_LABELS = {
   hiatus: 'En pausa',
 } as const
 
+const FONT_PRESETS:
+  Record<string, string> = {
+  serif:
+    'Georgia, Cambria, "Times New Roman", serif',
+  sans:
+    'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  mono:
+    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+}
+
 export const STORY_LAYOUT_STARTER_HTML = `<main class="story-shell">
   <section class="hero">
     <p class="eyebrow">{{story.status}}</p>
@@ -46,8 +56,8 @@ body {
 
 body {
   background: var(--story-background);
-  color: #f5f7fb;
-  font-family: system-ui, sans-serif;
+  color: var(--story-text);
+  font-family: var(--story-body-font);
 }
 
 .story-shell {
@@ -80,6 +90,11 @@ p {
   margin: 0;
 }
 
+h1,
+h2 {
+  font-family: var(--story-display-font);
+}
+
 h1 {
   max-width: 12ch;
   font-size: clamp(3rem, 10vw, 9rem);
@@ -95,7 +110,7 @@ h1 {
 
 .description {
   max-width: 48rem;
-  color: rgba(245, 247, 251, .72);
+  color: var(--story-muted);
   line-height: 1.7;
 }
 
@@ -280,6 +295,23 @@ function storyColor(
     : fallback
 }
 
+function storyFont(
+  key:
+    | string
+    | null
+    | undefined,
+  fallback: string,
+) {
+  const normalized =
+    key?.trim().toLowerCase()
+
+  return (
+    normalized
+      ? FONT_PRESETS[normalized]
+      : undefined
+  ) ?? fallback
+}
+
 export function buildStoryLayoutPreviewDocument(
   story: Story,
   html: string,
@@ -309,11 +341,27 @@ export function buildStoryLayoutPreviewDocument(
       '#111319',
     )
 
+  const displayFont =
+    storyFont(
+      story.visuals.displayFontKey,
+      FONT_PRESETS.serif,
+    )
+
+  const bodyFont =
+    storyFont(
+      story.visuals.bodyFontKey,
+      FONT_PRESETS.sans,
+    )
+
   const variables = `:root {
+  --story-text: #f5f7fb;
+  --story-muted: #b6bcc8;
   --story-accent: ${accent};
   --story-accent-soft: ${accentSoft};
   --story-background: ${background};
   --story-panel: ${panel};
+  --story-display-font: ${displayFont};
+  --story-body-font: ${bodyFont};
   --story-cover-image: ${cssUrl(story.assets.coverImageUrl)};
   --story-hero-image: ${cssUrl(story.assets.heroImageUrl)};
   --story-logo-image: ${cssUrl(story.assets.logoImageUrl)};
