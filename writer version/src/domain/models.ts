@@ -12,15 +12,31 @@ import type {
   StoryThemeKey,
 } from './story-theme'
 
-import type {
-  SyncMetadata,
-} from './sync-metadata'
+export interface SyncMetadata {
+  /**
+   * Revisión lógica del registro.
+   *
+   * create -> 1
+   * update -> +1
+   * delete -> +1
+   */
+  revision: number
 
-export interface Story extends SyncMetadata {
+  /**
+   * Tombstone.
+   *
+   * null = registro activo
+   * fecha = eliminado lógicamente
+   */
+  deletedAt: string | null
+}
+
+export interface Story
+  extends SyncMetadata {
   id: string
 
   /**
-   * Identidad editorial pública estable.
+   * Identidad estable para rutas públicas.
    */
   slug: string
 
@@ -35,18 +51,26 @@ export interface Story extends SyncMetadata {
   profile: StoryProfile
   assets: StoryAssets
   visuals: StoryVisuals
+
+  /**
+   * Presentación pública avanzada de la obra.
+   * `preset` conserva StoryPresentation;
+   * `custom` usa HTML/CSS sandboxed.
+   */
   layout: StoryCustomLayout
 
   createdAt: string
   updatedAt: string
 }
 
-export interface Chapter extends SyncMetadata {
+export interface Chapter
+  extends SyncMetadata {
   id: string
   storyId: string
 
   /**
-   * Slug público estable dentro de la obra.
+   * Identidad estable para la ruta pública
+   * dentro de su historia.
    */
   slug: string
 
@@ -54,35 +78,47 @@ export interface Chapter extends SyncMetadata {
   order: number
 
   /**
-   * Último snapshot explícito guardado.
+   * Snapshot/version explícita actualmente
+   * marcada como última versión.
    */
-  currentVersionId: string | null
+  currentVersionId:
+    | string
+    | null
 
   /**
    * Estado de trabajo actual.
-   * No genera una versión nueva por cada edición.
+   * Se guarda automáticamente,
+   * pero NO crea una nueva versión.
    */
-  draftContent: string
-  draftUpdatedAt: string
+  draftContent?: string
+
+  draftUpdatedAt?:
+    | string
+    | null
 
   createdAt: string
   updatedAt: string
 }
 
-export interface ChapterVersion extends SyncMetadata {
+export interface ChapterVersion
+  extends SyncMetadata {
   id: string
   chapterId: string
 
-  parentVersionId: string | null
+  parentVersionId:
+    | string
+    | null
 
   label: string
   content: string
 
   createdAt: string
-  updatedAt: string
 
   /**
-   * Dispositivo que originó este snapshot.
+   * Necesario para cambios de metadata
+   * como deletedAt.
    */
+  updatedAt: string
+
   deviceId: string
 }
