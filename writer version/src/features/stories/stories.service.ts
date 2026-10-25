@@ -10,6 +10,14 @@ import type {
 } from '../../domain/models'
 
 import type {
+  StoryCustomLayout,
+} from '../../domain/story-layout'
+
+import {
+  normalizeStoryCustomLayout,
+} from '../../domain/story-layout'
+
+import type {
   StoryAssets,
   StoryStatus,
   StoryVisuals,
@@ -116,6 +124,9 @@ export interface StoryVisualIdentityInput {
   visuals: StoryVisuals
 }
 
+export type StoryCustomLayoutInput =
+  StoryCustomLayout
+
 export function updateStoryEditorialProfile(
   story: Story,
   input: StoryEditorialProfileInput,
@@ -178,10 +189,6 @@ export function updateStoryEditorialProfile(
           input.description.trim(),
         profile,
 
-        /**
-         * slug permanece estable aunque cambie
-         * el título editorial de la obra.
-         */
         ...createUpdateMetadata(
           currentStory.revision,
           timestamp,
@@ -249,6 +256,50 @@ export function updateStoryVisualIdentity(
   )
 }
 
+export function updateStoryCustomLayout(
+  story: Story,
+  input: StoryCustomLayoutInput,
+) {
+  const timestamp = now()
+
+  const currentStory =
+    getActiveEntity(
+      stories.findOne(
+        {
+          id: story.id,
+        },
+        {
+          reactive: false,
+        },
+      ),
+    )
+
+  if (!currentStory) {
+    throw new Error(
+      'La historia ya no está disponible.',
+    )
+  }
+
+  stories.updateOne(
+    {
+      id: story.id,
+    },
+    {
+      $set: {
+        layout:
+          normalizeStoryCustomLayout(
+            input,
+          ),
+
+        ...createUpdateMetadata(
+          currentStory.revision,
+          timestamp,
+        ),
+      },
+    },
+  )
+}
+
 export function renameStory(
   story: Story,
   title: string,
@@ -281,10 +332,6 @@ export function renameStory(
         title:
           normalizedTitle,
 
-        /**
-         * slug NO se actualiza aquí.
-         * Es identidad editorial estable.
-         */
         ...createUpdateMetadata(
           currentStory.revision,
           timestamp,
@@ -338,6 +385,11 @@ export function duplicateStory(
     visuals:
       normalizeStoryVisuals(
         story.visuals,
+      ),
+
+    layout:
+      normalizeStoryCustomLayout(
+        story.layout,
       ),
 
     createdAt:
@@ -415,10 +467,6 @@ export function duplicateStory(
       order:
         sourceChapter.order,
 
-      /**
-       * La nueva historia comienza
-       * sin historial de snapshots.
-       */
       currentVersionId:
         null,
 
@@ -478,9 +526,6 @@ export function deleteStory(
         isActive,
       )
 
-  /**
-   * Tombstones de todas las versiones.
-   */
   for (
     const chapter
       of storyChapters
@@ -520,9 +565,6 @@ export function deleteStory(
       )
     }
 
-    /**
-     * Tombstone del capítulo.
-     */
     chapters.updateOne(
       {
         id: chapter.id,
@@ -538,9 +580,6 @@ export function deleteStory(
     )
   }
 
-  /**
-   * Finalmente tombstone de la historia.
-   */
   stories.updateOne(
     {
       id: story.id,
