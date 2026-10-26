@@ -307,25 +307,27 @@ if (!TEST_DATABASE_URL) {
 
       const publicPayload =
         publicResult.payload as {
-          layout: {
-            mode: string
-            html: string
-            css: string
+          story: {
+            layout: {
+              mode: string
+              html: string
+              css: string
+            }
           }
         }
 
       assert.equal(
-        publicPayload.layout.mode,
+        publicPayload.story.layout.mode,
         'custom',
       )
 
       assert.match(
-        publicPayload.layout.html,
+        publicPayload.story.layout.html,
         new RegExp(LAYOUT_MARKER),
       )
 
       assert.match(
-        publicPayload.layout.css,
+        publicPayload.story.layout.css,
         /:root, html, body, \*/,
       )
 
