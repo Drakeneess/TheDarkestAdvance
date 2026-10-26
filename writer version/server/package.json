@@ -13,7 +13,7 @@
     "test:conflict-policy": "prisma generate && node --import tsx --test src/sync/conflict-rebase.test.ts",
     "test:publishing": "prisma generate && node --import tsx --test src/publishing/*.test.ts",
     "test:assets": "node --import tsx --test src/assets/*.test.ts",
-    "test:e2e:codex": "prisma generate && node --import tsx --test src/e2e/writer-codex.e2e.test.ts",
+    "test:e2e:codex": "prisma generate && node --import tsx --test src/e2e/*.e2e.test.ts",
     "auth:hash-password": "tsx src/hash-password.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
