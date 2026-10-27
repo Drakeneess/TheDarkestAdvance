@@ -5,6 +5,10 @@ import {
 } from '../data/database'
 
 import {
+  normalizeStoryCustomLayout,
+} from '../domain/story-layout'
+
+import {
   normalizeStoryAssets,
   normalizeStoryProfile,
   normalizeStoryVisuals,
@@ -119,6 +123,11 @@ function applyServerRecord(
           normalizeStoryVisuals(
             record.payload.visuals,
           ),
+
+        layout:
+          normalizeStoryCustomLayout(
+            record.payload.layout,
+          ),
       }
 
       const existing =
@@ -150,6 +159,8 @@ function applyServerRecord(
               payload.assets,
             visuals:
               payload.visuals,
+            layout:
+              payload.layout,
             createdAt:
               payload.createdAt,
             updatedAt:

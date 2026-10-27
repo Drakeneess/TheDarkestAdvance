@@ -1,4 +1,8 @@
 import type {
+  StoryCustomLayout,
+} from './story-layout'
+
+import type {
   StoryAssets,
   StoryProfile,
   StoryVisuals,
@@ -33,44 +37,27 @@ export interface Story
 
   /**
    * Identidad estable para rutas públicas.
-   *
-   * Se genera al crear/importar la historia
-   * y no cambia al renombrarla.
    */
   slug: string
 
   /**
-   * Intención visual/editorial semántica.
-   * La resolución concreta pertenece al Codex.
+   * Preset visual base del Codex.
    */
   themeKey: StoryThemeKey
 
-  /**
-   * Identidad editorial base.
-   *
-   * Se mantiene fuera de profile porque título
-   * y descripción ya forman parte del dominio
-   * central de Story y son la fuente de verdad.
-   */
   title: string
   description: string
 
-  /**
-   * Metadata editorial adicional de la obra.
-   */
   profile: StoryProfile
-
-  /**
-   * Referencias a recursos visuales de la obra.
-   * La subida/gestión física se implementa aparte.
-   */
   assets: StoryAssets
+  visuals: StoryVisuals
 
   /**
-   * Overrides semánticos sobre themeKey.
-   * Nunca contiene CSS arbitrario.
+   * Presentación pública avanzada de la obra.
+   * `preset` conserva StoryPresentation;
+   * `custom` usa HTML/CSS sandboxed.
    */
-  visuals: StoryVisuals
+  layout: StoryCustomLayout
 
   createdAt: string
   updatedAt: string

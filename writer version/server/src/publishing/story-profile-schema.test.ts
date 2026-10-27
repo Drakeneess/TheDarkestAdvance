@@ -57,6 +57,15 @@ test(
         readerWidth: 'standard',
       },
     )
+
+    assert.deepEqual(
+      parsed.layout,
+      {
+        mode: 'preset',
+        html: '',
+        css: '',
+      },
+    )
   },
 )
 
@@ -122,3 +131,89 @@ test(
     )
   },
 )
+
+test(
+  'publishableStorySchema acepta HTML y CSS personalizados pasivos',
+  () => {
+    const parsed =
+      publishableStorySchema.parse({
+        ...baseStory,
+        layout: {
+          mode: 'custom',
+          html:
+            '<main><h1>{{story.title}}</h1><section>{{chapters}}</section></main>',
+          css:
+            '.hero { min-height: 70vh; background: var(--story-background); }',
+        },
+      })
+
+    assert.equal(
+      parsed.layout.mode,
+      'custom',
+    )
+
+    assert.match(
+      parsed.layout.html,
+      /story\.title/,
+    )
+  },
+)
+
+for (
+  const html
+    of [
+      '<script>alert(1)</script>',
+      '<img src="x" onerror="alert(1)">',
+      '<a href="javascript:alert(1)">x</a>',
+      '<iframe src="https://example.com"></iframe>',
+    ]
+) {
+  test(
+    `publishableStorySchema rechaza HTML activo: ${html.slice(0, 24)}`,
+    () => {
+      const parsed =
+        publishableStorySchema.safeParse({
+          ...baseStory,
+          layout: {
+            mode: 'custom',
+            html,
+            css: '',
+          },
+        })
+
+      assert.equal(
+        parsed.success,
+        false,
+      )
+    },
+  )
+}
+
+for (
+  const css
+    of [
+      '@import url("https://evil.test/x.css");',
+      '.x { background: url(javascript:alert(1)); }',
+      '.x { width: expression(alert(1)); }',
+    ]
+) {
+  test(
+    `publishableStorySchema rechaza CSS activo: ${css.slice(0, 24)}`,
+    () => {
+      const parsed =
+        publishableStorySchema.safeParse({
+          ...baseStory,
+          layout: {
+            mode: 'custom',
+            html: '<main>safe</main>',
+            css,
+          },
+        })
+
+      assert.equal(
+        parsed.success,
+        false,
+      )
+    },
+  )
+}

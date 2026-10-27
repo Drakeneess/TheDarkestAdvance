@@ -476,6 +476,9 @@ export async function storeStoryAsset(
   const payloadHash =
     sha256Hex(bytes)
 
+  const requestBody =
+    Uint8Array.from(bytes)
+
   const response =
     await fetch(
       url,
@@ -493,7 +496,7 @@ export async function storeStoryAsset(
           'Content-Length':
             String(bytes.length),
         },
-        body: bytes,
+        body: requestBody,
       },
     )
 
@@ -565,31 +568,48 @@ export async function openStoryAsset(
     )
   }
 
-  const contentLength =
-    Number(
-      response.headers.get(
-        'content-length',
-      ),
+  const bytes =
+    Buffer.from(
+      await response.arrayBuffer(),
     )
 
   if (
-    !Number.isSafeInteger(
-      contentLength,
-    ) ||
-    contentLength < 0 ||
-    !response.body
+    bytes.length === 0 ||
+    bytes.length >
+      STORY_ASSET_MAX_BYTES
   ) {
     throw new Error(
       'STORY_ASSET_STORAGE_INVALID_RESPONSE',
     )
   }
 
+  const declaredLength =
+    response.headers.get(
+      'content-length',
+    )
+
+  if (declaredLength !== null) {
+    const contentLength =
+      Number(declaredLength)
+
+    if (
+      !Number.isSafeInteger(
+        contentLength,
+      ) ||
+      contentLength !== bytes.length
+    ) {
+      throw new Error(
+        'STORY_ASSET_STORAGE_INVALID_RESPONSE',
+      )
+    }
+  }
+
   return {
     stream:
-      Readable.fromWeb(
-        response.body,
-      ),
+      Readable.from([
+        bytes,
+      ]),
     contentType,
-    size: contentLength,
+    size: bytes.length,
   }
 }

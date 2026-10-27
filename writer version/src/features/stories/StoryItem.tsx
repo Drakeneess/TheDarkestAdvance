@@ -9,6 +9,10 @@ import type {
 } from '../../domain/models'
 
 import {
+  StoryCustomLayoutEditor,
+} from './StoryCustomLayoutEditor'
+
+import {
   StoryProfileEditor,
 } from './StoryProfileEditor'
 
@@ -64,6 +68,11 @@ export function StoryItem({
   const [
     profileOpen,
     setProfileOpen,
+  ] = useState(false)
+
+  const [
+    layoutOpen,
+    setLayoutOpen,
   ] = useState(false)
 
   const [
@@ -152,6 +161,12 @@ export function StoryItem({
     setMenuOpen(false)
     onSelect()
     setProfileOpen(true)
+  }
+
+  function openLayout() {
+    setMenuOpen(false)
+    onSelect()
+    setLayoutOpen(true)
   }
 
   function startRename() {
@@ -313,6 +328,15 @@ export function StoryItem({
             <button
               type="button"
               onClick={
+                openLayout
+              }
+            >
+              Diseño
+            </button>
+
+            <button
+              type="button"
+              onClick={
                 startRename
               }
             >
@@ -367,6 +391,16 @@ export function StoryItem({
                 type="button"
                 role="menuitem"
                 onClick={
+                  openLayout
+                }
+              >
+                Diseño
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={
                   startRename
                 }
               >
@@ -413,6 +447,15 @@ export function StoryItem({
           story={story}
           onClose={() => {
             setProfileOpen(false)
+          }}
+        />
+      )}
+
+      {layoutOpen && (
+        <StoryCustomLayoutEditor
+          story={story}
+          onClose={() => {
+            setLayoutOpen(false)
           }}
         />
       )}

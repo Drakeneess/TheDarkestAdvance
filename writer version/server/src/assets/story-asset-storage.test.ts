@@ -123,7 +123,7 @@ test(
         if (method === 'PUT') {
           const bytes =
             Buffer.from(
-              init?.body as Buffer,
+              init?.body as Uint8Array,
             )
 
           objects.set(
@@ -163,7 +163,9 @@ test(
         }
 
         return new Response(
-          object.bytes,
+          Uint8Array.from(
+            object.bytes,
+          ),
           {
             status: 200,
             headers: {

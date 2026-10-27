@@ -5,6 +5,10 @@ import {
 } from '../data/database'
 
 import {
+  normalizeStoryCustomLayout,
+} from '../domain/story-layout'
+
+import {
   normalizeStoryAssets,
   normalizeStoryProfile,
   normalizeStoryVisuals,
@@ -156,6 +160,11 @@ function applyStory(
       normalizeStoryVisuals(
         change.payload.visuals,
       ),
+
+    layout:
+      normalizeStoryCustomLayout(
+        change.payload.layout,
+      ),
   }
 
   const existing =
@@ -202,6 +211,9 @@ function applyStory(
 
         visuals:
           payload.visuals,
+
+        layout:
+          payload.layout,
 
         createdAt:
           payload.createdAt,
@@ -396,16 +408,6 @@ export function applyRemoteChange(
       change,
     )
 
-  /**
-   * Una entidad es dirty cuando:
-   *
-   * - tiene una mutación pendiente;
-   * - ya está en conflicto;
-   * - existe localmente pero nunca fue
-   *   sincronizada;
-   * - su revision cambió desde la última
-   *   revisión sincronizada.
-   */
   const dirty =
     state?.pendingMutationId !==
       null &&
@@ -440,12 +442,6 @@ export function applyRemoteChange(
       entityId:
         change.entityId,
 
-      /**
-       * No avanzamos la base local.
-       *
-       * El serverVersion remoto queda
-       * guardado dentro del conflicto.
-       */
       serverVersion:
         state?.serverVersion ??
         null,
@@ -472,13 +468,6 @@ export function applyRemoteChange(
     return 'conflict'
   }
 
-  /**
-   * No usamos servicios de edición.
-   *
-   * Es replicación del servidor,
-   * así que copiamos exactamente
-   * la revision recibida.
-   */
   applySnapshot(
     change,
   )

@@ -9,6 +9,10 @@ import type {
 } from '../domain/models'
 
 import {
+  normalizeStoryCustomLayout,
+} from '../domain/story-layout'
+
+import {
   normalizeStoryAssets,
   normalizeStoryProfile,
   normalizeStoryVisuals,
@@ -23,7 +27,7 @@ import {
 } from '../domain/story-theme'
 
 export const DATABASE_SCHEMA_VERSION =
-  4
+  5
 
 const SCHEMA_VERSION_KEY =
   'writer:database-schema-version'
@@ -212,13 +216,6 @@ function migrateChapterVersions(
         null
     }
 
-    /**
-     * Las versiones antiguas no tenían
-     * updatedAt.
-     *
-     * createdAt es el único timestamp
-     * histórico verificable que tenemos.
-     */
     if (
       !version.updatedAt
     ) {
@@ -276,11 +273,6 @@ function migrateStoryEditorialFields(
       )
       .fetch()
 
-  /**
-   * Conservamos slugs válidos existentes.
-   * Los tombstones también reservan su slug
-   * para no reutilizar identidades antiguas.
-   */
   const usedSlugs =
     new Set(
       records
@@ -325,12 +317,6 @@ function migrateStoryEditorialFields(
       continue
     }
 
-    /**
-     * Esta migración solo completa el esquema.
-     * No representa una edición del usuario:
-     * revision, timestamps y tombstones
-     * permanecen intactos.
-     */
     collection.updateOne(
       {
         id: story.id,
@@ -410,10 +396,6 @@ function migrateChapterEditorialFields(
       used,
     )
 
-    /**
-     * Igual que Story, Chapter conserva
-     * revision, timestamps y tombstone.
-     */
     collection.updateOne(
       {
         id: chapter.id,
@@ -458,15 +440,6 @@ function migrateStoryProfiles(
     const story
       of records
   ) {
-    /**
-     * La V4 completa y normaliza el contrato,
-     * incluso si una build intermedia escribió
-     * datos parciales.
-     *
-     * No incrementamos revision ni updatedAt:
-     * esto es una migración de esquema local,
-     * no una edición del usuario.
-     */
     collection.updateOne(
       {
         id: story.id,
@@ -498,6 +471,49 @@ function migrateToVersion4(
     DatabaseCollections,
 ) {
   migrateStoryProfiles(
+    collections.stories,
+  )
+}
+
+function migrateStoryLayouts(
+  collection:
+    Collection<Story>,
+) {
+  const records =
+    collection
+      .find(
+        {},
+        {
+          reactive: false,
+        },
+      )
+      .fetch()
+
+  for (
+    const story
+      of records
+  ) {
+    collection.updateOne(
+      {
+        id: story.id,
+      },
+      {
+        $set: {
+          layout:
+            normalizeStoryCustomLayout(
+              story.layout,
+            ),
+        },
+      },
+    )
+  }
+}
+
+function migrateToVersion5(
+  collections:
+    DatabaseCollections,
+) {
+  migrateStoryLayouts(
     collections.stories,
   )
 }
@@ -538,6 +554,12 @@ export function migrateDatabase(
 
   if (storedVersion < 4) {
     migrateToVersion4(
+      collections,
+    )
+  }
+
+  if (storedVersion < 5) {
+    migrateToVersion5(
       collections,
     )
   }

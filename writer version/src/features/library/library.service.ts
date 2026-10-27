@@ -1,6 +1,9 @@
 import { chapterVersions, chapters, stories } from '../../data/database'
 import type { Chapter, ChapterVersion, Story } from '../../domain/models'
 import {
+  createDefaultStoryCustomLayout,
+} from '../../domain/story-layout'
+import {
   createDefaultStoryAssets,
   createDefaultStoryProfile,
   createDefaultStoryVisuals,
@@ -101,6 +104,9 @@ export function createStory(title: string, description = ''): Story {
 
     visuals:
       createDefaultStoryVisuals(),
+
+    layout:
+      createDefaultStoryCustomLayout(),
 
     createdAt: timestamp,
     updatedAt: timestamp,

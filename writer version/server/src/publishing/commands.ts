@@ -106,6 +106,9 @@ export async function publishStory({
       const visuals =
         story.visuals as Prisma.InputJsonValue
 
+      const layout =
+        story.layout as Prisma.InputJsonValue
+
       const publishedStory =
         await tx.publishedStory.upsert({
           where: {
@@ -125,6 +128,7 @@ export async function publishStory({
             profile,
             assets,
             visuals,
+            layout,
           },
           update: {
             slug: story.slug,
@@ -135,6 +139,7 @@ export async function publishStory({
             profile,
             assets,
             visuals,
+            layout,
           },
         })
 
