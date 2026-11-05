@@ -131,7 +131,9 @@ export function StoryCustomLayoutEditor({
       event: KeyboardEvent,
     ) {
       if (event.key === 'Escape') {
-        closeEditor()
+        if (!dirty || window.confirm('Hay cambios de diseño sin guardar. ¿Salir y descartarlos?')) {
+          onClose()
+        }
       }
     }
 
